@@ -1,6 +1,5 @@
 // script.js
 
-// ฟังก์ชันสลับการเปิด/ปิด ช่องกรอกข้อมูลตาม Checkbox
 function setupCheckboxToggle(checkboxId, inputId) {
   const checkbox = document.getElementById(checkboxId);
   const input = document.getElementById(inputId);
@@ -16,7 +15,6 @@ function setupCheckboxToggle(checkboxId, inputId) {
   });
 }
 
-// ผูกฟังก์ชันเข้ากับทุกช่องเมื่อโหลดหน้าเว็บ
 document.addEventListener('DOMContentLoaded', function() {
   const togglePairs = [
     ['eq_stage', 'qty_stage'],
@@ -30,6 +28,7 @@ document.addEventListener('DOMContentLoaded', function() {
     ['sec_fence', 'qty_fence'],
     ['sec_cone', 'qty_cone'],
     ['sec_megaphone', 'qty_megaphone'],
+    ['sec_other', 'detail_sec_other'],
     ['veh_small', 'reason_veh_small'],
     ['veh_large', 'reason_veh_large'],
     ['p_mok', 'qty_p_mok'],
@@ -42,19 +41,18 @@ document.addEventListener('DOMContentLoaded', function() {
     ['p_vasana', 'qty_p_vasana'],
     ['p_pilo', 'qty_p_pilo'],
     ['p_cha', 'qty_p_cha'],
-    ['p_cloth', 'qty_p_cloth']
+    ['p_cloth', 'qty_p_cloth'],
+    ['p_other', 'detail_p_other']
   ];
 
   togglePairs.forEach(pair => setupCheckboxToggle(pair[0], pair[1]));
 });
 
-// ฟังก์ชันตรวจสอบและส่งข้อมูล
 function handleSubmit(e) {
   e.preventDefault();
   const btn = document.getElementById('submitBtn');
   const form = e.target;
 
-  // 1. ตรวจสอบว่าเลือกสถานที่อย่างน้อย 1 แห่งหรือไม่
   const selectedLocations = Array.from(document.querySelectorAll('input[name="location_check"]:checked'))
                                  .map(el => el.value);
 
@@ -63,7 +61,6 @@ function handleSubmit(e) {
     return;
   }
 
-  // 2. ตรวจสอบรายการที่มีการติ๊กเลือก แต่ยังไม่ได้กรอกจำนวน/รายละเอียด
   const requiredInputPairs = [
     { check: 'eq_stage', input: 'qty_stage', label: 'ขนาดเวที' },
     { check: 'eq_table', input: 'qty_table', label: 'จำนวนโต๊ะ' },
@@ -76,6 +73,7 @@ function handleSubmit(e) {
     { check: 'sec_fence', input: 'qty_fence', label: 'จำนวนแผงกั้นจราจร' },
     { check: 'sec_cone', input: 'qty_cone', label: 'จำนวนกรวยยางจราจร' },
     { check: 'sec_megaphone', input: 'qty_megaphone', label: 'จำนวนโทรโข่ง' },
+    { check: 'sec_other', input: 'detail_sec_other', label: 'รายละเอียดงานจราจร อื่น ๆ' },
     { check: 'veh_small', input: 'reason_veh_small', label: 'วัตถุประสงค์การใช้รถกระบะบรรทุกเล็ก' },
     { check: 'veh_large', input: 'reason_veh_large', label: 'วัตถุประสงค์การใช้รถกระบะบรรทุกใหญ่' },
     { check: 'p_mok', input: 'qty_p_mok', label: 'จำนวนต้นโมกข์' },
@@ -88,14 +86,15 @@ function handleSubmit(e) {
     { check: 'p_vasana', input: 'qty_p_vasana', label: 'จำนวนต้นวาสนา' },
     { check: 'p_pilo', input: 'qty_p_pilo', label: 'จำนวนต้นพิโลทอง' },
     { check: 'p_cha', input: 'qty_p_cha', label: 'จำนวนต้นชาฮกเกี้ยน' },
-    { check: 'p_cloth', input: 'qty_p_cloth', label: 'จำนวนผ้าปิดกระถางต้นไม้' }
+    { check: 'p_cloth', input: 'qty_p_cloth', label: 'จำนวนผ้าปิดกระถางต้นไม้' },
+    { check: 'p_other', input: 'detail_p_other', label: 'รายละเอียดต้นไม้ประดับ อื่น ๆ' }
   ];
 
   for (let item of requiredInputPairs) {
     const checkbox = document.getElementById(item.check);
     const input = document.getElementById(item.input);
     if (checkbox && checkbox.checked) {
-      if (!input.value || input.value.trim() === '' || Number(input.value) <= 0) {
+      if (!input.value || input.value.trim() === '') {
         alert('กรุณาระบุ ' + item.label + ' ให้ถูกต้อง');
         input.focus();
         return;
@@ -108,26 +107,28 @@ function handleSubmit(e) {
 
   // รวบรวมอุปกรณ์
   let eqList = [];
-  if(document.getElementById('eq_sound').checked) eqList.push('เครื่องเสียง');
   if(document.getElementById('eq_stage').checked) eqList.push('เวที (' + document.getElementById('qty_stage').value + ')');
   if(document.getElementById('eq_table').checked) eqList.push('โต๊ะ ' + document.getElementById('qty_table').value + ' ตัว');
   if(document.getElementById('eq_chair').checked) eqList.push('เก้าอี้ ' + document.getElementById('qty_chair').value + ' ตัว');
   if(document.getElementById('eq_bin').checked) eqList.push('ถังขยะ ' + document.getElementById('qty_bin').value + ' ใบ');
   if(document.getElementById('eq_cooler').checked) eqList.push('คูลเลอร์ ' + document.getElementById('qty_cooler').value + ' ใบ');
   if(document.getElementById('eq_fan').checked) eqList.push('พัดลม ' + document.getElementById('qty_fan').value + ' ตัว');
-  if(document.getElementById('eq_elec').checked) eqList.push('งานไฟฟ้า');
-  if(document.getElementById('eq_water').checked) eqList.push('งานประปา');
+
+  // รวบรวมงานสาธารณูปโภคและระบบอาคาร
+  let utilityList = [];
+  if(document.getElementById('eq_elec').checked) utilityList.push('อำนวยความสะดวกงานไฟฟ้า');
+  if(document.getElementById('eq_water').checked) utilityList.push('อำนวยความสะดวกงานประปา');
 
   // รวบรวมงานจราจร
   let secList = [];
   if(document.getElementById('sec_p1').checked) secList.push('Parking 1');
-  if(document.getElementById('sec_p2').checked) secList.push('Parking 2');
   if(document.getElementById('sec_p3').checked) secList.push('Parking 3');
   if(document.getElementById('sec_guard').checked) secList.push('รปภ. ' + document.getElementById('qty_guard').value + ' นาย');
   if(document.getElementById('sec_tram').checked) secList.push('รถราง ' + document.getElementById('qty_tram').value + ' คัน');
   if(document.getElementById('sec_fence').checked) secList.push('แผงกั้น ' + document.getElementById('qty_fence').value + ' แผง');
   if(document.getElementById('sec_cone').checked) secList.push('กรวยยาง ' + document.getElementById('qty_cone').value + ' อัน');
   if(document.getElementById('sec_megaphone').checked) secList.push('โทรโข่ง ' + document.getElementById('qty_megaphone').value + ' ตัว');
+  if(document.getElementById('sec_other').checked) secList.push('อื่น ๆ: ' + document.getElementById('detail_sec_other').value);
 
   // รวบรวมยานพาหนะ
   let vehList = [];
@@ -147,6 +148,7 @@ function handleSubmit(e) {
   if(document.getElementById('p_pilo').checked) plantList.push('ต้นพิโลทอง ' + document.getElementById('qty_p_pilo').value + ' กระถาง');
   if(document.getElementById('p_cha').checked) plantList.push('ต้นชาฮกเกี้ยน ' + document.getElementById('qty_p_cha').value + ' กระถาง');
   if(document.getElementById('p_cloth').checked) plantList.push('ผ้าปิดกระถาง ' + document.getElementById('qty_p_cloth').value + ' ผืน');
+  if(document.getElementById('p_other').checked) plantList.push('อื่น ๆ: ' + document.getElementById('detail_p_other').value);
 
   const formData = {
     faculty: form.faculty.value,
@@ -155,15 +157,17 @@ function handleSubmit(e) {
     title: form.title.value,
     requesterName: form.requesterName.value,
     phone: form.phone.value,
-    email: form.email.value, // เพิ่มข้อมูลอีเมล
+    email: form.email.value,
     activityName: form.activityName.value,
     participantCount: form.participantCount.value,
+    soundUsage: form.soundUsage.value, // เพิ่มข้อมูลการใช้เสียง
     startDate: form.startDate.value,
     startTime: form.startTime.value,
     endDate: form.endDate.value,
     endTime: form.endTime.value,
     location: selectedLocations.join(', '),
     equipmentDetails: eqList.join(', '),
+    utilityDetails: utilityList.join(', '),
     securityDetails: secList.join(', '),
     vehicleDetails: vehList.join(', '),
     plantDetails: plantList.join(', '),
@@ -183,7 +187,7 @@ function handleSubmit(e) {
     if(res.success) {
       alert(res.message);
       form.reset();
-      document.querySelectorAll('.qty-input, #qty_stage, #reason_veh_small, #reason_veh_large').forEach(el => el.disabled = true);
+      document.querySelectorAll('.qty-input, #qty_stage, #reason_veh_small, #reason_veh_large, #detail_sec_other, #detail_p_other').forEach(el => el.disabled = true);
     } else {
       alert('เกิดข้อผิดพลาด: ' + res.message);
     }
@@ -193,7 +197,7 @@ function handleSubmit(e) {
   .catch(err => {
     alert('บันทึกการขอใช้สถานที่และบริการเรียบร้อยแล้ว!');
     form.reset();
-    document.querySelectorAll('.qty-input, #qty_stage, #reason_veh_small, #reason_veh_large').forEach(el => el.disabled = true);
+    document.querySelectorAll('.qty-input, #qty_stage, #reason_veh_small, #reason_veh_large, #detail_sec_other, #detail_p_other').forEach(el => el.disabled = true);
     btn.disabled = false;
     btn.innerText = 'ส่งแบบฟอร์มขอใช้บริการ';
   });

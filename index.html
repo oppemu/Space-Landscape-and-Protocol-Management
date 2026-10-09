@@ -7,14 +7,12 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
   
-  <!-- นำเข้าไฟล์ style.css -->
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <div class="container my-4" style="max-width: 900px;">
   <div class="header-box text-center mb-4">
-    <!-- แสดงโลโก้ -->
     <img src="LOGO.png" alt="Logo" class="logo-img" onerror="this.src='LOGO.jpg'">
     <h4 class="mb-1">แบบฟอร์มการขอใช้สถานที่และบริการ</h4>
     <h6>กองกายภาพและสิ่งแวดล้อม สำนักงานอธิการบดี มหาวิทยาลัยมหิดล</h6>
@@ -55,7 +53,6 @@
           <label class="form-label">หมายเลขโทรศัพท์ <span class="text-danger">*</span></label>
           <input type="tel" class="form-control" name="phone" placeholder="เช่น 0953696702" required>
         </div>
-        <!-- เพิ่มช่องกรอกอีเมล -->
         <div class="col-md-6">
           <label class="form-label">อีเมล <span class="text-danger">*</span></label>
           <input type="email" class="form-control" name="email" placeholder="เช่น example@mahidol.ac.th" required>
@@ -67,14 +64,29 @@
     <div class="card p-4 mb-4 shadow-sm">
       <h5 class="section-title mb-3">2. รายละเอียดกิจกรรม</h5>
       <div class="row g-3">
-        <div class="col-md-8">
+        <div class="col-md-12">
           <label class="form-label">เพื่อจัดกิจกรรม <span class="text-danger">*</span></label>
           <input type="text" class="form-control" name="activityName" placeholder="ระบุชื่อกิจกรรม/โครงการ" required>
         </div>
-        <div class="col-md-4">
+        
+        <div class="col-md-6">
           <label class="form-label">จำนวนผู้เข้าร่วม (คน) <span class="text-danger">*</span></label>
           <input type="number" class="form-control" name="participantCount" min="1" placeholder="20" required>
         </div>
+        <div class="col-md-6 d-flex flex-column justify-content-end">
+          <label class="form-label mb-2">การใช้เสียง <span class="text-danger">*</span></label>
+          <div class="d-flex align-items-center gap-4 pt-1">
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="soundUsage" id="sound_yes" value="ใช้เสียง" required>
+              <label class="form-check-label fw-bold text-success" for="sound_yes">ใช้เสียง</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="soundUsage" id="sound_no" value="ไม่ใช้เสียง" required>
+              <label class="form-check-label fw-bold text-secondary" for="sound_no">ไม่ใช้เสียง</label>
+            </div>
+          </div>
+        </div>
+
         <div class="col-md-3">
           <label class="form-label">ตั้งแต่วันที่ <span class="text-danger">*</span></label>
           <input type="date" class="form-control" name="startDate" required>
@@ -179,134 +191,218 @@
       </div>
     </div>
 
-    <!-- 4. รายการขอรับบริการเพิ่มเติม -->
+    <!-- 4. รายการขอรับบริการเพิ่มเติม (ปรับแยก 2 บรรทัดให้กว้างอ่านง่าย) -->
     <div class="card p-4 mb-4 shadow-sm">
       <h5 class="section-title mb-3">4. รายการขอรับบริการเพิ่มเติม (ระบุจำนวน)</h5>
       
-      <!-- อุปกรณ์ -->
-      <h6 class="fw-bold text-primary mt-2">วัสดุ อุปกรณ์ / งานระบบ</h6>
-      <div class="row g-2 mb-3">
-        <div class="col-md-6 d-flex align-items-center">
-          <input type="checkbox" id="eq_sound" class="form-check-input me-2">
-          <label for="eq_sound" class="me-2">เครื่องเสียง</label>
+      <!-- วัสดุ อุปกรณ์ -->
+      <h6 class="fw-bold text-primary mt-2">วัสดุ อุปกรณ์</h6>
+      <div class="row g-3 mb-3">
+        <div class="col-md-6">
+          <div class="form-check mb-1">
+            <input type="checkbox" id="eq_stage" class="form-check-input">
+            <label for="eq_stage" class="form-check-label">เวที</label>
+          </div>
+          <input type="text" id="qty_stage" class="form-control form-control-sm" placeholder="ขนาด เช่น 3x4 เมตร" disabled>
         </div>
-        <div class="col-md-6 d-flex align-items-center">
-          <input type="checkbox" id="eq_stage" class="form-check-input me-2">
-          <label for="eq_stage" class="me-2">เวที ขนาด:</label>
-          <input type="text" id="qty_stage" class="form-control form-control-sm" style="width:120px;" placeholder="เช่น 3x4 เมตร" disabled>
+        <div class="col-md-6">
+          <div class="form-check mb-1">
+            <input type="checkbox" id="eq_table" class="form-check-input">
+            <label for="eq_table" class="form-check-label">โต๊ะ (ไม่เกิน 50 ตัว)</label>
+          </div>
+          <input type="number" id="qty_table" class="form-control form-control-sm" max="50" placeholder="ระบุจำนวน (ตัว)" disabled>
         </div>
-        <div class="col-md-6 d-flex align-items-center">
-          <input type="checkbox" id="eq_table" class="form-check-input me-2">
-          <label for="eq_table" class="me-2">โต๊ะ (ไม่เกิน 50 ตัว):</label>
-          <input type="number" id="qty_table" class="form-control form-control-sm qty-input" max="50" placeholder="ตัว" disabled>
+        <div class="col-md-6">
+          <div class="form-check mb-1">
+            <input type="checkbox" id="eq_chair" class="form-check-input">
+            <label for="eq_chair" class="form-check-label">เก้าอี้ (ไม่เกิน 250 ตัว)</label>
+          </div>
+          <input type="number" id="qty_chair" class="form-control form-control-sm" max="250" placeholder="ระบุจำนวน (ตัว)" disabled>
         </div>
-        <div class="col-md-6 d-flex align-items-center">
-          <input type="checkbox" id="eq_chair" class="form-check-input me-2">
-          <label for="eq_chair" class="me-2">เก้าอี้ (ไม่เกิน 250 ตัว):</label>
-          <input type="number" id="qty_chair" class="form-control form-control-sm qty-input" max="250" placeholder="ตัว" disabled>
+        <div class="col-md-6">
+          <div class="form-check mb-1">
+            <input type="checkbox" id="eq_bin" class="form-check-input">
+            <label for="eq_bin" class="form-check-label">ถังขยะ (ไม่เกิน 20 ใบ)</label>
+          </div>
+          <input type="number" id="qty_bin" class="form-control form-control-sm" max="20" placeholder="ระบุจำนวน (ใบ)" disabled>
         </div>
-        <div class="col-md-6 d-flex align-items-center">
-          <input type="checkbox" id="eq_bin" class="form-check-input me-2">
-          <label for="eq_bin" class="me-2">ถังขยะ (ไม่เกิน 20 ใบ):</label>
-          <input type="number" id="qty_bin" class="form-control form-control-sm qty-input" max="20" placeholder="ใบ" disabled>
+        <div class="col-md-6">
+          <div class="form-check mb-1">
+            <input type="checkbox" id="eq_cooler" class="form-check-input">
+            <label for="eq_cooler" class="form-check-label">คูลเลอร์ใส่น้ำ (ไม่เกิน 3 ใบ)</label>
+          </div>
+          <input type="number" id="qty_cooler" class="form-control form-control-sm" max="3" placeholder="ระบุจำนวน (ใบ)" disabled>
         </div>
-        <div class="col-md-6 d-flex align-items-center">
-          <input type="checkbox" id="eq_cooler" class="form-check-input me-2">
-          <label for="eq_cooler" class="me-2">คูลเลอร์ใส่น้ำ (ไม่เกิน 3 ใบ):</label>
-          <input type="number" id="qty_cooler" class="form-control form-control-sm qty-input" max="3" placeholder="ใบ" disabled>
-        </div>
-        <div class="col-md-6 d-flex align-items-center">
-          <input type="checkbox" id="eq_fan" class="form-check-input me-2">
-          <label for="eq_fan" class="me-2">พัดลม (ไม่เกิน 5 ตัว):</label>
-          <input type="number" id="qty_fan" class="form-control form-control-sm qty-input" max="5" placeholder="ตัว" disabled>
-        </div>
-        <div class="col-md-6 d-flex align-items-center">
-          <input type="checkbox" id="eq_elec" class="form-check-input me-2">
-          <label for="eq_elec">อำนวยความสะดวกงานไฟฟ้า</label>
-        </div>
-        <div class="col-md-6 d-flex align-items-center">
-          <input type="checkbox" id="eq_water" class="form-check-input me-2">
-          <label for="eq_water">อำนวยความสะดวกงานประปา</label>
+        <div class="col-md-6">
+          <div class="form-check mb-1">
+            <input type="checkbox" id="eq_fan" class="form-check-input">
+            <label for="eq_fan" class="form-check-label">พัดลม (ไม่เกิน 5 ตัว)</label>
+          </div>
+          <input type="number" id="qty_fan" class="form-control form-control-sm" max="5" placeholder="ระบุจำนวน (ตัว)" disabled>
         </div>
       </div>
 
-      <!-- จราจร -->
-      <h6 class="fw-bold text-primary mt-3">งานจราจรและความปลอดภัย</h6>
+      <!-- งานสาธารณูปโภคและระบบอาคาร -->
+      <h6 class="fw-bold text-primary mt-3">งานสาธารณูปโภคและระบบอาคาร</h6>
       <div class="row g-2 mb-3">
-        <div class="col-md-6"><input type="checkbox" id="sec_p1" class="form-check-input me-2"><label for="sec_p1">ลานจอดรถชั่วคราว 1 (Parking 1)</label></div>
-        <div class="col-md-6"><input type="checkbox" id="sec_p2" class="form-check-input me-2"><label for="sec_p2">ลานจอดรถชั่วคราว 2 (Parking 2)</label></div>
-        <div class="col-md-6"><input type="checkbox" id="sec_p3" class="form-check-input me-2"><label for="sec_p3">ลานจอดรถชั่วคราว 3 (Parking 3)</label></div>
-        <div class="col-md-6 d-flex align-items-center">
-          <input type="checkbox" id="sec_guard" class="form-check-input me-2">
-          <label for="sec_guard" class="me-2">เจ้าหน้าที่ รปภ.:</label>
-          <input type="number" id="qty_guard" class="form-control form-control-sm qty-input" placeholder="นาย" disabled>
+        <div class="col-md-6">
+          <div class="form-check">
+            <input type="checkbox" id="eq_elec" class="form-check-input">
+            <label for="eq_elec" class="form-check-label">อำนวยความสะดวกงานไฟฟ้า</label>
+          </div>
         </div>
-        <div class="col-md-6 d-flex align-items-center">
-          <input type="checkbox" id="sec_tram" class="form-check-input me-2">
-          <label for="sec_tram" class="me-2">รถราง:</label>
-          <input type="number" id="qty_tram" class="form-control form-control-sm qty-input" placeholder="คัน" disabled>
+        <div class="col-md-6">
+          <div class="form-check">
+            <input type="checkbox" id="eq_water" class="form-check-input">
+            <label for="eq_water" class="form-check-label">อำนวยความสะดวกงานประปา</label>
+          </div>
         </div>
-        <div class="col-md-6 d-flex align-items-center">
-          <input type="checkbox" id="sec_fence" class="form-check-input me-2">
-          <label for="sec_fence" class="me-2">แผงกั้นจราจร (ไม่เกิน 100):</label>
-          <input type="number" id="qty_fence" class="form-control form-control-sm qty-input" max="100" placeholder="แผง" disabled>
+      </div>
+
+      <!-- งานจราจรและความปลอดภัย -->
+      <h6 class="fw-bold text-primary mt-3">งานจราจรและความปลอดภัย</h6>
+      <div class="row g-3 mb-3">
+        <div class="col-md-6">
+          <div class="form-check">
+            <input type="checkbox" id="sec_p1" class="form-check-input">
+            <label for="sec_p1" class="form-check-label">ลานจอดรถชั่วคราว 1 (Parking 1)</label>
+          </div>
         </div>
-        <div class="col-md-6 d-flex align-items-center">
-          <input type="checkbox" id="sec_cone" class="form-check-input me-2">
-          <label for="sec_cone" class="me-2">กรวยยางจราจร (ไม่เกิน 20):</label>
-          <input type="number" id="qty_cone" class="form-control form-control-sm qty-input" max="20" placeholder="อัน" disabled>
+        <div class="col-md-6">
+          <div class="form-check">
+            <input type="checkbox" id="sec_p3" class="form-check-input">
+            <label for="sec_p3" class="form-check-label">ลานจอดรถชั่วคราว 3 (Parking 3)</label>
+          </div>
         </div>
-        <div class="col-md-6 d-flex align-items-center">
-          <input type="checkbox" id="sec_megaphone" class="form-check-input me-2">
-          <label for="sec_megaphone" class="me-2">โทรโข่ง (ไม่เกิน 3):</label>
-          <input type="number" id="qty_megaphone" class="form-control form-control-sm qty-input" max="3" placeholder="ตัว" disabled>
+        <div class="col-md-6">
+          <div class="form-check mb-1">
+            <input type="checkbox" id="sec_guard" class="form-check-input">
+            <label for="sec_guard" class="form-check-label">เจ้าหน้าที่ รปภ.</label>
+          </div>
+          <input type="number" id="qty_guard" class="form-control form-control-sm" placeholder="ระบุจำนวน (นาย)" disabled>
+        </div>
+        <div class="col-md-6">
+          <div class="form-check mb-1">
+            <input type="checkbox" id="sec_tram" class="form-check-input">
+            <label for="sec_tram" class="form-check-label">รถราง</label>
+          </div>
+          <input type="number" id="qty_tram" class="form-control form-control-sm" placeholder="ระบุจำนวน (คัน)" disabled>
+        </div>
+        <div class="col-md-6">
+          <div class="form-check mb-1">
+            <input type="checkbox" id="sec_fence" class="form-check-input">
+            <label for="sec_fence" class="form-check-label">แผงกั้นจราจร (ไม่เกิน 100 แผง)</label>
+          </div>
+          <input type="number" id="qty_fence" class="form-control form-control-sm" max="100" placeholder="ระบุจำนวน (แผง)" disabled>
+        </div>
+        <div class="col-md-6">
+          <div class="form-check mb-1">
+            <input type="checkbox" id="sec_cone" class="form-check-input">
+            <label for="sec_cone" class="form-check-label">กรวยยางจราจร (ไม่เกิน 20 อัน)</label>
+          </div>
+          <input type="number" id="qty_cone" class="form-control form-control-sm" max="20" placeholder="ระบุจำนวน (อัน)" disabled>
+        </div>
+        <div class="col-md-6">
+          <div class="form-check mb-1">
+            <input type="checkbox" id="sec_megaphone" class="form-check-input">
+            <label for="sec_megaphone" class="form-check-label">โทรโข่ง (ไม่เกิน 3 ตัว)</label>
+          </div>
+          <input type="number" id="qty_megaphone" class="form-control form-control-sm" max="3" placeholder="ระบุจำนวน (ตัว)" disabled>
+        </div>
+        <div class="col-md-6">
+          <div class="form-check mb-1">
+            <input type="checkbox" id="sec_other" class="form-check-input">
+            <label for="sec_other" class="form-check-label">อื่น ๆ (งานจราจร)</label>
+          </div>
+          <input type="text" id="detail_sec_other" class="form-control form-control-sm" placeholder="ระบุรายละเอียดเพิ่มเติม" disabled>
         </div>
       </div>
 
       <!-- ยานพาหนะ -->
       <h6 class="fw-bold text-primary mt-3">ยานพาหนะ (เฉพาะภายในมหาวิทยาลัยมหิดล ศาลายา)</h6>
-      <div class="row g-2 mb-3">
-        <div class="col-md-6 d-flex align-items-center">
-          <input type="checkbox" id="veh_small" class="form-check-input me-2">
-          <label for="veh_small" class="me-2">รถกระบะบรรทุกเล็ก (ลค 5556) เพื่อ:</label>
-          <input type="text" id="reason_veh_small" class="form-control form-control-sm" placeholder="วัตถุประสงค์" disabled>
+      <div class="row g-3 mb-3">
+        <div class="col-md-6">
+          <div class="form-check mb-1">
+            <input type="checkbox" id="veh_small" class="form-check-input">
+            <label for="veh_small" class="form-check-label">รถกระบะบรรทุกเล็ก (ลค 5556)</label>
+          </div>
+          <input type="text" id="reason_veh_small" class="form-control form-control-sm" placeholder="ระบุวัตถุประสงค์การใช้งาน" disabled>
         </div>
-        <div class="col-md-6 d-flex align-items-center">
-          <input type="checkbox" id="veh_large" class="form-check-input me-2">
-          <label for="veh_large" class="me-2">รถกระบะบรรทุกใหญ่ (98-5575) เพื่อ:</label>
-          <input type="text" id="reason_veh_large" class="form-control form-control-sm" placeholder="วัตถุประสงค์" disabled>
+        <div class="col-md-6">
+          <div class="form-check mb-1">
+            <input type="checkbox" id="veh_large" class="form-check-input">
+            <label for="veh_large" class="form-check-label">รถกระบะบรรทุกใหญ่ (98-5575)</label>
+          </div>
+          <input type="text" id="reason_veh_large" class="form-control form-control-sm" placeholder="ระบุวัตถุประสงค์การใช้งาน" disabled>
         </div>
       </div>
 
       <!-- ต้นไม้ประดับ -->
       <h6 class="fw-bold text-primary mt-3">ต้นไม้เพื่อประดับตกแต่งสถานที่</h6>
-      <div class="row g-2">
-        <div class="col-md-6 d-flex align-items-center"><input type="checkbox" id="p_mok" class="form-check-input me-2"><label for="p_mok" class="me-2">ต้นโมกข์ (&lt;=50):</label><input type="number" id="qty_p_mok" class="form-control form-control-sm qty-input" max="50" placeholder="กระถาง" disabled></div>
-        <div class="col-md-6 d-flex align-items-center"><input type="checkbox" id="p_thian" class="form-check-input me-2"><label for="p_thian" class="me-2">ต้นเทียนทอง (&lt;=50):</label><input type="number" id="qty_p_thian" class="form-control form-control-sm qty-input" max="50" placeholder="กระถาง" disabled></div>
-        <div class="col-md-6 d-flex align-items-center"><input type="checkbox" id="p_saow" class="form-check-input me-2"><label for="p_saow" class="me-2">ต้นสาวน้อยประแป้ง (&lt;=50):</label><input type="number" id="qty_p_saow" class="form-control form-control-sm qty-input" max="50" placeholder="กระถาง" disabled></div>
-        <div class="col-md-6 d-flex align-items-center"><input type="checkbox" id="p_fueng" class="form-check-input me-2"><label for="p_fueng" class="me-2">ต้นเฟื่องฟ้า (&lt;=50):</label><input type="number" id="qty_p_fueng" class="form-control form-control-sm qty-input" max="50" placeholder="กระถาง" disabled></div>
-        <div class="col-md-6 d-flex align-items-center"><input type="checkbox" id="p_mak" class="form-check-input me-2"><label for="p_mak" class="me-2">ต้นหมากเหลือง (&lt;=50):</label><input type="number" id="qty_p_mak" class="form-control form-control-sm qty-input" max="50" placeholder="กระถาง" disabled></div>
-        <div class="col-md-6 d-flex align-items-center"><input type="checkbox" id="p_jung" class="form-check-input me-2"><label for="p_jung" class="me-2">ต้นจั๋ง (&lt;=10):</label><input type="number" id="qty_p_jung" class="form-control form-control-sm qty-input" max="10" placeholder="กระถาง" disabled></div>
-        <div class="col-md-6 d-flex align-items-center"><input type="checkbox" id="p_jun" class="form-check-input me-2"><label for="p_jun" class="me-2">ต้นจันทร์ผา (&lt;=8):</label><input type="number" id="qty_p_jun" class="form-control form-control-sm qty-input" max="8" placeholder="กระถาง" disabled></div>
-        <div class="col-md-6 d-flex align-items-center"><input type="checkbox" id="p_vasana" class="form-check-input me-2"><label for="p_vasana" class="me-2">ต้นวาสนา (&lt;=10):</label><input type="number" id="qty_p_vasana" class="form-control form-control-sm qty-input" max="10" placeholder="กระถาง" disabled></div>
-        <div class="col-md-6 d-flex align-items-center"><input type="checkbox" id="p_pilo" class="form-check-input me-2"><label for="p_pilo" class="me-2">ต้นพิโลทอง (&lt;=30):</label><input type="number" id="qty_p_pilo" class="form-control form-control-sm qty-input" max="30" placeholder="กระถาง" disabled></div>
-        <div class="col-md-6 d-flex align-items-center"><input type="checkbox" id="p_cha" class="form-check-input me-2"><label for="p_cha" class="me-2">ต้นชาฮกเกี้ยน (&lt;=20):</label><input type="number" id="qty_p_cha" class="form-control form-control-sm qty-input" max="20" placeholder="กระถาง" disabled></div>
-        <div class="col-md-6 d-flex align-items-center"><input type="checkbox" id="p_cloth" class="form-check-input me-2"><label for="p_cloth" class="me-2">ผ้าปิดกระถางต้นไม้ (ผ้ามันสีน้ำเงิน):</label><input type="number" id="qty_p_cloth" class="form-control form-control-sm qty-input" placeholder="ผืน" disabled></div>
+      <div class="row g-3">
+        <div class="col-md-6">
+          <div class="form-check mb-1"><input type="checkbox" id="p_mok" class="form-check-input"><label for="p_mok" class="form-check-label">ต้นโมกข์ (&lt;=50)</label></div>
+          <input type="number" id="qty_p_mok" class="form-control form-control-sm" max="50" placeholder="ระบุจำนวน (กระถาง)" disabled>
+        </div>
+        <div class="col-md-6">
+          <div class="form-check mb-1"><input type="checkbox" id="p_thian" class="form-check-input"><label for="p_thian" class="form-check-label">ต้นเทียนทอง (&lt;=50)</label></div>
+          <input type="number" id="qty_p_thian" class="form-control form-control-sm" max="50" placeholder="ระบุจำนวน (กระถาง)" disabled>
+        </div>
+        <div class="col-md-6">
+          <div class="form-check mb-1"><input type="checkbox" id="p_saow" class="form-check-input"><label for="p_saow" class="form-check-label">ต้นสาวน้อยประแป้ง (&lt;=50)</label></div>
+          <input type="number" id="qty_p_saow" class="form-control form-control-sm" max="50" placeholder="ระบุจำนวน (กระถาง)" disabled>
+        </div>
+        <div class="col-md-6">
+          <div class="form-check mb-1"><input type="checkbox" id="p_fueng" class="form-check-input"><label for="p_fueng" class="form-check-label">ต้นเฟื่องฟ้า (&lt;=50)</label></div>
+          <input type="number" id="qty_p_fueng" class="form-control form-control-sm" max="50" placeholder="ระบุจำนวน (กระถาง)" disabled>
+        </div>
+        <div class="col-md-6">
+          <div class="form-check mb-1"><input type="checkbox" id="p_mak" class="form-check-input"><label for="p_mak" class="form-check-label">ต้นหมากเหลือง (&lt;=50)</label></div>
+          <input type="number" id="qty_p_mak" class="form-control form-control-sm" max="50" placeholder="ระบุจำนวน (กระถาง)" disabled>
+        </div>
+        <div class="col-md-6">
+          <div class="form-check mb-1"><input type="checkbox" id="p_jung" class="form-check-input"><label for="p_jung" class="form-check-label">ต้นจั๋ง (&lt;=10)</label></div>
+          <input type="number" id="qty_p_jung" class="form-control form-control-sm" max="10" placeholder="ระบุจำนวน (กระถาง)" disabled>
+        </div>
+        <div class="col-md-6">
+          <div class="form-check mb-1"><input type="checkbox" id="p_jun" class="form-check-input"><label for="p_jun" class="form-check-label">ต้นจันทร์ผา (&lt;=8)</label></div>
+          <input type="number" id="qty_p_jun" class="form-control form-control-sm" max="8" placeholder="ระบุจำนวน (กระถาง)" disabled>
+        </div>
+        <div class="col-md-6">
+          <div class="form-check mb-1"><input type="checkbox" id="p_vasana" class="form-check-input"><label for="p_vasana" class="form-check-label">ต้นวาสนา (&lt;=10)</label></div>
+          <input type="number" id="qty_p_vasana" class="form-control form-control-sm" max="10" placeholder="ระบุจำนวน (กระถาง)" disabled>
+        </div>
+        <div class="col-md-6">
+          <div class="form-check mb-1"><input type="checkbox" id="p_pilo" class="form-check-input"><label for="p_pilo" class="form-check-label">ต้นพิโลทอง (&lt;=30)</label></div>
+          <input type="number" id="qty_p_pilo" class="form-control form-control-sm" max="30" placeholder="ระบุจำนวน (กระถาง)" disabled>
+        </div>
+        <div class="col-md-6">
+          <div class="form-check mb-1"><input type="checkbox" id="p_cha" class="form-check-input"><label for="p_cha" class="form-check-label">ต้นชาฮกเกี้ยน (&lt;=20)</label></div>
+          <input type="number" id="qty_p_cha" class="form-control form-control-sm" max="20" placeholder="ระบุจำนวน (กระถาง)" disabled>
+        </div>
+        <div class="col-md-6">
+          <div class="form-check mb-1"><input type="checkbox" id="p_cloth" class="form-check-input"><label for="p_cloth" class="form-check-label">ผ้าปิดกระถางต้นไม้ (ผ้ามันสีน้ำเงิน)</label></div>
+          <input type="number" id="qty_p_cloth" class="form-control form-control-sm" placeholder="ระบุจำนวน (ผืน)" disabled>
+        </div>
+        <div class="col-md-6">
+          <div class="form-check mb-1"><input type="checkbox" id="p_other" class="form-check-input"><label for="p_other" class="form-check-label">อื่น ๆ (ต้นไม้ประดับ)</label></div>
+          <input type="text" id="detail_p_other" class="form-control form-control-sm" placeholder="ระบุรายละเอียดเพิ่มเติม" disabled>
+        </div>
       </div>
     </div>
 
     <!-- 5. ผู้ให้การรับรอง -->
     <div class="card p-4 mb-4 shadow-sm">
       <h5 class="section-title mb-3">5. ผู้ให้การรับรอง</h5>
-      <p class="text-muted small">ข้าพเจ้าขอรับรองการขอใช้สถานที่ / วัสดุ อุปกรณ์ / ต้นไม้ / ยานพาหนะ และร่วมดูแลความเรียบร้อยตลอดการจัดงาน หากเกิดความเสียหายใด ๆ ต่อสถานที่ หรือละเลยการดูแลความสะอาด ข้าพเจ้าจะเป็นผู้รับผิดชอบชดใช้ค่าเสียหายที่เกิดขึ้นจริง</p>
+      <p class="text-muted small mb-3">ข้าพเจ้าขอรับรองการขอใช้สถานที่ / วัสดุ อุปกรณ์ / ต้นไม้ / ยานพาหนะ และร่วมดูแลความเรียบร้อยตลอดการจัดงาน หากเกิดความเสียหายใด ๆ ต่อสถานที่ หรือละเลยการดูแลความสะอาด ข้าพเจ้าจะเป็นผู้รับผิดชอบชดใช้ค่าเสียหายที่เกิดขึ้นจริง</p>
       <div class="row g-3">
         <div class="col-md-6">
           <label class="form-label">ชื่อ-สกุล ผู้ให้การรับรอง <span class="text-danger">*</span></label>
-          <input type="text" class="form-control" name="approverName" required>
+          <input type="text" class="form-control" name="approverName" placeholder="เช่น นายสมชาย ใจดี" required>
         </div>
         <div class="col-md-6">
           <label class="form-label">ตำแหน่ง <span class="text-danger">*</span></label>
-          <input type="text" class="form-control" name="approverPosition" required>
+          <input type="text" class="form-control" name="approverPosition" placeholder="เช่น หัวหน้างาน..." required>
         </div>
       </div>
     </div>
@@ -327,7 +423,6 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- นำเข้าไฟล์ JS -->
 <script src="config.js"></script>
 <script src="script.js"></script>
 </body>
