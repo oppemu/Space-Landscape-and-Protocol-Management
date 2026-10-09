@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ตรวจสอบและดูประวัติการขอใช้บริการ</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
+  
+  <!-- เพิ่ม html2pdf.js สำหรับแปลงหน้าเว็บเป็น PDF ลงเครื่องโดยตรง -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+  <style>
+    body { font-family: 'Sarabun', sans-serif; background-color: #f4f6f9; min-height: 100vh; }
+    .search-card { background: white; border-radius: 16px; padding: 30px; box-shadow: 0 10px 25px rgba(0, 43, 102, 0.08); max-width: 800px; margin: 30px auto; }
+    .logo-img { max-width: 120px; height: auto; }
+    .result-card { background: white; border-radius: 12px; border: 1px solid #e2e8f0; padding: 20px; margin-bottom: 15px; }
+    .btn-navy { background-color: #1e1e50; color: white; border-radius: 20px; padding: 8px 24px; border: none; }
+    .btn-navy:hover { background-color: #121236; color: white; }
+    .pdf-preview-box { background: white; border: 1px solid #ccc; padding: 30px; font-size: 0.95rem; line-height: 1.6; color: #333; }
+  </style>
+</head>
+<body>
+
+<div class="container my-4">
+  <div class="mb-3" style="max-width: 800px; margin: 0 auto;">
+    <a href="./index.html" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left"></i> ย้อนกลับหน้าเมนูหลัก</a>
+  </div>
+
+  <!-- การค้นหาประวัติ -->
+  <div class="search-card text-center">
+    <img src="LOGO.png" alt="Logo" class="logo-img mb-3" onerror="this.src='LOGO.jpg'">
+    <h5 class="mb-4 fw-bold" style="color: #002b66;">ตรวจสอบประวัติการขอใช้สถานที่และบริการ</h5>
+    
+    <form id="searchForm" onsubmit="handleSearch(event)">
+      <div class="row g-3 text-start mb-3">
+        <div class="col-md-6">
+          <label class="form-label">ชื่อ - สกุล ผู้ขอใช้สถานที่ <span class="text-danger">*</span></label>
+          <input type="text" id="searchName" class="form-control" placeholder="เช่น ธีระพงศ์ เหมาทานนท์" required>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">อีเมล <span class="text-danger">*</span></label>
+          <input type="email" id="searchEmail" class="form-control" placeholder="เช่น example@mahidol.ac.th" required>
+        </div>
+      </div>
+      <button type="submit" id="searchBtn" class="btn btn-navy shadow-sm"><i class="bi bi-search"></i> ค้นหาประวัติ</button>
+    </form>
+  </div>
+
+  <!-- แสดงผลลัพธ์ -->
+  <div id="resultContainer" class="mx-auto" style="max-width: 800px;"></div>
+</div>
+
+<!-- Modal สำหรับแสดงตัวอย่าง PDF -->
+<div class="modal fade" id="pdfModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header" style="background-color: #f8f9fa;">
+        <h5 class="modal-title fw-bold" style="color: #1e1e50;">ตัวอย่างเอกสาร</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body bg-light">
+        <div id="pdfContent" class="pdf-preview-box shadow-sm rounded"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
+        <!-- เปลี่ยนปุ่มเป็น ดาวน์โหลด PDF -->
+        <button type="button" id="downloadPdfBtn" class="btn btn-success" onclick="downloadPdf()"><i class="bi bi-download me-1"></i> ดาวน์โหลดเอกสาร PDF</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="config.js"></script>
+<script>
+  let currentRecord = null;
+
+  function handleSearch(e) {
+    e.preventDefault();
+    const name = document.getElementById('searchName').value.trim();
+    const email = document.getElementById('searchEmail').value.trim();
+    const searchBtn = document.getElementById('searchBtn');
+    const resultContainer = document.getElementById('resultContainer');
+
+    searchBtn.disabled = true;
+    searchBtn.innerHTML = 'กำลังค้นหา...';
+    resultContainer.innerHTML = '<div class="text-center text-muted my-4"><div class="spinner-border text-primary spinner-border-sm me-2"></div>กำลังดึงข้อมูลประวัติ...</div>';
+
+    fetch(`${CONFIG.WEB_APP_URL}?action=getHistory&name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}`)
+      .then(res => res.json())
+      .then(data => {
+        searchBtn.disabled = false;
+        searchBtn.innerHTML = '<i class="bi bi-search"></i> ค้นหาประวัติ';
+        
+        if (data.success && data.records && data.records.length > 0) {
+          renderResults(data.records);
+        } else {
+          resultContainer.innerHTML = `<div class="alert alert-warning text-center my-3">ไม่พบข้อมูลประวัติของ คุณ${name} (${email})</div>`;
+        }
+      })
+      .catch(err => {
+        searchBtn.disabled = false;
+        searchBtn.innerHTML = '<i class="bi bi-search"></i> ค้นหาประวัติ';
+        resultContainer.innerHTML = `<div class="alert alert-danger text-center my-3">เกิดข้อผิดพลาดในการเชื่อมต่อข้อมูล</div>`;
+      });
+  }
+
+  function renderResults(records) {
+    const container = document.getElementById('resultContainer');
+    let html = '';
+
+    records.forEach((rec, idx) => {
+      html += `
+        <div class="result-card shadow-sm">
+          <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div>
+              <h5 class="fw-bold mb-1" style="color: #1e1e50;">${rec.id || 'REQ-' + (idx + 1)}</h5>
+              <p class="mb-1 text-dark"><strong>ผู้กรอกข้อมูล:</strong> ${rec.requesterName}</p>
+              <p class="mb-1 text-secondary"><strong>เรื่องที่ดำเนินการ:</strong> ${rec.activityName}</p>
+              <p class="mb-0 text-muted small"><strong>สถานที่:</strong> ${rec.location}</p>
+            </div>
+            <div>
+              <button class="btn btn-navy btn-sm" onclick='openPdfModal(${JSON.stringify(rec)})'>
+                ดูตัวอย่าง PDF
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    });
+
+    container.innerHTML = html;
+  }
+
+  function openPdfModal(record) {
+    currentRecord = record;
+    const modalBody = document.getElementById('pdfContent');
+
+    modalBody.innerHTML = `
+      <div class="text-center mb-4">
+        <h5 class="fw-bold mb-1" style="color: #002b66;">กองกายภาพและสิ่งแวดล้อม มหาวิทยาลัยมหิดล</h5>
+        <p class="text-muted small">แบบฟอร์มขอใช้สถานที่และบริการ</p>
+      </div>
+      <div class="mb-3">
+        <h6 class="fw-bold text-primary border-bottom pb-1">1. ข้อมูลผู้กรอกแบบฟอร์ม</h6>
+        <p class="mb-1"><strong>ลำดับ / ID :</strong> ${record.id || '-'}</p>
+        <p class="mb-1"><strong>วันที่ยื่นเรื่อง :</strong> ${record.requestDate || '-'}</p>
+        <p class="mb-1"><strong>ชื่อผู้กรอกข้อมูล :</strong> ${record.title || ''} ${record.requesterName}</p>
+        <p class="mb-1"><strong>หน่วยงาน :</strong> ${record.faculty} ${record.department ? '(' + record.department + ')' : ''}</p>
+        <p class="mb-1"><strong>E-Mail :</strong> ${record.email}</p>
+      </div>
+      <div class="mb-3">
+        <h6 class="fw-bold text-primary border-bottom pb-1">2. รายละเอียดงานและกิจกรรม</h6>
+        <p class="mb-1"><strong>เรื่องที่ดำเนินการ :</strong> ${record.activityName}</p>
+        <p class="mb-1"><strong>สถานที่ขอใช้ :</strong> ${record.location}</p>
+        <p class="mb-1"><strong>จำนวนผู้เข้าร่วม :</strong> ${record.participantCount} คน</p>
+        <p class="mb-1"><strong>ช่วงวันเวลา :</strong> ${record.startDate} (${record.startTime}) ถึง ${record.endDate} (${record.endTime})</p>
+      </div>
+      <div class="mb-3">
+        <h6 class="fw-bold text-primary border-bottom pb-1">3. รายการบริการเพิ่มเติม</h6>
+        <p class="mb-1"><strong>วัสดุ/อุปกรณ์ :</strong> ${record.equipmentDetails || 'ไม่มี'}</p>
+        <p class="mb-1"><strong>งานสาธารณูปโภค :</strong> ${record.utilityDetails || 'ไม่มี'}</p>
+        <p class="mb-1"><strong>งานจราจร/ความปลอดภัย :</strong> ${record.securityDetails || 'ไม่มี'}</p>
+        <p class="mb-1"><strong>ยานพาหนะ :</strong> ${record.vehicleDetails || 'ไม่มี'}</p>
+        <p class="mb-1"><strong>ต้นไม้ประดับ :</strong> ${record.plantDetails || 'ไม่มี'}</p>
+      </div>
+      <div class="mt-4 pt-2 border-top">
+        <p class="mb-1"><strong>ผู้ให้การรับรอง :</strong> ${record.approverName} (${record.approverPosition})</p>
+      </div>
+    `;
+
+    const modal = new bootstrap.Modal(document.getElementById('pdfModal'));
+    modal.show();
+  }
+
+  // ฟังก์ชันสร้างและดาวน์โหลดไฟล์ PDF ลงเครื่องโดยตรง
+  function downloadPdf() {
+    if (!currentRecord) return;
+
+    const element = document.getElementById('pdfContent');
+    const opt = {
+      margin:       10,
+      filename:     `คำขอใช้สถานที่_${currentRecord.id || 'เอกสาร'}.pdf`,
+      image:        { type: 'jpeg', quality: 0.98 },
+      html2canvas:  { scale: 2 },
+      jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+
+    const btn = document.getElementById('downloadPdfBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>กำลังสร้าง PDF...';
+
+    html2pdf().set(opt).from(element).save().then(() => {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="bi bi-download me-1"></i> ดาวน์โหลดเอกสาร PDF';
+    });
+  }
+</script>
+</body>
+</html>
