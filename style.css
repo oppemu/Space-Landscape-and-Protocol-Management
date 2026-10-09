@@ -1,0 +1,39 @@
+/* style.css */
+body {
+  font-family: 'Sarabun', sans-serif;
+  background-color: #f4f6f9;
+}
+
+.header-box {
+  background-color: #002b66;
+  color: white;
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.card {
+  border-radius: 10px;
+  border: 1px solid #dcdcdc;
+}
+
+.section-title {
+  border-bottom: 2px solid #002b66;
+  padding-bottom: 5px;
+  color: #002b66;
+  font-weight: bold;
+}
+
+.qty-input {
+  width: 90px;
+  display: inline-block;
+}
+
+.form-check-label {
+  cursor: pointer;
+}
+
+.logo-img {
+  max-width: 120px;
+  height: auto;
+  margin-bottom: 15px;
+}
