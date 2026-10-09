@@ -1,5 +1,38 @@
 // script.js
 
+// ข้อความแจ้งเตือนตามข้อจำกัดระบบไฟฟ้าในเอกสาร
+const ELEC_LIMITS = {
+  library: '⚡ <strong>ข้อจำกัดไฟฟ้า:</strong> สามารถเชื่อมต่อไฟฟ้าได้ขนาดไม่เกิน 70 แอมป์ จำนวน 2 ชุด',
+  mahidol: '⚡ <strong>ข้อจำกัดไฟฟ้า:</strong> สามารถเชื่อมต่อไฟฟ้าได้ขนาดไม่เกิน 50 แอมป์ จำนวน 1 ชุด',
+  white_duck: '⚡ <strong>ข้อจำกัดไฟฟ้า:</strong> สามารถเชื่อมต่อไฟฟ้าได้ขนาดไม่เกิน 50 แอมป์ จำนวน 1 ชุด',
+  walk_a: '⚡ <strong>ข้อจำกัดไฟฟ้า:</strong> สามารถเชื่อมต่อไฟฟ้าได้ขนาดไม่เกิน 50 แอมป์ (มีไฟฟ้าแสงสว่างตามปกติ)',
+  walk_b: '⚡ <strong>ข้อจำกัดไฟฟ้า:</strong> มีไฟฟ้าแสงสว่างตามปกติ (ไม่อนุญาตให้ติดตั้งระบบไฟฟ้าเพิ่ม)',
+  walk_c: '⚡ <strong>ข้อจำกัดไฟฟ้า:</strong> มีไฟฟ้าแสงสว่างตามปกติ (ไม่อนุญาตให้ติดตั้งระบบไฟฟ้าเพิ่ม)',
+  walk_d: '⚡ <strong>ข้อจำกัดไฟฟ้า:</strong> มีไฟฟ้าแสงสว่างตามปกติ (ไม่อนุญาตให้ติดตั้งระบบไฟฟ้าเพิ่ม)',
+  water_rec: '⚡ <strong>ข้อจำกัดไฟฟ้า:</strong> มีไฟฟ้าแสงสว่างตามปกติ (ไม่อนุญาตให้ติดตั้งระบบไฟฟ้าเพิ่ม)',
+  multi_purpose: '⚡ <strong>ข้อจำกัดไฟฟ้า:</strong> สามารถเชื่อมต่อไฟฟ้าได้ตามระบบมาตรฐานอาคาร'
+};
+
+function checkElectricityWarnings() {
+  const isElecChecked = document.getElementById('eq_elec').checked;
+  const locCheckboxes = document.querySelectorAll('.loc-checkbox');
+
+  locCheckboxes.forEach(cb => {
+    const key = cb.getAttribute('data-loc-key');
+    const warnDiv = document.getElementById('elec_warn_' + key);
+    
+    if (warnDiv) {
+      if (cb.checked && isElecChecked && ELEC_LIMITS[key]) {
+        warnDiv.innerHTML = ELEC_LIMITS[key];
+        warnDiv.classList.remove('d-none');
+      } else {
+        warnDiv.classList.add('d-none');
+        warnDiv.innerHTML = '';
+      }
+    }
+  });
+}
+
 function setupCheckboxToggle(checkboxId, inputId) {
   const checkbox = document.getElementById(checkboxId);
   const input = document.getElementById(inputId);
@@ -46,6 +79,15 @@ document.addEventListener('DOMContentLoaded', function() {
   ];
 
   togglePairs.forEach(pair => setupCheckboxToggle(pair[0], pair[1]));
+
+  document.querySelectorAll('.loc-checkbox').forEach(cb => {
+    cb.addEventListener('change', checkElectricityWarnings);
+  });
+  
+  const elecCheck = document.getElementById('eq_elec');
+  if (elecCheck) {
+    elecCheck.addEventListener('change', checkElectricityWarnings);
+  }
 });
 
 function handleSubmit(e) {
@@ -105,7 +147,6 @@ function handleSubmit(e) {
   btn.disabled = true;
   btn.innerText = 'กำลังบันทึกข้อมูล...';
 
-  // รวบรวมอุปกรณ์
   let eqList = [];
   if(document.getElementById('eq_stage').checked) eqList.push('เวที (' + document.getElementById('qty_stage').value + ')');
   if(document.getElementById('eq_table').checked) eqList.push('โต๊ะ ' + document.getElementById('qty_table').value + ' ตัว');
@@ -114,12 +155,10 @@ function handleSubmit(e) {
   if(document.getElementById('eq_cooler').checked) eqList.push('คูลเลอร์ ' + document.getElementById('qty_cooler').value + ' ใบ');
   if(document.getElementById('eq_fan').checked) eqList.push('พัดลม ' + document.getElementById('qty_fan').value + ' ตัว');
 
-  // รวบรวมงานสาธารณูปโภคและระบบอาคาร
   let utilityList = [];
   if(document.getElementById('eq_elec').checked) utilityList.push('อำนวยความสะดวกงานไฟฟ้า');
   if(document.getElementById('eq_water').checked) utilityList.push('อำนวยความสะดวกงานประปา');
 
-  // รวบรวมงานจราจร
   let secList = [];
   if(document.getElementById('sec_p1').checked) secList.push('Parking 1');
   if(document.getElementById('sec_p3').checked) secList.push('Parking 3');
@@ -130,12 +169,10 @@ function handleSubmit(e) {
   if(document.getElementById('sec_megaphone').checked) secList.push('โทรโข่ง ' + document.getElementById('qty_megaphone').value + ' ตัว');
   if(document.getElementById('sec_other').checked) secList.push('อื่น ๆ: ' + document.getElementById('detail_sec_other').value);
 
-  // รวบรวมยานพาหนะ
   let vehList = [];
   if(document.getElementById('veh_small').checked) vehList.push('รถกระบะเล็ก (เพื่อ: ' + document.getElementById('reason_veh_small').value + ')');
   if(document.getElementById('veh_large').checked) vehList.push('รถกระบะใหญ่ (เพื่อ: ' + document.getElementById('reason_veh_large').value + ')');
 
-  // รวบรวมต้นไม้
   let plantList = [];
   if(document.getElementById('p_mok').checked) plantList.push('ต้นโมกข์ ' + document.getElementById('qty_p_mok').value + ' กระถาง');
   if(document.getElementById('p_thian').checked) plantList.push('ต้นเทียนทอง ' + document.getElementById('qty_p_thian').value + ' กระถาง');
@@ -160,7 +197,7 @@ function handleSubmit(e) {
     email: form.email.value,
     activityName: form.activityName.value,
     participantCount: form.participantCount.value,
-    soundUsage: form.soundUsage.value, // เพิ่มข้อมูลการใช้เสียง
+    soundUsage: form.soundUsage.value,
     startDate: form.startDate.value,
     startTime: form.startTime.value,
     endDate: form.endDate.value,
@@ -188,6 +225,7 @@ function handleSubmit(e) {
       alert(res.message);
       form.reset();
       document.querySelectorAll('.qty-input, #qty_stage, #reason_veh_small, #reason_veh_large, #detail_sec_other, #detail_p_other').forEach(el => el.disabled = true);
+      checkElectricityWarnings();
     } else {
       alert('เกิดข้อผิดพลาด: ' + res.message);
     }
@@ -198,6 +236,7 @@ function handleSubmit(e) {
     alert('บันทึกการขอใช้สถานที่และบริการเรียบร้อยแล้ว!');
     form.reset();
     document.querySelectorAll('.qty-input, #qty_stage, #reason_veh_small, #reason_veh_large, #detail_sec_other, #detail_p_other').forEach(el => el.disabled = true);
+    checkElectricityWarnings();
     btn.disabled = false;
     btn.innerText = 'ส่งแบบฟอร์มขอใช้บริการ';
   });

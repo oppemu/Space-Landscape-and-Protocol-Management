@@ -1,5 +1,5 @@
 // config.js
 const CONFIG = {
-  // นำ Web App URL ที่ได้จาก Google Apps Script (Deploy as Web App) มาวางที่นี่
-  WEB_APP_URL: "https://script.google.com/macros/s/AKfycbzn4LFyxQ-4NoOygMqw-WA0YcfugU3aQhzNhUZY7wnEQjXim9BJ5R6cIiDwThtAvoZn/exec"
+  // นำ URL ที่ได้จากการ Deploy Web App ของ Google Apps Script มาวางในอัญประกาศ
+  WEB_APP_URL: "https://script.google.com/macros/s/AKfycbx64h4JWnRgk9HQTuWB3UfpI5P5qcGf0oR97MaxxeNBSyg_Ks9bvB_aoh5LS6V_ocK7/exec"
 };

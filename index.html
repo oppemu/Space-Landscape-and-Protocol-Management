@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>แบบฟอร์มขอใช้สถานที่และบริการ</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
   
   <link rel="stylesheet" href="style.css">
@@ -12,6 +13,13 @@
 <body>
 
 <div class="container my-4" style="max-width: 900px;">
+  <!-- ปุ่มย้อนกลับไปหน้าเมนูหลัก -->
+  <div class="mb-3">
+    <a href="home.html" class="btn btn-outline-secondary btn-sm">
+      <i class="bi bi-arrow-left"></i> ย้อนกลับหน้าเมนูหลัก
+    </a>
+  </div>
+
   <div class="header-box text-center mb-4">
     <img src="LOGO.png" alt="Logo" class="logo-img" onerror="this.src='LOGO.jpg'">
     <h4 class="mb-1">แบบฟอร์มการขอใช้สถานที่และบริการ</h4>
@@ -110,88 +118,101 @@
     <div class="card p-4 mb-4 shadow-sm">
       <h5 class="section-title mb-3">3. สถานที่ที่ขอใช้บริการ (เลือกได้มากกว่า 1 รายการ)</h5>
       <div class="row g-2">
-        <div class="col-md-6">
+        <div class="col-md-6 mb-2">
           <div class="form-check">
-            <input class="form-check-input" type="checkbox" name="location_check" value="ทางเดิน Cover Way" id="loc_coverway">
+            <input class="form-check-input loc-checkbox" type="checkbox" name="location_check" value="ทางเดิน Cover Way" id="loc_coverway" data-loc-key="coverway">
             <label class="form-check-label" for="loc_coverway">ทางเดิน Cover Way</label>
           </div>
+          <div id="elec_warn_coverway" class="elec-warning text-warning-emphasis bg-warning-subtle border border-warning rounded p-2 mt-1 small d-none"></div>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-6 mb-2">
           <div class="form-check">
-            <input class="form-check-input" type="checkbox" name="location_check" value="ลานมหิดล (มี sprinkler)" id="loc_mahidol">
+            <input class="form-check-input loc-checkbox" type="checkbox" name="location_check" value="ลานมหิดล (มี sprinkler)" id="loc_mahidol" data-loc-key="mahidol">
             <label class="form-check-label" for="loc_mahidol">ลานมหิดล (มี sprinkler)</label>
           </div>
+          <div id="elec_warn_mahidol" class="elec-warning text-warning-emphasis bg-warning-subtle border border-warning rounded p-2 mt-1 small d-none"></div>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-6 mb-2">
           <div class="form-check">
-            <input class="form-check-input" type="checkbox" name="location_check" value="สนามหญ้าด้านหน้าหอสมุดและคลังความรู้" id="loc_library">
+            <input class="form-check-input loc-checkbox" type="checkbox" name="location_check" value="สนามหญ้าด้านหน้าหอสมุดและคลังความรู้" id="loc_library" data-loc-key="library">
             <label class="form-check-label" for="loc_library">สนามหญ้าด้านหน้าหอสมุดและคลังความรู้</label>
           </div>
+          <div id="elec_warn_library" class="elec-warning text-warning-emphasis bg-warning-subtle border border-warning rounded p-2 mt-1 small d-none"></div>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-6 mb-2">
           <div class="form-check">
-            <input class="form-check-input" type="checkbox" name="location_check" value="ศาลาแปดเหลี่ยมด้านข้างหอสมุด" id="loc_octagonsala">
+            <input class="form-check-input loc-checkbox" type="checkbox" name="location_check" value="ศาลาแปดเหลี่ยมด้านข้างหอสมุด" id="loc_octagonsala" data-loc-key="octagonsala">
             <label class="form-check-label" for="loc_octagonsala">ศาลาแปดเหลี่ยมด้านข้างหอสมุด</label>
           </div>
+          <div id="elec_warn_octagonsala" class="elec-warning text-warning-emphasis bg-warning-subtle border border-warning rounded p-2 mt-1 small d-none"></div>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-6 mb-2">
           <div class="form-check">
-            <input class="form-check-input" type="checkbox" name="location_check" value="สนามหญ้าฝั่งตรงข้ามอาคารคณะกายภาพบำบัด (ลานเป็ดขาว)" id="loc_white_duck">
+            <input class="form-check-input loc-checkbox" type="checkbox" name="location_check" value="สนามหญ้าฝั่งตรงข้ามอาคารคณะกายภาพบำบัด (ลานเป็ดขาว)" id="loc_white_duck" data-loc-key="white_duck">
             <label class="form-check-label" for="loc_white_duck">สนามหญ้าฝั่งตรงข้ามอาคารคณะกายภาพบำบัด (ลานเป็ดขาว)</label>
           </div>
+          <div id="elec_warn_white_duck" class="elec-warning text-warning-emphasis bg-warning-subtle border border-warning rounded p-2 mt-1 small d-none"></div>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-6 mb-2">
           <div class="form-check">
-            <input class="form-check-input" type="checkbox" name="location_check" value="สนามหญ้าข้างสำนักงานอธิการบดี (ติด MUIC)" id="loc_muic">
+            <input class="form-check-input loc-checkbox" type="checkbox" name="location_check" value="สนามหญ้าข้างสำนักงานอธิการบดี (ติด MUIC)" id="loc_muic" data-loc-key="muic">
             <label class="form-check-label" for="loc_muic">สนามหญ้าข้างสำนักงานอธิการบดี (ติด MUIC)</label>
           </div>
+          <div id="elec_warn_muic" class="elec-warning text-warning-emphasis bg-warning-subtle border border-warning rounded p-2 mt-1 small d-none"></div>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-6 mb-2">
           <div class="form-check">
-            <input class="form-check-input" type="checkbox" name="location_check" value="ถนนคนเดิน สาย เอ (วิทยาลัยนานาชาติ ถึง คณะวิศวกรรมศาสตร์)" id="loc_walk_a">
+            <input class="form-check-input loc-checkbox" type="checkbox" name="location_check" value="ถนนคนเดิน สาย เอ (วิทยาลัยนานาชาติ ถึง คณะวิศวกรรมศาสตร์)" id="loc_walk_a" data-loc-key="walk_a">
             <label class="form-check-label" for="loc_walk_a">ถนนคนเดิน สาย เอ (วิทยาลัยนานาชาติ ถึง คณะวิศวกรรมศาสตร์)</label>
           </div>
+          <div id="elec_warn_walk_a" class="elec-warning text-warning-emphasis bg-warning-subtle border border-warning rounded p-2 mt-1 small d-none"></div>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-6 mb-2">
           <div class="form-check">
-            <input class="form-check-input" type="checkbox" name="location_check" value="ถนนคนเดิน สาย บี (คณะวิศวกรรมศาสตร์ ถึง วิทยาลัยวิทย์ฯ การกีฬา)" id="loc_walk_b">
+            <input class="form-check-input loc-checkbox" type="checkbox" name="location_check" value="ถนนคนเดิน สาย บี (คณะวิศวกรรมศาสตร์ ถึง วิทยาลัยวิทย์ฯ การกีฬา)" id="loc_walk_b" data-loc-key="walk_b">
             <label class="form-check-label" for="loc_walk_b">ถนนคนเดิน สาย บี (คณะวิศวกรรมศาสตร์ ถึง วิทยาลัยวิทย์ฯ การกีฬา)</label>
           </div>
+          <div id="elec_warn_walk_b" class="elec-warning text-warning-emphasis bg-warning-subtle border border-warning rounded p-2 mt-1 small d-none"></div>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-6 mb-2">
           <div class="form-check">
-            <input class="form-check-input" type="checkbox" name="location_check" value="ถนนคนเดิน สาย ซี (สถาบันพัฒนาสุขภาพอาเซียน ถึง สวนเจ้าฟ้า)" id="loc_walk_c">
+            <input class="form-check-input loc-checkbox" type="checkbox" name="location_check" value="ถนนคนเดิน สาย ซี (สถาบันพัฒนาสุขภาพอาเซียน ถึง สวนเจ้าฟ้า)" id="loc_walk_c" data-loc-key="walk_c">
             <label class="form-check-label" for="loc_walk_c">ถนนคนเดิน สาย ซี (สถาบันพัฒนาสุขภาพอาเซียน ถึง สวนเจ้าฟ้า)</label>
           </div>
+          <div id="elec_warn_walk_c" class="elec-warning text-warning-emphasis bg-warning-subtle border border-warning rounded p-2 mt-1 small d-none"></div>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-6 mb-2">
           <div class="form-check">
-            <input class="form-check-input" type="checkbox" name="location_check" value="ถนนคนเดิน สาย ดี (วิทยาลัยวิทย์ฯ ถึง หน้าหอพัก 9)" id="loc_walk_d">
+            <input class="form-check-input loc-checkbox" type="checkbox" name="location_check" value="ถนนคนเดิน สาย ดี (วิทยาลัยวิทย์ฯ ถึง หน้าหอพัก 9)" id="loc_walk_d" data-loc-key="walk_d">
             <label class="form-check-label" for="loc_walk_d">ถนนคนเดิน สาย ดี (วิทยาลัยวิทย์ฯ ถึง หน้าหอพัก 9)</label>
           </div>
+          <div id="elec_warn_walk_d" class="elec-warning text-warning-emphasis bg-warning-subtle border border-warning rounded p-2 mt-1 small d-none"></div>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-6 mb-2">
           <div class="form-check">
-            <input class="form-check-input" type="checkbox" name="location_check" value="สนามหญ้าด้านหน้ากองกายภาพและสิ่งแวดล้อม" id="loc_phys_office">
+            <input class="form-check-input loc-checkbox" type="checkbox" name="location_check" value="สนามหญ้าด้านหน้ากองกายภาพและสิ่งแวดล้อม" id="loc_phys_office" data-loc-key="phys_office">
             <label class="form-check-label" for="loc_phys_office">สนามหญ้าด้านหน้ากองกายภาพและสิ่งแวดล้อม</label>
           </div>
+          <div id="elec_warn_phys_office" class="elec-warning text-warning-emphasis bg-warning-subtle border border-warning rounded p-2 mt-1 small d-none"></div>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-6 mb-2">
           <div class="form-check">
-            <input class="form-check-input" type="checkbox" name="location_check" value="แหล่งนันทนาการทางน้ำ (ด้านหลังสนามฟุตบอลใหญ่)" id="loc_water_rec">
+            <input class="form-check-input loc-checkbox" type="checkbox" name="location_check" value="แหล่งนันทนาการทางน้ำ (ด้านหลังสนามฟุตบอลใหญ่)" id="loc_water_rec" data-loc-key="water_rec">
             <label class="form-check-label" for="loc_water_rec">แหล่งนันทนาการทางน้ำ (ด้านหลังสนามฟุตบอลใหญ่)</label>
           </div>
+          <div id="elec_warn_water_rec" class="elec-warning text-warning-emphasis bg-warning-subtle border border-warning rounded p-2 mt-1 small d-none"></div>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-6 mb-2">
           <div class="form-check">
-            <input class="form-check-input" type="checkbox" name="location_check" value="สนามหญ้าบริเวณโดยรอบอาคารอเนกประสงค์" id="loc_multi_purpose">
+            <input class="form-check-input loc-checkbox" type="checkbox" name="location_check" value="สนามหญ้าบริเวณโดยรอบอาคารอเนกประสงค์" id="loc_multi_purpose" data-loc-key="multi_purpose">
             <label class="form-check-label" for="loc_multi_purpose">สนามหญ้าบริเวณโดยรอบอาคารอเนกประสงค์</label>
           </div>
+          <div id="elec_warn_multi_purpose" class="elec-warning text-warning-emphasis bg-warning-subtle border border-warning rounded p-2 mt-1 small d-none"></div>
         </div>
       </div>
     </div>
 
-    <!-- 4. รายการขอรับบริการเพิ่มเติม (ปรับแยก 2 บรรทัดให้กว้างอ่านง่าย) -->
+    <!-- 4. รายการขอรับบริการเพิ่มเติม -->
     <div class="card p-4 mb-4 shadow-sm">
       <h5 class="section-title mb-3">4. รายการขอรับบริการเพิ่มเติม (ระบุจำนวน)</h5>
       
@@ -422,7 +443,6 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
 <script src="config.js"></script>
 <script src="script.js"></script>
 </body>

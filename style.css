@@ -23,24 +23,21 @@ body {
   font-weight: bold;
 }
 
-/* ขยายขนาด Checkbox และ Radio Button ให้ใหญ่ขึ้น ติ๊กง่ายขึ้น */
 .form-check-input {
-  width: 1.3rem !important;
-  height: 1.3rem !important;
+  width: 1.25rem !important;
+  height: 1.25rem !important;
   margin-top: 0.15rem;
   cursor: pointer;
 }
 
-/* ปรับระยะห่าง ตัวหนังสือข้าง Checkbox */
 .form-check-label {
   cursor: pointer;
-  font-size: 1.05rem;
-  padding-left: 0.25rem;
+  font-size: 1rem;
+  padding-left: 0.2rem;
 }
 
-/* ปรับขนาดช่องกรอกจำนวน/รายละเอียด ให้สมดุลกับ Checkbox */
 .qty-input {
-  width: 95px !important;
+  width: 100px !important;
   display: inline-block;
 }
 
@@ -50,120 +47,12 @@ body {
   margin-bottom: 15px;
 }
 
-/* เพิ่มระยะบรรทัดในแต่ละรายการ */
-.row.g-2 > [class*="col-"] {
-  padding-top: 6px;
-  padding-bottom: 6px;
-}/* style.css */
-body {
-  font-family: 'Sarabun', sans-serif;
-  background-color: #f4f6f9;
+.elec-warning {
+  line-height: 1.4;
+  animation: fadeIn 0.3s ease-in-out;
 }
 
-.header-box {
-  background-color: #002b66;
-  color: white;
-  border-radius: 8px;
-  padding: 20px;
-}
-
-.card {
-  border-radius: 10px;
-  border: 1px solid #dcdcdc;
-}
-
-.section-title {
-  border-bottom: 2px solid #002b66;
-  padding-bottom: 5px;
-  color: #002b66;
-  font-weight: bold;
-}
-
-/* ขยายขนาด Checkbox และ Radio Button ให้ใหญ่ขึ้น ติ๊กง่ายขึ้น */
-.form-check-input {
-  width: 1.3rem !important;
-  height: 1.3rem !important;
-  margin-top: 0.15rem;
-  cursor: pointer;
-}
-
-/* ปรับระยะห่าง ตัวหนังสือข้าง Checkbox */
-.form-check-label {
-  cursor: pointer;
-  font-size: 1.05rem;
-  padding-left: 0.25rem;
-}
-
-/* ปรับขนาดช่องกรอกจำนวน/รายละเอียด ให้สมดุลกับ Checkbox */
-.qty-input {
-  width: 95px !important;
-  display: inline-block;
-}
-
-.logo-img {
-  max-width: 120px;
-  height: auto;
-  margin-bottom: 15px;
-}
-
-/* เพิ่มระยะบรรทัดในแต่ละรายการ */
-.row.g-2 > [class*="col-"] {
-  padding-top: 6px;
-  padding-bottom: 6px;
-}/* style.css */
-body {
-  font-family: 'Sarabun', sans-serif;
-  background-color: #f4f6f9;
-}
-
-.header-box {
-  background-color: #002b66;
-  color: white;
-  border-radius: 8px;
-  padding: 20px;
-}
-
-.card {
-  border-radius: 10px;
-  border: 1px solid #dcdcdc;
-}
-
-.section-title {
-  border-bottom: 2px solid #002b66;
-  padding-bottom: 5px;
-  color: #002b66;
-  font-weight: bold;
-}
-
-/* ขยายขนาด Checkbox และ Radio Button ให้ใหญ่ขึ้น ติ๊กง่ายขึ้น */
-.form-check-input {
-  width: 1.3rem !important;
-  height: 1.3rem !important;
-  margin-top: 0.15rem;
-  cursor: pointer;
-}
-
-/* ปรับระยะห่าง ตัวหนังสือข้าง Checkbox */
-.form-check-label {
-  cursor: pointer;
-  font-size: 1.05rem;
-  padding-left: 0.25rem;
-}
-
-/* ปรับขนาดช่องกรอกจำนวน/รายละเอียด ให้สมดุลกับ Checkbox */
-.qty-input {
-  width: 95px !important;
-  display: inline-block;
-}
-
-.logo-img {
-  max-width: 120px;
-  height: auto;
-  margin-bottom: 15px;
-}
-
-/* เพิ่มระยะบรรทัดในแต่ละรายการ */
-.row.g-2 > [class*="col-"] {
-  padding-top: 6px;
-  padding-bottom: 6px;
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-3px); }
+  to { opacity: 1; transform: translateY(0); }
 }
