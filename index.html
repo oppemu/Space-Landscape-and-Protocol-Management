@@ -49,6 +49,7 @@
       transition: all 0.2s ease-in-out;
       border: 2px solid transparent;
       text-decoration: none;
+      cursor: pointer;
     }
     .btn-menu:hover {
       transform: translateY(-4px);
@@ -72,7 +73,7 @@
     <div class="row g-4">
       <!-- 1. ขอใช้สถานที่ -->
       <div class="col-md-6">
-        <a href="index.html" class="btn btn-primary btn-menu w-100 shadow-sm">
+        <a href="form.html" class="btn btn-primary btn-menu w-100 shadow-sm">
           <i class="bi bi-file-earmark-plus-fill"></i>
           <span>ขอใช้สถานที่</span>
         </a>
@@ -80,7 +81,7 @@
 
       <!-- 2. ดูประวัติ -->
       <div class="col-md-6">
-        <button class="btn btn-info text-white btn-menu w-100 shadow-sm" onclick="alert('ระบบกำลังพัฒนามอดูลดูประวัติ')">
+        <button type="button" class="btn btn-info text-white btn-menu w-100 shadow-sm" onclick="alert('ระบบกำลังพัฒนามอดูลดูประวัติ')">
           <i class="bi bi-clock-history"></i>
           <span>ดูประวัติ</span>
         </button>
@@ -88,7 +89,7 @@
 
       <!-- 3. พิมพ์เอกสาร -->
       <div class="col-md-6">
-        <button class="btn btn-success btn-menu w-100 shadow-sm" onclick="alert('ระบบกำลังพัฒนามอดูลพิมพ์เอกสาร')">
+        <button type="button" class="btn btn-success btn-menu w-100 shadow-sm" onclick="alert('ระบบกำลังพัฒนามอดูลพิมพ์เอกสาร')">
           <i class="bi bi-printer-fill"></i>
           <span>พิมพ์เอกสาร</span>
         </button>
@@ -96,7 +97,7 @@
 
       <!-- 4. ปิด -->
       <div class="col-md-6">
-        <button class="btn btn-danger btn-menu w-100 shadow-sm" onclick="closeWindow()">
+        <button type="button" class="btn btn-danger btn-menu w-100 shadow-sm" onclick="closeWindow()">
           <i class="bi bi-x-circle-fill"></i>
           <span>ปิด</span>
         </button>
