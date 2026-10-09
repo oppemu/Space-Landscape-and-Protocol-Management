@@ -155,6 +155,7 @@ function handleSubmit(e) {
     title: form.title.value,
     requesterName: form.requesterName.value,
     phone: form.phone.value,
+    email: form.email.value, // เพิ่มข้อมูลอีเมล
     activityName: form.activityName.value,
     participantCount: form.participantCount.value,
     startDate: form.startDate.value,
@@ -170,7 +171,6 @@ function handleSubmit(e) {
     approverPosition: form.approverPosition.value
   };
 
-  // ส่งข้อมูลผ่าน fetch แบบ text/plain เพื่อเลี่ยงการติด CORS Preflight
   fetch(CONFIG.WEB_APP_URL, {
     method: "POST",
     headers: {
@@ -191,7 +191,6 @@ function handleSubmit(e) {
     btn.innerText = 'ส่งแบบฟอร์มขอใช้บริการ';
   })
   .catch(err => {
-    // ในกรณีที่เบราว์เซอร์รับ JSON ไม่ได้เนื่องจากติด Redirect แต่ข้อมูลถูกส่งเข้า Google Sheet เรียบร้อยแล้ว
     alert('บันทึกการขอใช้สถานที่และบริการเรียบร้อยแล้ว!');
     form.reset();
     document.querySelectorAll('.qty-input, #qty_stage, #reason_veh_small, #reason_veh_large').forEach(el => el.disabled = true);
