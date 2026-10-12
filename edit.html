@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>เปลี่ยนแปลงแก้ไขข้อมูลการขอใช้บริการ</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body { font-family: 'Sarabun', sans-serif; background-color: #f4f6f9; min-height: 100vh; }
+    .card-box { background: white; border-radius: 16px; padding: 35px; box-shadow: 0 10px 25px rgba(0, 43, 102, 0.08); max-width: 500px; margin: 40px auto; }
+    .logo-img { max-width: 120px; height: auto; }
+    .btn-navy { background-color: #1e1e50; color: white; border-radius: 20px; padding: 10px 24px; border: none; }
+    .btn-navy:hover { background-color: #121236; color: white; }
+  </style>
+</head>
+<body>
+
+<div class="container my-4">
+  <div class="mb-3" style="max-width: 500px; margin: 0 auto;">
+    <a href="./index.html" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left"></i> ย้อนกลับหน้าเมนูหลัก</a>
+  </div>
+
+  <div class="card-box text-center">
+    <img src="LOGO.png" alt="Logo" class="logo-img mb-3" onerror="this.src='LOGO.jpg'">
+    <h5 class="fw-bold mb-2" style="color: #002b66;"><i class="bi bi-key-fill text-warning me-2"></i>ยืนยันรหัสผ่านเพื่อแก้ไขข้อมูล</h5>
+    <p class="text-muted small mb-4">กรุณากรอกรหัสคำขอ และรหัสลับ 4 หลักที่ท่านตั้งไว้ขณะยื่นแบบฟอร์ม</p>
+    
+    <form id="verifyPinForm" onsubmit="handleVerifyPin(event)">
+      <div class="text-start mb-3">
+        <label class="form-label">รหัสคำขอ (Request ID) <span class="text-danger">*</span></label>
+        <input type="text" id="reqId" class="form-control" placeholder="เช่น OPPE0001" required>
+      </div>
+      <div class="text-start mb-4">
+        <label class="form-label">รหัสลับ 4 หลัก (PIN) <span class="text-danger">*</span></label>
+        <input type="password" id="pinCode" class="form-control text-center fs-4 fw-bold letter-spacing" maxlength="4" pattern="\d{4}" placeholder="••••" required>
+      </div>
+      <button type="submit" id="submitBtn" class="btn btn-navy w-100 shadow-sm fw-bold">
+        <i class="bi bi-box-arrow-in-right me-2"></i>เข้าสู่หน้าแก้ไขข้อมูล
+      </button>
+    </form>
+
+    <div id="statusAlert" class="mt-4"></div>
+  </div>
+</div>
+
+<script src="config.js"></script>
+<script>
+  window.onVerifyPinReceived = function(data) {
+    const btn = document.getElementById('submitBtn');
+    const alertDiv = document.getElementById('statusAlert');
+    
+    btn.disabled = false;
+    btn.innerHTML = '<i class="bi bi-box-arrow-in-right me-2"></i>เข้าสู่หน้าแก้ไขข้อมูล';
+
+    const oldScript = document.getElementById('jsonpScript');
+    if (oldScript) oldScript.remove();
+
+    if (data && data.success) {
+      alertDiv.innerHTML = `<div class="alert alert-success text-center small"><i class="bi bi-check-circle-fill me-1"></i> ยืนยันรหัสผ่านถูกต้อง! กำลังนำไปยังหน้าแก้ไข...</div>`;
+      setTimeout(() => {
+        window.location.href = `./form.html?mode=edit&row=${data.rowIndex}`;
+      }, 1000);
+    } else {
+      alertDiv.innerHTML = `<div class="alert alert-danger text-center small"><i class="bi bi-exclamation-triangle-fill me-1"></i> ${data.message || 'รหัสคำขอหรือรหัสลับ 4 หลักไม่ถูกต้อง'}</div>`;
+    }
+  };
+
+  function handleVerifyPin(e) {
+    e.preventDefault();
+    const reqId = document.getElementById('reqId').value.trim();
+    const pin = document.getElementById('pinCode').value.trim();
+    const btn = document.getElementById('submitBtn');
+    const alertDiv = document.getElementById('statusAlert');
+
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>กำลังตรวจสอบรหัส...';
+    alertDiv.innerHTML = '';
+
+    const oldScript = document.getElementById('jsonpScript');
+    if (oldScript) oldScript.remove();
+
+    const script = document.createElement('script');
+    script.id = 'jsonpScript';
+    script.src = `${CONFIG.WEB_APP_URL}?action=verifyPin&requestId=${encodeURIComponent(reqId)}&pin=${encodeURIComponent(pin)}&callback=onVerifyPinReceived`;
+    script.onerror = function() {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="bi bi-box-arrow-in-right me-2"></i>เข้าสู่หน้าแก้ไขข้อมูล';
+      alertDiv.innerHTML = `<div class="alert alert-danger text-center small">เกิดข้อผิดพลาดในการเชื่อมต่อระบบ</div>`;
+    };
+    document.body.appendChild(script);
+  }
+</script>
+</body>
+</html>

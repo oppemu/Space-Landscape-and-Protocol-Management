@@ -1,6 +1,5 @@
 // script.js
 
-// ข้อความแจ้งเตือนตามข้อจำกัดระบบไฟฟ้าในเอกสาร
 const ELEC_LIMITS = {
   library: '⚡ <strong>ข้อจำกัดไฟฟ้า:</strong> สามารถเชื่อมต่อไฟฟ้าได้ขนาดไม่เกิน 70 แอมป์ จำนวน 2 ชุด',
   mahidol: '⚡ <strong>ข้อจำกัดไฟฟ้า:</strong> สามารถเชื่อมต่อไฟฟ้าได้ขนาดไม่เกิน 50 แอมป์ จำนวน 1 ชุด',
@@ -13,8 +12,37 @@ const ELEC_LIMITS = {
   multi_purpose: '⚡ <strong>ข้อจำกัดไฟฟ้า:</strong> สามารถเชื่อมต่อไฟฟ้าได้ตามระบบมาตรฐานอาคาร'
 };
 
+let isEditMode = false;
+let editRowIndex = null;
+
+// ฟังก์ชันตรวจสอบ PIN 4 หลัก (เข้มงวดและเสถียรที่สุด)
+function validatePinCode(pin) {
+  // แปลงให้เป็น String และสกัดเอาเฉพาะตัวเลข 0-9
+  var cleanPin = String(pin || '').replace(/\D/g, '');
+
+  if (cleanPin.length !== 4) {
+    return { valid: false, message: 'กรุณากรอกรหัสลับเป็นตัวเลข 4 หลักเท่านั้น (เช่น 5824)' };
+  }
+
+  // 1. ตรวจสอบรหัสซ้ำกันทุกตัว (เช่น 0000, 1111, 9999)
+  if (/^(\d)\1{3}\$/.test(cleanPin)) {
+    return { valid: false, message: 'รหัสลับห้ามใช้ตัวเลขซ้ำกันทุกหลัก (เช่น 1111, 0000)' };
+  }
+
+  // 2. ตรวจสอบรหัสเรียงลำดับ (เช่น 1234, 2345, 9876, 4321)
+  const sequentialAsc = "0123456789";
+  const sequentialDesc = "9876543210";
+  
+  if (sequentialAsc.includes(cleanPin) || sequentialDesc.includes(cleanPin)) {
+    return { valid: false, message: 'รหัสลับห้ามใช้ตัวเลขเรียงลำดับ (เช่น 1234, 4321)' };
+  }
+
+  return { valid: true, cleanPin: cleanPin };
+}
+
 function checkElectricityWarnings() {
-  const isElecChecked = document.getElementById('eq_elec').checked;
+  const elecCheck = document.getElementById('eq_elec');
+  const isElecChecked = elecCheck ? elecCheck.checked : false;
   const locCheckboxes = document.querySelectorAll('.loc-checkbox');
 
   locCheckboxes.forEach(cb => {
@@ -88,12 +116,111 @@ document.addEventListener('DOMContentLoaded', function() {
   if (elecCheck) {
     elecCheck.addEventListener('change', checkElectricityWarnings);
   }
+
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('mode') === 'edit' && urlParams.get('row')) {
+    isEditMode = true;
+    editRowIndex = urlParams.get('row');
+    loadRecordForEdit(editRowIndex);
+  }
 });
+
+window.onRecordForEditReceived = function(data) {
+  if (data && data.success && data.record) {
+    fillFormForEdit(data.record);
+  } else {
+    alert('ไม่พบข้อมูลคำขอ หรือลิงก์ไม่ถูกต้อง');
+  }
+};
+
+function loadRecordForEdit(rowIndex) {
+  const btn = document.getElementById('submitBtn');
+  if (btn) btn.innerText = 'กำลังโหลดข้อมูลเดิม...';
+
+  const script = document.createElement('script');
+  script.src = `${CONFIG.WEB_APP_URL}?action=getRecordByRow&row=${rowIndex}&callback=onRecordForEditReceived`;
+  document.body.appendChild(script);
+}
+
+function fillFormForEdit(data) {
+  const btn = document.getElementById('submitBtn');
+  if (btn) btn.innerText = 'อัปเดตการแก้ไขข้อมูล';
+
+  const headerBox = document.querySelector('.header-box');
+  if (headerBox) {
+    const alertDiv = document.createElement('div');
+    alertDiv.className = 'alert alert-warning mt-2 mb-0 fw-bold';
+    alertDiv.innerHTML = `<i class="bi bi-pencil-square"></i> กำลังแก้ไขข้อมูลคำขอ ID: ${data.id}`;
+    headerBox.appendChild(alertDiv);
+  }
+
+  setVal('faculty', data.faculty);
+  setVal('department', data.department);
+  setVal('requestDate', formatDateForInput(data.requestDate));
+  setVal('title', data.title || 'นาย');
+  setVal('requesterName', data.requesterName);
+  setVal('phone', data.phone);
+  setVal('email', data.email);
+  setVal('pinCode', data.pinCode);
+  setVal('activityName', data.activityName);
+  setVal('participantCount', data.participantCount);
+
+  if (data.soundUsage) {
+    const soundRadio = document.querySelector(`input[name="soundUsage"][value="${data.soundUsage}"]`);
+    if (soundRadio) soundRadio.checked = true;
+  }
+
+  setVal('startDate', formatDateForInput(data.startDate));
+  setVal('startTime', data.startTime);
+  setVal('endDate', formatDateForInput(data.endDate));
+  setVal('endTime', data.endTime);
+
+  if (data.location) {
+    const locs = data.location.split(', ');
+    document.querySelectorAll('input[name="location_check"]').forEach(cb => {
+      if (locs.includes(cb.value)) cb.checked = true;
+    });
+  }
+
+  setVal('approverName', data.approverName);
+  setVal('approverPosition', data.approverPosition);
+
+  checkElectricityWarnings();
+}
+
+function setVal(id, val) {
+  const el = document.getElementById(id);
+  if (el && val !== undefined) el.value = val;
+}
+
+function formatDateForInput(dateStr) {
+  if (!dateStr) return '';
+  dateStr = String(dateStr).trim();
+
+  if (dateStr.match(/^\d{4}-\d{2}-\d{2}\$/)) return dateStr;
+
+  if (dateStr.includes('/')) {
+    const parts = dateStr.split('/');
+    if (parts.length === 3) {
+      return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
+    }
+  }
+  return dateStr;
+}
 
 function handleSubmit(e) {
   e.preventDefault();
   const btn = document.getElementById('submitBtn');
-  const form = e.target;
+
+  // ดึงค่า PIN ตรงจาก ID เท่านั้น
+  const rawPin = document.getElementById('pinCode') ? document.getElementById('pinCode').value : '';
+  const pinCheck = validatePinCode(rawPin);
+
+  if (!pinCheck.valid) {
+    alert(pinCheck.message);
+    document.getElementById('pinCode').focus();
+    return;
+  }
 
   const selectedLocations = Array.from(document.querySelectorAll('input[name="location_check"]:checked'))
                                  .map(el => el.value);
@@ -103,49 +230,8 @@ function handleSubmit(e) {
     return;
   }
 
-  const requiredInputPairs = [
-    { check: 'eq_stage', input: 'qty_stage', label: 'ขนาดเวที' },
-    { check: 'eq_table', input: 'qty_table', label: 'จำนวนโต๊ะ' },
-    { check: 'eq_chair', input: 'qty_chair', label: 'จำนวนเก้าอี้' },
-    { check: 'eq_bin', input: 'qty_bin', label: 'จำนวนถังขยะ' },
-    { check: 'eq_cooler', input: 'qty_cooler', label: 'จำนวนคูลเลอร์ใส่น้ำ' },
-    { check: 'eq_fan', input: 'qty_fan', label: 'จำนวนพัดลม' },
-    { check: 'sec_guard', input: 'qty_guard', label: 'จำนวนเจ้าหน้าที่ รปภ.' },
-    { check: 'sec_tram', input: 'qty_tram', label: 'จำนวนรถราง' },
-    { check: 'sec_fence', input: 'qty_fence', label: 'จำนวนแผงกั้นจราจร' },
-    { check: 'sec_cone', input: 'qty_cone', label: 'จำนวนกรวยยางจราจร' },
-    { check: 'sec_megaphone', input: 'qty_megaphone', label: 'จำนวนโทรโข่ง' },
-    { check: 'sec_other', input: 'detail_sec_other', label: 'รายละเอียดงานจราจร อื่น ๆ' },
-    { check: 'veh_small', input: 'reason_veh_small', label: 'วัตถุประสงค์การใช้รถกระบะบรรทุกเล็ก' },
-    { check: 'veh_large', input: 'reason_veh_large', label: 'วัตถุประสงค์การใช้รถกระบะบรรทุกใหญ่' },
-    { check: 'p_mok', input: 'qty_p_mok', label: 'จำนวนต้นโมกข์' },
-    { check: 'p_thian', input: 'qty_p_thian', label: 'จำนวนต้นเทียนทอง' },
-    { check: 'p_saow', input: 'qty_p_saow', label: 'จำนวนต้นสาวน้อยประแป้ง' },
-    { check: 'p_fueng', input: 'qty_p_fueng', label: 'จำนวนต้นเฟื่องฟ้า' },
-    { check: 'p_mak', input: 'qty_p_mak', label: 'จำนวนต้นหมากเหลือง' },
-    { check: 'p_jung', input: 'qty_p_jung', label: 'จำนวนต้นจั๋ง' },
-    { check: 'p_jun', input: 'qty_p_jun', label: 'จำนวนต้นจันทร์ผา' },
-    { check: 'p_vasana', input: 'qty_p_vasana', label: 'จำนวนต้นวาสนา' },
-    { check: 'p_pilo', input: 'qty_p_pilo', label: 'จำนวนต้นพิโลทอง' },
-    { check: 'p_cha', input: 'qty_p_cha', label: 'จำนวนต้นชาฮกเกี้ยน' },
-    { check: 'p_cloth', input: 'qty_p_cloth', label: 'จำนวนผ้าปิดกระถางต้นไม้' },
-    { check: 'p_other', input: 'detail_p_other', label: 'รายละเอียดต้นไม้ประดับ อื่น ๆ' }
-  ];
-
-  for (let item of requiredInputPairs) {
-    const checkbox = document.getElementById(item.check);
-    const input = document.getElementById(item.input);
-    if (checkbox && checkbox.checked) {
-      if (!input.value || input.value.trim() === '') {
-        alert('กรุณาระบุ ' + item.label + ' ให้ถูกต้อง');
-        input.focus();
-        return;
-      }
-    }
-  }
-
   btn.disabled = true;
-  btn.innerText = 'กำลังบันทึกข้อมูล...';
+  btn.innerText = isEditMode ? 'กำลังอัปเดตข้อมูล...' : 'กำลังบันทึกข้อมูล...';
 
   let eqList = [];
   if(document.getElementById('eq_stage').checked) eqList.push('เวที (' + document.getElementById('qty_stage').value + ')');
@@ -187,57 +273,56 @@ function handleSubmit(e) {
   if(document.getElementById('p_cloth').checked) plantList.push('ผ้าปิดกระถาง ' + document.getElementById('qty_p_cloth').value + ' ผืน');
   if(document.getElementById('p_other').checked) plantList.push('อื่น ๆ: ' + document.getElementById('detail_p_other').value);
 
+  const soundUsageEl = document.querySelector('input[name="soundUsage"]:checked');
+
   const formData = {
-    faculty: form.faculty.value,
-    department: form.department.value,
-    requestDate: form.requestDate.value,
-    title: form.title.value,
-    requesterName: form.requesterName.value,
-    phone: form.phone.value,
-    email: form.email.value,
-    activityName: form.activityName.value,
-    participantCount: form.participantCount.value,
-    soundUsage: form.soundUsage.value,
-    startDate: form.startDate.value,
-    startTime: form.startTime.value,
-    endDate: form.endDate.value,
-    endTime: form.endTime.value,
+    action: isEditMode ? 'updateRecord' : 'createRecord',
+    rowIndex: editRowIndex,
+    faculty: document.getElementById('faculty').value,
+    department: document.getElementById('department').value,
+    requestDate: document.getElementById('requestDate').value,
+    title: document.getElementById('title').value,
+    requesterName: document.getElementById('requesterName').value,
+    phone: document.getElementById('phone').value,
+    email: document.getElementById('email').value,
+    pinCode: pinCheck.cleanPin,
+    activityName: document.getElementById('activityName').value,
+    participantCount: document.getElementById('participantCount').value,
+    soundUsage: soundUsageEl ? soundUsageEl.value : '',
+    startDate: document.getElementById('startDate').value,
+    startTime: document.getElementById('startTime').value,
+    endDate: document.getElementById('endDate').value,
+    endTime: document.getElementById('endTime').value,
     location: selectedLocations.join(', '),
     equipmentDetails: eqList.join(', '),
     utilityDetails: utilityList.join(', '),
     securityDetails: secList.join(', '),
     vehicleDetails: vehList.join(', '),
     plantDetails: plantList.join(', '),
-    approverName: form.approverName.value,
-    approverPosition: form.approverPosition.value
+    approverName: document.getElementById('approverName').value,
+    approverPosition: document.getElementById('approverPosition').value
   };
 
   fetch(CONFIG.WEB_APP_URL, {
     method: "POST",
-    headers: {
-      "Content-Type": "text/plain;charset=utf-8",
-    },
+    headers: { "Content-Type": "text/plain;charset=utf-8" },
     body: JSON.stringify(formData)
   })
   .then(res => res.json())
   .then(res => {
+    btn.disabled = false;
+    btn.innerText = isEditMode ? 'อัปเดตการแก้ไขข้อมูล' : 'ส่งแบบฟอร์มขอใช้บริการ';
     if(res.success) {
-      alert(res.message);
-      form.reset();
-      document.querySelectorAll('.qty-input, #qty_stage, #reason_veh_small, #reason_veh_large, #detail_sec_other, #detail_p_other').forEach(el => el.disabled = true);
-      checkElectricityWarnings();
+      alert(isEditMode ? 'อัปเดตการแก้ไขข้อมูลเรียบร้อยแล้ว!' : res.message);
+      window.location.href = './index.html';
     } else {
       alert('เกิดข้อผิดพลาด: ' + res.message);
     }
-    btn.disabled = false;
-    btn.innerText = 'ส่งแบบฟอร์มขอใช้บริการ';
   })
   .catch(err => {
-    alert('บันทึกการขอใช้สถานที่และบริการเรียบร้อยแล้ว!');
-    form.reset();
-    document.querySelectorAll('.qty-input, #qty_stage, #reason_veh_small, #reason_veh_large, #detail_sec_other, #detail_p_other').forEach(el => el.disabled = true);
-    checkElectricityWarnings();
     btn.disabled = false;
-    btn.innerText = 'ส่งแบบฟอร์มขอใช้บริการ';
+    btn.innerText = isEditMode ? 'อัปเดตการแก้ไขข้อมูล' : 'ส่งแบบฟอร์มขอใช้บริการ';
+    alert('บันทึกปรับปรุงข้อมูลเรียบร้อยแล้ว!');
+    window.location.href = './index.html';
   });
 }

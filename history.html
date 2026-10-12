@@ -7,8 +7,7 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
-  
-  <!-- เพิ่ม html2pdf.js สำหรับแปลงหน้าเว็บเป็น PDF ลงเครื่องโดยตรง -->
+  <link rel="stylesheet" href="style.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
   <style>
@@ -28,7 +27,6 @@
     <a href="./index.html" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left"></i> ย้อนกลับหน้าเมนูหลัก</a>
   </div>
 
-  <!-- การค้นหาประวัติ -->
   <div class="search-card text-center">
     <img src="LOGO.png" alt="Logo" class="logo-img mb-3" onerror="this.src='LOGO.jpg'">
     <h5 class="mb-4 fw-bold" style="color: #002b66;">ตรวจสอบประวัติการขอใช้สถานที่และบริการ</h5>
@@ -37,7 +35,7 @@
       <div class="row g-3 text-start mb-3">
         <div class="col-md-6">
           <label class="form-label">ชื่อ - สกุล ผู้ขอใช้สถานที่ <span class="text-danger">*</span></label>
-          <input type="text" id="searchName" class="form-control" placeholder="เช่น ธิระพงศ์ เหมาทานนท์" required>
+          <input type="text" id="searchName" class="form-control" placeholder="เช่น ธิระพงศ์ เหมทานนท์" required>
         </div>
         <div class="col-md-6">
           <label class="form-label">อีเมล <span class="text-danger">*</span></label>
@@ -48,11 +46,9 @@
     </form>
   </div>
 
-  <!-- แสดงผลลัพธ์ -->
   <div id="resultContainer" class="mx-auto" style="max-width: 800px;"></div>
 </div>
 
-<!-- Modal สำหรับแสดงตัวอย่าง PDF -->
 <div class="modal fade" id="pdfModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-lg modal-dialog-scrollable">
     <div class="modal-content">
@@ -65,7 +61,6 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
-        <!-- เปลี่ยนปุ่มเป็น ดาวน์โหลด PDF -->
         <button type="button" id="downloadPdfBtn" class="btn btn-success" onclick="downloadPdf()"><i class="bi bi-download me-1"></i> ดาวน์โหลดเอกสาร PDF</button>
       </div>
     </div>
@@ -76,6 +71,25 @@
 <script src="config.js"></script>
 <script>
   let currentRecord = null;
+
+  window.onHistoryReceived = function(data) {
+    const searchBtn = document.getElementById('searchBtn');
+    const resultContainer = document.getElementById('resultContainer');
+    const name = document.getElementById('searchName').value.trim();
+    const email = document.getElementById('searchEmail').value.trim();
+
+    searchBtn.disabled = false;
+    searchBtn.innerHTML = '<i class="bi bi-search"></i> ค้นหาประวัติ';
+
+    const oldScript = document.getElementById('jsonpScript');
+    if (oldScript) oldScript.remove();
+
+    if (data && data.success && data.records && data.records.length > 0) {
+      renderResults(data.records);
+    } else {
+      resultContainer.innerHTML = `<div class="alert alert-warning text-center my-3">ไม่พบข้อมูลประวัติของ คุณ${name} (${email})</div>`;
+    }
+  };
 
   function handleSearch(e) {
     e.preventDefault();
@@ -88,42 +102,37 @@
     searchBtn.innerHTML = 'กำลังค้นหา...';
     resultContainer.innerHTML = '<div class="text-center text-muted my-4"><div class="spinner-border text-primary spinner-border-sm me-2"></div>กำลังดึงข้อมูลประวัติ...</div>';
 
-    fetch(`${CONFIG.WEB_APP_URL}?action=getHistory&name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}`)
-      .then(res => res.json())
-      .then(data => {
-        searchBtn.disabled = false;
-        searchBtn.innerHTML = '<i class="bi bi-search"></i> ค้นหาประวัติ';
-        
-        if (data.success && data.records && data.records.length > 0) {
-          renderResults(data.records);
-        } else {
-          resultContainer.innerHTML = `<div class="alert alert-warning text-center my-3">ไม่พบข้อมูลประวัติของ คุณ${name} (${email})</div>`;
-        }
-      })
-      .catch(err => {
-        searchBtn.disabled = false;
-        searchBtn.innerHTML = '<i class="bi bi-search"></i> ค้นหาประวัติ';
-        resultContainer.innerHTML = `<div class="alert alert-danger text-center my-3">เกิดข้อผิดพลาดในการเชื่อมต่อข้อมูล</div>`;
-      });
+    const oldScript = document.getElementById('jsonpScript');
+    if (oldScript) oldScript.remove();
+
+    const script = document.createElement('script');
+    script.id = 'jsonpScript';
+    script.src = `${CONFIG.WEB_APP_URL}?action=getHistory&name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}&callback=onHistoryReceived`;
+    script.onerror = function() {
+      searchBtn.disabled = false;
+      searchBtn.innerHTML = '<i class="bi bi-search"></i> ค้นหาประวัติ';
+      resultContainer.innerHTML = `<div class="alert alert-danger text-center my-3">เกิดข้อผิดพลาดในการเชื่อมต่อข้อมูล</div>`;
+    };
+    document.body.appendChild(script);
   }
 
   function renderResults(records) {
     const container = document.getElementById('resultContainer');
     let html = '';
 
-    records.forEach((rec, idx) => {
+    records.forEach((rec) => {
       html += `
         <div class="result-card shadow-sm">
           <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
             <div>
-              <h5 class="fw-bold mb-1" style="color: #1e1e50;">${rec.id || 'REQ-' + (idx + 1)}</h5>
-              <p class="mb-1 text-dark"><strong>ผู้กรอกข้อมูล:</strong> ${rec.requesterName}</p>
+              <h5 class="fw-bold mb-1" style="color: #1e1e50;">ID: ${rec.id}</h5>
+              <p class="mb-1 text-dark"><strong>ผู้ขอใช้:</strong> ${rec.title || ''} ${rec.requesterName}</p>
               <p class="mb-1 text-secondary"><strong>เรื่องที่ดำเนินการ:</strong> ${rec.activityName}</p>
               <p class="mb-0 text-muted small"><strong>สถานที่:</strong> ${rec.location}</p>
             </div>
             <div>
               <button class="btn btn-navy btn-sm" onclick='openPdfModal(${JSON.stringify(rec)})'>
-                ดูตัวอย่าง PDF
+                <i class="bi bi-file-earmark-pdf me-1"></i>ดูตัวอย่าง PDF
               </button>
             </div>
           </div>
@@ -175,7 +184,6 @@
     modal.show();
   }
 
-  // ฟังก์ชันสร้างและดาวน์โหลดไฟล์ PDF ลงเครื่องโดยตรง
   function downloadPdf() {
     if (!currentRecord) return;
 
