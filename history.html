@@ -80,7 +80,6 @@
       box-shadow: 0 4px 12px rgba(30, 30, 80, 0.25);
     }
 
-    /* Grid Layout */
     .info-grid {
       display: grid;
       grid-template-columns: max-content 1fr;
@@ -337,7 +336,6 @@
     const modalBody = document.getElementById('pdfContent');
     const phoneNum = formatPhoneNumber(record.phone || record.Phone);
 
-    // ปรับลดระดับสถานที่และข้อจำกัดไฟฟ้าแบบ Hierarchical สวยงาม
     let locationHtml = '-';
     if (record.location && record.location.trim() !== '') {
       const locList = record.location.split(', ');
@@ -418,10 +416,10 @@
 
     const element = document.getElementById('pdfContent');
     const opt = {
-      margin:       8,
+      margin:       [10, 10, 10, 10],
       filename:     `คำขอใช้สถานที่_${currentRecord.id || 'เอกสาร'}.pdf`,
       image:        { type: 'jpeg', quality: 0.98 },
-      html2canvas:  { scale: 2 },
+      html2canvas:  { scale: 2, useCORS: true, scrollX: 0, scrollY: 0 },
       jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
 
@@ -429,7 +427,15 @@
     btn.disabled = true;
     btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>กำลังสร้าง PDF...';
 
+    const originalWidth = element.style.width;
+    element.style.width = '750px';
+
     html2pdf().set(opt).from(element).save().then(() => {
+      element.style.width = originalWidth;
+      btn.disabled = false;
+      btn.innerHTML = '<i class="bi bi-download me-1"></i> ดาวน์โหลดเอกสาร PDF';
+    }).catch(err => {
+      element.style.width = originalWidth;
       btn.disabled = false;
       btn.innerHTML = '<i class="bi bi-download me-1"></i> ดาวน์โหลดเอกสาร PDF';
     });
