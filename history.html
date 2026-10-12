@@ -80,7 +80,7 @@
       box-shadow: 0 4px 12px rgba(30, 30, 80, 0.25);
     }
 
-    /* Grid Layout ใหม่ป้องกันข้อความตัดตกบรรทัด */
+    /* Grid Layout ป้องกันข้อความตัดตกบรรทัด */
     .info-grid {
       display: grid;
       grid-template-columns: max-content 1fr;
@@ -175,6 +175,19 @@
   let currentRecord = null;
   let pinModalObj = null;
   let pdfModalObj = null;
+
+  // รายการข้อจำกัดระบบไฟฟ้าของแต่ละสถานที่
+  const ELEC_LIMITS = {
+    'ลานมหิดล (มี sprinkler)': '⚡ ข้อจำกัดไฟฟ้า: สามารถเชื่อมต่อไฟฟ้าได้ขนาดไม่เกิน 50 แอมป์ จำนวน 1 ชุด',
+    'ถนนคนเดิน สาย เอ (วิทยาลัยนานาชาติ ถึง คณะวิศวกรรมศาสตร์)': '⚡ ข้อจำกัดไฟฟ้า: สามารถเชื่อมต่อไฟฟ้าได้ขนาดไม่เกิน 50 แอมป์ (มีไฟฟ้าแสงสว่างตามปกติ)',
+    'ถนนคนเดิน สาย บี (คณะวิศวกรรมศาสตร์ ถึง วิทยาลัยวิทย์ฯ การกีฬา)': '⚡ ข้อจำกัดไฟฟ้า: มีไฟฟ้าแสงสว่างตามปกติ (ไม่อนุญาตให้ติดตั้งระบบไฟฟ้าเพิ่ม)',
+    'ถนนคนเดิน สาย ซี (สถาบันพัฒนาสุขภาพอาเซียน ถึง สวนเจ้าฟ้า)': '⚡ ข้อจำกัดไฟฟ้า: มีไฟฟ้าแสงสว่างตามปกติ (ไม่อนุญาตให้ติดตั้งระบบไฟฟ้าเพิ่ม)',
+    'ถนนคนเดิน สาย ดี (วิทยาลัยวิทย์ฯ ถึง หน้าหอพัก 9)': '⚡ ข้อจำกัดไฟฟ้า: มีไฟฟ้าแสงสว่างตามปกติ (ไม่อนุญาตให้ติดตั้งระบบไฟฟ้าเพิ่ม)',
+    'สนามหญ้าด้านหน้าหอสมุดและคลังความรู้': '⚡ ข้อจำกัดไฟฟ้า: สามารถเชื่อมต่อไฟฟ้าได้ขนาดไม่เกิน 70 แอมป์ จำนวน 2 ชุด',
+    'ศาลาแปดเหลี่ยมด้านข้างหอสมุด': '⚡ ข้อจำกัดไฟฟ้า: สามารถเชื่อมต่อไฟฟ้าได้ขนาดไม่เกิน 50 แอมป์ จำนวน 1 ชุด',
+    'แหล่งนันทนาการทางน้ำ (ด้านหลังสนามฟุตบอลใหญ่)': '⚡ ข้อจำกัดไฟฟ้า: มีไฟฟ้าแสงสว่างตามปกติ (ไม่อนุญาตให้ติดตั้งระบบไฟฟ้าเพิ่ม)',
+    'สนามหญ้าบริเวณโดยรอบอาคารอเนกประสงค์': '⚡ ข้อจำกัดไฟฟ้า: สามารถเชื่อมต่อไฟฟ้าได้ตามระบบมาตรฐานอาคาร'
+  };
 
   document.addEventListener('DOMContentLoaded', function() {
     pinModalObj = new bootstrap.Modal(document.getElementById('pinModal'));
@@ -325,37 +338,76 @@
     const modalBody = document.getElementById('pdfContent');
     const phoneNum = formatPhoneNumber(record.phone || record.Phone);
 
+    // แปลงรายการสถานที่ให้แสดงเป็น Bullet List พร้อมเตือนข้อจำกัดไฟฟ้า
+    let locationHtml = '-';
+    if (record.location && record.location.trim() !== '') {
+      const locList = record.location.split(', ');
+      
+      locationHtml = `<ul class="mb-0 ps-3 mt-1" style="list-style-type: disc;">` + 
+        locList.map(loc => {
+          const cleanLoc = loc.trim();
+          const warningText = ELEC_LIMITS[cleanLoc];
+          let warnBox = '';
+          
+          if (warningText) {
+            warnBox = `
+              <div class="mt-1 mb-2 p-2 rounded-2" style="background-color: #fffbeb; border: 1px solid #fef08a; color: #b45309; font-size: 0.85rem; line-height: 1.4;">
+                ${warningText}
+              </div>`;
+          }
+          return `<li class="mb-1"><strong>${cleanLoc}</strong>${warnBox}</li>`;
+        }).join('') + 
+      `</ul>`;
+    }
+
     modalBody.innerHTML = `
-      <div class="text-center mb-4">
-        <h5 class="fw-bold mb-1" style="color: #002b66;">กองกายภาพและสิ่งแวดล้อม มหาวิทยาลัยมหิดล</h5>
-        <p class="text-muted small">แบบฟอร์มขอใช้สถานที่และบริการ</p>
+      <div class="text-center mb-4 pb-2 border-bottom">
+        <h5 class="fw-bold mb-1" style="color: #002b66; font-size: 1.3rem;">กองกายภาพและสิ่งแวดล้อม มหาวิทยาลัยมหิดล</h5>
+        <p class="text-muted small mb-0">แบบฟอร์มขอใช้สถานที่และบริการ</p>
       </div>
-      <div class="mb-3">
-        <h6 class="fw-bold text-primary border-bottom pb-1">1. ข้อมูลผู้กรอกแบบฟอร์ม</h6>
-        <p class="mb-1"><strong>ลำดับ / ID :</strong> ${record.id || '-'}</p>
-        <p class="mb-1"><strong>วันที่ยื่นเรื่อง :</strong> ${record.requestDate || '-'}</p>
-        <p class="mb-1"><strong>ชื่อผู้กรอกข้อมูล :</strong> ${record.title || ''} ${record.requesterName}</p>
-        <p class="mb-1"><strong>หน่วยงาน :</strong> ${record.faculty} ${record.department ? '(' + record.department + ')' : ''}</p>
-        <p class="mb-1"><strong>หมายเลขโทรศัพท์ :</strong> ${phoneNum}</p>
-        <p class="mb-1"><strong>E-Mail :</strong> ${record.email}</p>
+
+      <!-- 1. ข้อมูลผู้กรอกแบบฟอร์ม -->
+      <div class="mb-4">
+        <h6 class="fw-bold text-primary border-bottom pb-1 mb-2" style="font-size: 1.05rem;">1. ข้อมูลผู้กรอกแบบฟอร์ม</h6>
+        <div class="ps-2">
+          <p class="mb-1"><strong>ลำดับ / ID :</strong> <span class="badge bg-secondary">${record.id || '-'}</span></p>
+          <p class="mb-1"><strong>วันที่ยื่นเรื่อง :</strong> ${record.requestDate || '-'}</p>
+          <p class="mb-1"><strong>ชื่อผู้กรอกข้อมูล :</strong> ${record.title || ''} ${record.requesterName}</p>
+          <p class="mb-1"><strong>หน่วยงาน :</strong> ${record.faculty} ${record.department ? '(' + record.department + ')' : ''}</p>
+          <p class="mb-1"><strong>หมายเลขโทรศัพท์ :</strong> ${phoneNum}</p>
+          <p class="mb-1"><strong>E-Mail :</strong> ${record.email}</p>
+        </div>
       </div>
-      <div class="mb-3">
-        <h6 class="fw-bold text-primary border-bottom pb-1">2. รายละเอียดงานและกิจกรรม</h6>
-        <p class="mb-1"><strong>เรื่องที่ดำเนินการ :</strong> ${record.activityName}</p>
-        <p class="mb-1"><strong>สถานที่ขอใช้ :</strong> ${record.location}</p>
-        <p class="mb-1"><strong>จำนวนผู้เข้าร่วม :</strong> ${record.participantCount} คน</p>
-        <p class="mb-1"><strong>ช่วงวันเวลา :</strong> ${record.startDate} (${record.startTime}) ถึง ${record.endDate} (${record.endTime})</p>
+
+      <!-- 2. รายละเอียดงานและกิจกรรม -->
+      <div class="mb-4">
+        <h6 class="fw-bold text-primary border-bottom pb-1 mb-2" style="font-size: 1.05rem;">2. รายละเอียดงานและกิจกรรม</h6>
+        <div class="ps-2">
+          <p class="mb-2"><strong>เรื่องที่ดำเนินการ :</strong> ${record.activityName}</p>
+          <div class="mb-2">
+            <strong>สถานที่ขอใช้ :</strong>
+            <div class="text-dark fw-normal">${locationHtml}</div>
+          </div>
+          <p class="mb-1"><strong>จำนวนผู้เข้าร่วม :</strong> ${record.participantCount} คน</p>
+          <p class="mb-1"><strong>ช่วงวันเวลา :</strong> ${record.startDate} (${record.startTime}) ถึง ${record.endDate} (${record.endTime})</p>
+        </div>
       </div>
-      <div class="mb-3">
-        <h6 class="fw-bold text-primary border-bottom pb-1">3. รายการบริการเพิ่มเติม</h6>
-        <p class="mb-1"><strong>วัสดุ/อุปกรณ์ :</strong> ${record.equipmentDetails || 'ไม่มี'}</p>
-        <p class="mb-1"><strong>งานสาธารณูปโภค :</strong> ${record.utilityDetails || 'ไม่มี'}</p>
-        <p class="mb-1"><strong>งานจราจร/ความปลอดภัย :</strong> ${record.securityDetails || 'ไม่มี'}</p>
-        <p class="mb-1"><strong>ยานพาหนะ :</strong> ${record.vehicleDetails || 'ไม่มี'}</p>
-        <p class="mb-1"><strong>ต้นไม้ประดับ :</strong> ${record.plantDetails || 'ไม่มี'}</p>
+
+      <!-- 3. รายการบริการเพิ่มเติม -->
+      <div class="mb-4">
+        <h6 class="fw-bold text-primary border-bottom pb-1 mb-2" style="font-size: 1.05rem;">3. รายการบริการเพิ่มเติม</h6>
+        <div class="ps-2">
+          <p class="mb-1"><strong>วัสดุ/อุปกรณ์ :</strong> ${record.equipmentDetails || 'ไม่มี'}</p>
+          <p class="mb-1"><strong>งานสาธารณูปโภค :</strong> ${record.utilityDetails || 'ไม่มี'}</p>
+          <p class="mb-1"><strong>งานจราจร/ความปลอดภัย :</strong> ${record.securityDetails || 'ไม่มี'}</p>
+          <p class="mb-1"><strong>ยานพาหนะ :</strong> ${record.vehicleDetails || 'ไม่มี'}</p>
+          <p class="mb-1"><strong>ต้นไม้ประดับ :</strong> ${record.plantDetails || 'ไม่มี'}</p>
+        </div>
       </div>
-      <div class="mt-4 pt-2 border-top">
-        <p class="mb-1"><strong>ผู้ให้การรับรอง :</strong> ${record.approverName} (${record.approverPosition})</p>
+
+      <!-- 4. ผู้รับรอง -->
+      <div class="mt-4 pt-3 border-top">
+        <p class="mb-0"><strong>ผู้ให้การรับรอง :</strong> ${record.approverName} (${record.approverPosition})</p>
       </div>
     `;
 
