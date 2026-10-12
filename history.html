@@ -6,62 +6,164 @@
   <title>ตรวจสอบและดูประวัติการขอใช้บริการ</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
   <style>
-    body { font-family: 'Sarabun', sans-serif; background-color: #f4f6f9; min-height: 100vh; }
-    .search-card { background: white; border-radius: 16px; padding: 30px; box-shadow: 0 10px 25px rgba(0, 43, 102, 0.08); max-width: 800px; margin: 30px auto; }
-    .logo-img { max-width: 120px; height: auto; }
-    .result-card { background: white; border-radius: 12px; border: 1px solid #e2e8f0; padding: 20px; margin-bottom: 15px; }
-    .btn-navy { background-color: #1e1e50; color: white; border-radius: 20px; padding: 8px 24px; border: none; }
-    .btn-navy:hover { background-color: #121236; color: white; }
-    .pdf-preview-box { background: white; border: 1px solid #ccc; padding: 30px; font-size: 0.95rem; line-height: 1.6; color: #333; }
+    body { 
+      font-family: 'Sarabun', sans-serif; 
+      background-color: #f0f3f8; 
+      min-height: 100vh; 
+      color: #334155;
+    }
+    .search-card { 
+      background: white; 
+      border-radius: 20px; 
+      padding: 35px 30px; 
+      box-shadow: 0 10px 30px rgba(0, 43, 102, 0.06); 
+      max-width: 850px; 
+      margin: 30px auto 25px auto; 
+      border: 1px solid rgba(226, 232, 240, 0.8);
+    }
+    .logo-img { max-width: 130px; height: auto; }
+    
+    .result-card { 
+      background: white; 
+      border-radius: 16px; 
+      border: 1px solid #e2e8f0; 
+      padding: 24px; 
+      margin-bottom: 20px; 
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+      transition: all 0.2s ease-in-out;
+    }
+    .result-card:hover {
+      box-shadow: 0 8px 20px rgba(0, 43, 102, 0.08);
+      border-color: #cbd5e1;
+    }
+    .id-badge {
+      background-color: #e0e7ff;
+      color: #1e1e50;
+      font-weight: 700;
+      padding: 6px 16px;
+      border-radius: 30px;
+      font-size: 0.95rem;
+      display: inline-block;
+    }
+    .btn-pdf { 
+      background-color: #1e1e50; 
+      color: white; 
+      border-radius: 25px; 
+      padding: 8px 22px; 
+      border: none; 
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: all 0.2s ease;
+    }
+    .btn-pdf:hover { 
+      background-color: #0f172a; 
+      color: #fbbf24;
+      transform: translateY(-1px);
+    }
+    .btn-search {
+      background-color: #1e1e50;
+      color: white;
+      border-radius: 30px;
+      padding: 10px 32px;
+      font-weight: 600;
+      border: none;
+      transition: all 0.2s;
+    }
+    .btn-search:hover {
+      background-color: #0f172a;
+      color: white;
+      box-shadow: 0 4px 12px rgba(30, 30, 80, 0.25);
+    }
+
+    /* Grid Layout ใหม่ป้องกันข้อความตัดตกบรรทัด */
+    .info-grid {
+      display: grid;
+      grid-template-columns: max-content 1fr;
+      column-gap: 12px;
+      row-gap: 10px;
+      align-items: start;
+    }
+    .info-label {
+      color: #64748b;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+    .info-value {
+      color: #1e293b;
+      font-weight: 600;
+      line-height: 1.5;
+    }
+    .pdf-preview-box { background: white; border: 1px solid #ccc; padding: 35px; font-size: 0.95rem; line-height: 1.6; color: #333; }
   </style>
 </head>
 <body>
 
 <div class="container my-4">
-  <div class="mb-3" style="max-width: 800px; margin: 0 auto;">
-    <a href="./index.html" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left"></i> ย้อนกลับหน้าเมนูหลัก</a>
+  <div class="mb-3" style="max-width: 850px; margin: 0 auto;">
+    <a href="./index.html" class="btn btn-outline-secondary btn-sm rounded-pill px-3"><i class="bi bi-arrow-left me-1"></i> ย้อนกลับหน้าเมนูหลัก</a>
   </div>
 
   <div class="search-card text-center">
     <img src="LOGO.png" alt="Logo" class="logo-img mb-3" onerror="this.src='LOGO.jpg'">
-    <h5 class="mb-4 fw-bold" style="color: #002b66;">ตรวจสอบประวัติการขอใช้สถานที่และบริการ</h5>
+    <h4 class="mb-4 fw-bold" style="color: #002b66;">ตรวจสอบประวัติการขอใช้สถานที่และบริการ</h4>
     
     <form id="searchForm" onsubmit="handleSearch(event)">
-      <div class="row g-3 text-start mb-3">
+      <div class="row g-3 text-start mb-4">
         <div class="col-md-6">
-          <label class="form-label">ชื่อ - สกุล ผู้ขอใช้สถานที่ <span class="text-danger">*</span></label>
-          <input type="text" id="searchName" class="form-control" placeholder="เช่น ธิระพงศ์ เหมทานนท์" required>
+          <label class="form-label fw-semibold">ชื่อ - สกุล ผู้ขอใช้สถานที่ <span class="text-danger">*</span></label>
+          <input type="text" id="searchName" class="form-control form-control-lg fs-6" placeholder="เช่น ธิระพงศ์ เหมทานนท์" required>
         </div>
         <div class="col-md-6">
-          <label class="form-label">อีเมล <span class="text-danger">*</span></label>
-          <input type="email" id="searchEmail" class="form-control" placeholder="เช่น example@mahidol.ac.th" required>
+          <label class="form-label fw-semibold">อีเมล <span class="text-danger">*</span></label>
+          <input type="email" id="searchEmail" class="form-control form-control-lg fs-6" placeholder="เช่น example@mahidol.ac.th" required>
         </div>
       </div>
-      <button type="submit" id="searchBtn" class="btn btn-navy shadow-sm"><i class="bi bi-search"></i> ค้นหาประวัติ</button>
+      <button type="submit" id="searchBtn" class="btn btn-search shadow-sm"><i class="bi bi-search me-1"></i> ค้นหาประวัติ</button>
     </form>
   </div>
 
-  <div id="resultContainer" class="mx-auto" style="max-width: 800px;"></div>
+  <div id="resultContainer" class="mx-auto" style="max-width: 850px;"></div>
 </div>
 
-<div class="modal fade" id="pdfModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-lg modal-dialog-scrollable">
-    <div class="modal-content">
-      <div class="modal-header" style="background-color: #f8f9fa;">
-        <h5 class="modal-title fw-bold" style="color: #1e1e50;">ตัวอย่างเอกสาร</h5>
+<!-- Modal 1: ยืนยัน PIN ก่อนดู PDF -->
+<div class="modal fade" id="pinModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg rounded-4">
+      <div class="modal-header border-0 pb-0">
+        <h5 class="modal-title fw-bold" style="color: #1e1e50;"><i class="bi bi-shield-lock-fill text-warning me-2"></i>ยืนยันรหัสผ่านเพื่อความปลอดภัย</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <div class="modal-body bg-light">
-        <div id="pdfContent" class="pdf-preview-box shadow-sm rounded"></div>
+      <div class="modal-body text-center p-4">
+        <p class="text-muted small mb-3">กรุณากรอกรหัสลับ 4 หลักที่ท่านตั้งไว้ขณะยื่นเรื่อง (<span id="modalReqIdText" class="fw-bold text-dark"></span>)</p>
+        <form id="pinAuthForm" onsubmit="verifyPinAndShowPdf(event)">
+          <input type="password" id="inputPinCode" class="form-control text-center fs-3 fw-bold mb-3 mx-auto rounded-3" style="max-width: 200px; letter-spacing: 6px;" maxlength="4" placeholder="••••" required autocomplete="off">
+          <button type="submit" id="checkPinBtn" class="btn btn-search w-100 fw-bold py-2">ยืนยันรหัสผ่านเพื่อเปิด PDF</button>
+        </form>
+        <div id="pinAlert" class="mt-3"></div>
       </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
-        <button type="button" id="downloadPdfBtn" class="btn btn-success" onclick="downloadPdf()"><i class="bi bi-download me-1"></i> ดาวน์โหลดเอกสาร PDF</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal 2: แสดงตัวอย่าง PDF -->
+<div class="modal fade" id="pdfModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content rounded-4 border-0">
+      <div class="modal-header" style="background-color: #f8fafc;">
+        <h5 class="modal-title fw-bold" style="color: #1e1e50;"><i class="bi bi-file-earmark-pdf-fill me-2 text-danger"></i>ตัวอย่างเอกสารคำขอ</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body bg-light p-4">
+        <div id="pdfContent" class="pdf-preview-box shadow-sm rounded-3"></div>
+      </div>
+      <div class="modal-footer border-0 bg-light pt-0">
+        <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">ปิด</button>
+        <button type="button" id="downloadPdfBtn" class="btn btn-success rounded-pill px-4" onclick="downloadPdf()"><i class="bi bi-download me-1"></i> ดาวน์โหลดเอกสาร PDF</button>
       </div>
     </div>
   </div>
@@ -71,6 +173,22 @@
 <script src="config.js"></script>
 <script>
   let currentRecord = null;
+  let pinModalObj = null;
+  let pdfModalObj = null;
+
+  document.addEventListener('DOMContentLoaded', function() {
+    pinModalObj = new bootstrap.Modal(document.getElementById('pinModal'));
+    pdfModalObj = new bootstrap.Modal(document.getElementById('pdfModal'));
+  });
+
+  function formatPhoneNumber(phone) {
+    if (!phone) return '-';
+    let clean = String(phone).trim().replace(/\D/g, '');
+    if (clean.length === 9) {
+      clean = '0' + clean;
+    }
+    return clean;
+  }
 
   window.onHistoryReceived = function(data) {
     const searchBtn = document.getElementById('searchBtn');
@@ -79,7 +197,7 @@
     const email = document.getElementById('searchEmail').value.trim();
 
     searchBtn.disabled = false;
-    searchBtn.innerHTML = '<i class="bi bi-search"></i> ค้นหาประวัติ';
+    searchBtn.innerHTML = '<i class="bi bi-search me-1"></i> ค้นหาประวัติ';
 
     const oldScript = document.getElementById('jsonpScript');
     if (oldScript) oldScript.remove();
@@ -87,7 +205,7 @@
     if (data && data.success && data.records && data.records.length > 0) {
       renderResults(data.records);
     } else {
-      resultContainer.innerHTML = `<div class="alert alert-warning text-center my-3">ไม่พบข้อมูลประวัติของ คุณ${name} (${email})</div>`;
+      resultContainer.innerHTML = `<div class="alert alert-warning text-center my-3 rounded-4 shadow-sm py-3"><i class="bi bi-exclamation-circle me-2"></i>ไม่พบข้อมูลประวัติของ คุณ${name} (${email})</div>`;
     }
   };
 
@@ -99,7 +217,7 @@
     const resultContainer = document.getElementById('resultContainer');
 
     searchBtn.disabled = true;
-    searchBtn.innerHTML = 'กำลังค้นหา...';
+    searchBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>กำลังค้นหา...';
     resultContainer.innerHTML = '<div class="text-center text-muted my-4"><div class="spinner-border text-primary spinner-border-sm me-2"></div>กำลังดึงข้อมูลประวัติ...</div>';
 
     const oldScript = document.getElementById('jsonpScript');
@@ -110,8 +228,8 @@
     script.src = `${CONFIG.WEB_APP_URL}?action=getHistory&name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}&callback=onHistoryReceived`;
     script.onerror = function() {
       searchBtn.disabled = false;
-      searchBtn.innerHTML = '<i class="bi bi-search"></i> ค้นหาประวัติ';
-      resultContainer.innerHTML = `<div class="alert alert-danger text-center my-3">เกิดข้อผิดพลาดในการเชื่อมต่อข้อมูล</div>`;
+      searchBtn.innerHTML = '<i class="bi bi-search me-1"></i> ค้นหาประวัติ';
+      resultContainer.innerHTML = `<div class="alert alert-danger text-center my-3 rounded-4">เกิดข้อผิดพลาดในการเชื่อมต่อข้อมูล</div>`;
     };
     document.body.appendChild(script);
   }
@@ -121,20 +239,25 @@
     let html = '';
 
     records.forEach((rec) => {
+      window['rec_' + rec.id] = rec;
       html += `
-        <div class="result-card shadow-sm">
-          <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
-            <div>
-              <h5 class="fw-bold mb-1" style="color: #1e1e50;">ID: ${rec.id}</h5>
-              <p class="mb-1 text-dark"><strong>ผู้ขอใช้:</strong> ${rec.title || ''} ${rec.requesterName}</p>
-              <p class="mb-1 text-secondary"><strong>เรื่องที่ดำเนินการ:</strong> ${rec.activityName}</p>
-              <p class="mb-0 text-muted small"><strong>สถานที่:</strong> ${rec.location}</p>
-            </div>
-            <div>
-              <button class="btn btn-navy btn-sm" onclick='openPdfModal(${JSON.stringify(rec)})'>
-                <i class="bi bi-file-earmark-pdf me-1"></i>ดูตัวอย่าง PDF
-              </button>
-            </div>
+        <div class="result-card">
+          <div class="d-flex justify-content-between align-items-center pb-3 mb-3 border-bottom">
+            <span class="id-badge"><i class="bi bi-file-text me-1"></i> Request ID: ${rec.id}</span>
+            <button class="btn btn-pdf shadow-sm" onclick="promptPinForPdf('${rec.id}')">
+              <i class="bi bi-lock-fill me-1 text-warning"></i> ดูตัวอย่าง PDF
+            </button>
+          </div>
+
+          <div class="info-grid">
+            <span class="info-label"><i class="bi bi-person me-2"></i>ผู้ขอใช้บริการ:</span>
+            <span class="info-value">${rec.title || ''} ${rec.requesterName}</span>
+
+            <span class="info-label"><i class="bi bi-journal-text me-2"></i>เรื่องที่ดำเนินการ:</span>
+            <span class="info-value">${rec.activityName}</span>
+
+            <span class="info-label"><i class="bi bi-geo-alt me-2"></i>สถานที่ขอใช้:</span>
+            <span class="info-value">${rec.location}</span>
           </div>
         </div>
       `;
@@ -143,9 +266,64 @@
     container.innerHTML = html;
   }
 
+  function promptPinForPdf(reqId) {
+    currentRecord = window['rec_' + reqId];
+    document.getElementById('modalReqIdText').innerText = reqId;
+    document.getElementById('inputPinCode').value = '';
+    document.getElementById('pinAlert').innerHTML = '';
+    pinModalObj.show();
+  }
+
+  window.onVerifyPinForPdfReceived = function(data) {
+    const btn = document.getElementById('checkPinBtn');
+    const alertDiv = document.getElementById('pinAlert');
+
+    btn.disabled = false;
+    btn.innerHTML = 'ยืนยันรหัสผ่านเพื่อเปิด PDF';
+
+    const oldScript = document.getElementById('verifyPinScript');
+    if (oldScript) oldScript.remove();
+
+    if (data && data.success) {
+      pinModalObj.hide();
+      openPdfModal(currentRecord);
+    } else {
+      alertDiv.innerHTML = `<div class="alert alert-danger small py-2 mb-0 rounded-3"><i class="bi bi-exclamation-triangle-fill me-1"></i> รหัสลับ 4 หลักไม่ถูกต้อง</div>`;
+    }
+  };
+
+  function verifyPinAndShowPdf(e) {
+    e.preventDefault();
+    const pin = document.getElementById('inputPinCode').value.trim();
+    const btn = document.getElementById('checkPinBtn');
+    const alertDiv = document.getElementById('pinAlert');
+
+    if (!pin || pin.length !== 4) {
+      alertDiv.innerHTML = `<div class="alert alert-warning small py-2 mb-0 rounded-3">กรุณากรอกรหัสลับเป็นตัวเลข 4 หลัก</div>`;
+      return;
+    }
+
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>กำลังตรวจสอบรหัส...';
+    alertDiv.innerHTML = '';
+
+    const oldScript = document.getElementById('verifyPinScript');
+    if (oldScript) oldScript.remove();
+
+    const script = document.createElement('script');
+    script.id = 'verifyPinScript';
+    script.src = `${CONFIG.WEB_APP_URL}?action=verifyPin&requestId=${encodeURIComponent(currentRecord.id)}&pin=${encodeURIComponent(pin)}&callback=onVerifyPinForPdfReceived`;
+    script.onerror = function() {
+      btn.disabled = false;
+      btn.innerHTML = 'ยืนยันรหัสผ่านเพื่อเปิด PDF';
+      alertDiv.innerHTML = `<div class="alert alert-danger small py-2 mb-0 rounded-3">เกิดข้อผิดพลาดในการเชื่อมต่อระบบ</div>`;
+    };
+    document.body.appendChild(script);
+  }
+
   function openPdfModal(record) {
-    currentRecord = record;
     const modalBody = document.getElementById('pdfContent');
+    const phoneNum = formatPhoneNumber(record.phone || record.Phone);
 
     modalBody.innerHTML = `
       <div class="text-center mb-4">
@@ -158,6 +336,7 @@
         <p class="mb-1"><strong>วันที่ยื่นเรื่อง :</strong> ${record.requestDate || '-'}</p>
         <p class="mb-1"><strong>ชื่อผู้กรอกข้อมูล :</strong> ${record.title || ''} ${record.requesterName}</p>
         <p class="mb-1"><strong>หน่วยงาน :</strong> ${record.faculty} ${record.department ? '(' + record.department + ')' : ''}</p>
+        <p class="mb-1"><strong>หมายเลขโทรศัพท์ :</strong> ${phoneNum}</p>
         <p class="mb-1"><strong>E-Mail :</strong> ${record.email}</p>
       </div>
       <div class="mb-3">
@@ -180,8 +359,7 @@
       </div>
     `;
 
-    const modal = new bootstrap.Modal(document.getElementById('pdfModal'));
-    modal.show();
+    pdfModalObj.show();
   }
 
   function downloadPdf() {
