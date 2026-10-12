@@ -15,21 +15,20 @@ const ELEC_LIMITS = {
 let isEditMode = false;
 let editRowIndex = null;
 
-// ฟังก์ชันตรวจสอบ PIN 4 หลัก (เข้มงวดและเสถียรที่สุด)
+// ฟังก์ชันตรวจสอบ PIN 4 หลัก
 function validatePinCode(pin) {
-  // แปลงให้เป็น String และสกัดเอาเฉพาะตัวเลข 0-9
   var cleanPin = String(pin || '').replace(/\D/g, '');
 
   if (cleanPin.length !== 4) {
     return { valid: false, message: 'กรุณากรอกรหัสลับเป็นตัวเลข 4 หลักเท่านั้น (เช่น 5824)' };
   }
 
-  // 1. ตรวจสอบรหัสซ้ำกันทุกตัว (เช่น 0000, 1111, 9999)
+  // 1. ตรวจสอบรหัสซ้ำกันทุกตัว
   if (/^(\d)\1{3}\$/.test(cleanPin)) {
     return { valid: false, message: 'รหัสลับห้ามใช้ตัวเลขซ้ำกันทุกหลัก (เช่น 1111, 0000)' };
   }
 
-  // 2. ตรวจสอบรหัสเรียงลำดับ (เช่น 1234, 2345, 9876, 4321)
+  // 2. ตรวจสอบรหัสเรียงลำดับ
   const sequentialAsc = "0123456789";
   const sequentialDesc = "9876543210";
   
@@ -212,7 +211,6 @@ function handleSubmit(e) {
   e.preventDefault();
   const btn = document.getElementById('submitBtn');
 
-  // ดึงค่า PIN ตรงจาก ID เท่านั้น
   const rawPin = document.getElementById('pinCode') ? document.getElementById('pinCode').value : '';
   const pinCheck = validatePinCode(rawPin);
 
@@ -305,24 +303,19 @@ function handleSubmit(e) {
 
   fetch(CONFIG.WEB_APP_URL, {
     method: "POST",
+    mode: "no-cors",
     headers: { "Content-Type": "text/plain;charset=utf-8" },
     body: JSON.stringify(formData)
   })
-  .then(res => res.json())
-  .then(res => {
+  .then(() => {
     btn.disabled = false;
     btn.innerText = isEditMode ? 'อัปเดตการแก้ไขข้อมูล' : 'ส่งแบบฟอร์มขอใช้บริการ';
-    if(res.success) {
-      alert(isEditMode ? 'อัปเดตการแก้ไขข้อมูลเรียบร้อยแล้ว!' : res.message);
-      window.location.href = './index.html';
-    } else {
-      alert('เกิดข้อผิดพลาด: ' + res.message);
-    }
+    alert(isEditMode ? 'อัปเดตการแก้ไขข้อมูลเรียบร้อยแล้ว!' : 'บันทึกข้อมูลเรียบร้อยแล้ว!');
+    window.location.href = './index.html';
   })
   .catch(err => {
     btn.disabled = false;
     btn.innerText = isEditMode ? 'อัปเดตการแก้ไขข้อมูล' : 'ส่งแบบฟอร์มขอใช้บริการ';
-    alert('บันทึกปรับปรุงข้อมูลเรียบร้อยแล้ว!');
-    window.location.href = './index.html';
+    alert('เกิดข้อผิดพลาดในการบันทึกข้อมูล');
   });
 }
