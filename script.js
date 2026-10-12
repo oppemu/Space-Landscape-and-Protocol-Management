@@ -14,8 +14,8 @@ const ELEC_LIMITS = {
 
 let isEditMode = false;
 let editRowIndex = null;
+let currentRequestId = "";
 
-// ฟังก์ชันตรวจสอบ PIN 4 หลัก
 function validatePinCode(pin) {
   var cleanPin = String(pin || '').replace(/\D/g, '');
 
@@ -23,12 +23,10 @@ function validatePinCode(pin) {
     return { valid: false, message: 'กรุณากรอกรหัสลับเป็นตัวเลข 4 หลักเท่านั้น (เช่น 5824)' };
   }
 
-  // 1. ตรวจสอบรหัสซ้ำกันทุกตัว
   if (/^(\d)\1{3}\$/.test(cleanPin)) {
     return { valid: false, message: 'รหัสลับห้ามใช้ตัวเลขซ้ำกันทุกหลัก (เช่น 1111, 0000)' };
   }
 
-  // 2. ตรวจสอบรหัสเรียงลำดับ
   const sequentialAsc = "0123456789";
   const sequentialDesc = "9876543210";
   
@@ -144,6 +142,8 @@ function loadRecordForEdit(rowIndex) {
 function fillFormForEdit(data) {
   const btn = document.getElementById('submitBtn');
   if (btn) btn.innerText = 'อัปเดตการแก้ไขข้อมูล';
+
+  currentRequestId = data.id || "";
 
   const headerBox = document.querySelector('.header-box');
   if (headerBox) {
@@ -276,11 +276,12 @@ function handleSubmit(e) {
   const formData = {
     action: isEditMode ? 'updateRecord' : 'createRecord',
     rowIndex: editRowIndex,
-    faculty: document.getElementById('faculty').value,
-    department: document.getElementById('department').value,
+    requestId: isEditMode ? currentRequestId : "",
     requestDate: document.getElementById('requestDate').value,
     title: document.getElementById('title').value,
     requesterName: document.getElementById('requesterName').value,
+    faculty: document.getElementById('faculty').value,
+    department: document.getElementById('department').value,
     phone: document.getElementById('phone').value,
     email: document.getElementById('email').value,
     pinCode: pinCheck.cleanPin,
