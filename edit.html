@@ -10,34 +10,52 @@
   <link rel="stylesheet" href="style.css">
   <style>
     body { font-family: 'Sarabun', sans-serif; background-color: #f4f6f9; min-height: 100vh; }
-    .card-box { background: white; border-radius: 16px; padding: 35px; box-shadow: 0 10px 25px rgba(0, 43, 102, 0.08); max-width: 500px; margin: 40px auto; }
-    .logo-img { max-width: 120px; height: auto; }
-    .btn-navy { background-color: #1e1e50; color: white; border-radius: 20px; padding: 10px 24px; border: none; }
-    .btn-navy:hover { background-color: #121236; color: white; }
+    .card-box { 
+      background: white; 
+      border-radius: 24px; 
+      padding: 40px 30px; 
+      box-shadow: 0 15px 35px rgba(15, 23, 42, 0.08); 
+      max-width: 480px; 
+      margin: 20px auto; 
+      border: 1px solid rgba(226, 232, 240, 0.8);
+    }
+    .logo-img { max-width: 100px; height: auto; }
+    .btn-navy { 
+      background-color: #1e1b4b; 
+      color: white; 
+      border-radius: 30px; 
+      padding: 12px; 
+      border: none; 
+      width: 100%; 
+      font-size: 1.05rem; 
+      font-weight: 600; 
+      transition: all 0.2s; 
+    }
+    .btn-navy:hover { background-color: #0f172a; color: white; box-shadow: 0 4px 12px rgba(15, 23, 42, 0.2); }
   </style>
 </head>
 <body>
 
 <div class="container my-4">
-  <div class="mb-3" style="max-width: 500px; margin: 0 auto;">
-    <a href="./index.html" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left"></i> ย้อนกลับหน้าเมนูหลัก</a>
+  <div class="mb-3" style="max-width: 480px; margin: 0 auto;">
+    <a href="./menu-common.html" class="btn btn-outline-secondary btn-sm rounded-pill px-3"><i class="bi bi-arrow-left me-1"></i> กลับหน้าเมนูขอใช้สถานที่</a>
   </div>
 
   <div class="card-box text-center">
     <img src="LOGO.png" alt="Logo" class="logo-img mb-3" onerror="this.src='LOGO.jpg'">
-    <h5 class="fw-bold mb-2" style="color: #002b66;"><i class="bi bi-key-fill text-warning me-2"></i>ยืนยันรหัสผ่านเพื่อแก้ไขข้อมูล</h5>
+    <h4 class="fw-bold text-dark mb-2">🔑 ยืนยันรหัสผ่านเพื่อแก้ไขข้อมูล</h4>
     <p class="text-muted small mb-4">กรุณากรอกรหัสคำขอ และรหัสลับ 4 หลักที่ท่านตั้งไว้ขณะยื่นแบบฟอร์ม</p>
     
     <form id="verifyPinForm" onsubmit="handleVerifyPin(event)">
       <div class="text-start mb-3">
-        <label class="form-label">รหัสคำขอ (Request ID) <span class="text-danger">*</span></label>
-        <input type="text" id="reqId" class="form-control" placeholder="เช่น OPPE0001" required>
+        <label class="form-label fw-semibold">รหัสคำขอ (Request ID) <span class="text-danger">*</span></label>
+        <input type="text" id="reqId" class="form-control text-uppercase" placeholder="เช่น OPPE0001" required>
       </div>
       <div class="text-start mb-4">
-        <label class="form-label">รหัสลับ 4 หลัก (PIN) <span class="text-danger">*</span></label>
-        <input type="password" id="pinCode" class="form-control text-center fs-4 fw-bold letter-spacing" maxlength="4" pattern="\d{4}" placeholder="••••" required>
+        <label class="form-label fw-semibold">รหัสลับ 4 หลัก (PIN) <span class="text-danger">*</span></label>
+        <input type="password" id="pinCode" class="form-control text-center fw-bold fs-5" maxlength="4" placeholder="••••" required autocomplete="off">
       </div>
-      <button type="submit" id="submitBtn" class="btn btn-navy w-100 shadow-sm fw-bold">
+      <button type="submit" id="submitBtn" class="btn btn-navy shadow-sm">
         <i class="bi bi-box-arrow-in-right me-2"></i>เข้าสู่หน้าแก้ไขข้อมูล
       </button>
     </form>
@@ -59,12 +77,12 @@
     if (oldScript) oldScript.remove();
 
     if (data && data.success) {
-      alertDiv.innerHTML = `<div class="alert alert-success text-center small"><i class="bi bi-check-circle-fill me-1"></i> ยืนยันรหัสผ่านถูกต้อง! กำลังนำไปยังหน้าแก้ไข...</div>`;
+      alertDiv.innerHTML = `<div class="alert alert-success text-center small rounded-3"><i class="bi bi-check-circle-fill me-1"></i> ยืนยันรหัสผ่านถูกต้อง! กำลังนำไปยังหน้าแก้ไข...</div>`;
       setTimeout(() => {
         window.location.href = `./form.html?mode=edit&row=${data.rowIndex}`;
       }, 1000);
     } else {
-      alertDiv.innerHTML = `<div class="alert alert-danger text-center small"><i class="bi bi-exclamation-triangle-fill me-1"></i> ${data.message || 'รหัสคำขอหรือรหัสลับ 4 หลักไม่ถูกต้อง'}</div>`;
+      alertDiv.innerHTML = `<div class="alert alert-danger text-center small rounded-3"><i class="bi bi-exclamation-triangle-fill me-1"></i> ${data.message || 'รหัสคำขอหรือรหัสลับ 4 หลักไม่ถูกต้อง'}</div>`;
     }
   };
 
@@ -88,7 +106,7 @@
     script.onerror = function() {
       btn.disabled = false;
       btn.innerHTML = '<i class="bi bi-box-arrow-in-right me-2"></i>เข้าสู่หน้าแก้ไขข้อมูล';
-      alertDiv.innerHTML = `<div class="alert alert-danger text-center small">เกิดข้อผิดพลาดในการเชื่อมต่อระบบ</div>`;
+      alertDiv.innerHTML = `<div class="alert alert-danger text-center small rounded-3">เกิดข้อผิดพลาดในการเชื่อมต่อระบบ</div>`;
     };
     document.body.appendChild(script);
   }
