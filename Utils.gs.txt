@@ -1,0 +1,27 @@
+// สคริปต์ฟังก์ชันส่วนกลาง (Helper Functions)
+function cleanPhone(val) {
+  if (!val) return "";
+  var str = String(val).trim().replace(/\D/g, '');
+  if (str.length === 9) str = "0" + str;
+  return str;
+}
+
+function cleanDateTime(val) {
+  if (!val) return "";
+  var str = String(val).trim();
+  if (str.indexOf("T") !== -1) str = str.split("T")[0];
+  return str;
+}
+
+function isTimeOverlapped(start1, end1, start2, end2) {
+  return (start1 < end2) && (end1 > start2);
+}
+
+function createResponse(data, callback) {
+  if (callback) {
+    return ContentService.createTextOutput(callback + "(" + JSON.stringify(data) + ")")
+      .setMimeType(ContentService.MimeType.JAVASCRIPT);
+  }
+  return ContentService.createTextOutput(JSON.stringify(data))
+    .setMimeType(ContentService.MimeType.JSON);
+}

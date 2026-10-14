@@ -1,0 +1,260 @@
+// ดึงข้อมูลประวัติการจองห้องประชุมตาม ชื่อ และ อีเมล (แมปคอลัมน์ A ถึง Z)
+function handleGetRoomHistory(e, ss) {
+  var roomSheet = ss.getSheetByName("Booking Room");
+  if (!roomSheet) return { success: false, message: "Sheet 'Booking Room' not found" };
+
+  var displayData = roomSheet.getDataRange().getDisplayValues();
+  var searchName = e.parameter.name ? e.parameter.name.trim().toLowerCase() : "";
+  var searchEmail = e.parameter.email ? e.parameter.email.trim().toLowerCase() : "";
+  var results = [];
+
+  for (var i = 1; i < displayData.length; i++) {
+    var row = displayData[i];
+    
+    var applicantName = row[9] ? String(row[9]).trim().toLowerCase() : "";   // J: ชื่อผู้จอง
+    var email = row[14] ? String(row[14]).trim().toLowerCase() : "";         // O: อีเมล
+    
+    if (applicantName.indexOf(searchName) !== -1 && (searchEmail === "" || email === searchEmail)) {
+      results.push({
+        id: row[1] || ("BR" + String(i).padStart(4, '0')), // B: BookingID
+        rowIndex: i + 1,
+        timestamp: row[0] || "",             // A
+        monthSubmitted: row[2] || "",        // C
+        eventDate: row[3] || "",             // D
+        building: row[4] || "",              // E
+        roomName: row[5] || "",              // F
+        startTime: cleanDateTime(row[6]),    // G
+        endTime: cleanDateTime(row[7]),      // H
+        eventTitle: row[8] || "",            // I
+        applicantName: row[9] || "",         // J
+        applicantStatus: row[10] || "",      // K
+        attendeeCount: row[11] || "",        // L
+        pinCode: row[12] || "",              // M
+        phone: cleanPhone(row[13]),          // N
+        email: row[14] || "",                // O
+        originalFee: row[15] || 0,           // P
+        taxAmount: row[16] || 0,             // Q
+        waivedAmount: row[17] || 0,          // R
+        docNumber: row[18] || "",            // S
+        docDate: row[19] || "",              // T
+        payDate: row[20] || "",              // U
+        receiptNo: row[21] || "",            // V
+        depositDate: row[22] || "",          // W
+        depositReceiptNo: row[23] || "",     // X
+        depositAmount: row[24] || "",        // Y
+        status: row[25] || "Pending"         // Z: สถานะ
+      });
+    }
+  }
+  return { success: true, records: results.reverse() };
+}
+
+// เช็คห้องติดจอง Real-time
+function handleCheckBookedRooms(e, ss) {
+  var roomSheet = ss.getSheetByName("Booking Room");
+  var displayData = roomSheet ? roomSheet.getDataRange().getDisplayValues() : [];
+  
+  var reqBuilding = e.parameter.building ? e.parameter.building.trim() : "";
+  var newStart = new Date(e.parameter.startDate + "T" + e.parameter.startTime);
+  var newEnd = new Date(e.parameter.endDate + "T" + e.parameter.endTime);
+  var bookedRooms = [];
+
+  for (var i = 1; i < displayData.length; i++) {
+    var row = displayData[i];
+    var exBuilding = row[4];  // E: building
+    var exRoomStr = row[5];   // F: roomName
+    var exStatus = row[25];   // Z: status
+
+    if (exStatus === "Cancelled" || exStatus === "Rejected") continue;
+
+    if (exBuilding === reqBuilding) {
+      var exEventDate = row[3]; // D: eventDate
+      var exStartTime = row[6]; // G: startTime
+      var exEndTime = row[7];   // H: endTime
+
+      if (exEventDate && exStartTime && exEndTime) {
+        var exDates = exEventDate.split(" ถึง ");
+        var exStartDateStr = exDates[0].trim();
+        var exEndDateStr = exDates.length > 1 ? exDates[1].trim() : exDates[0].trim();
+
+        var exStart = new Date(exStartDateStr + "T" + exStartTime);
+        var exEnd = new Date(exEndDateStr + "T" + exEndTime);
+
+        if (isTimeOverlapped(newStart, newEnd, exStart, exEnd)) {
+          var rList = exRoomStr.split(", ");
+          rList.forEach(function(r) {
+            if (bookedRooms.indexOf(r.trim()) === -1) {
+              bookedRooms.push(r.trim());
+            }
+          });
+        }
+      }
+    }
+  }
+
+  return { success: true, bookedRooms: bookedRooms };
+}
+
+// บันทึกคำขอจองห้องใหม่ (แก้ไขเพิ่มคอลัมน์ให้ครบ A ถึง Z รวม 26 คอลัมน์)
+function handleSaveRoomBooking(params, ss) {
+  var roomSheet = ss.getSheetByName("Booking Room");
+  if (!roomSheet) return { success: false, message: "Sheet 'Booking Room' not found" };
+
+  var data = roomSheet.getDataRange().getDisplayValues();
+  var newStart = new Date(params.startDate + "T" + params.startTime);
+  var newEnd = new Date(params.endDate + "T" + params.endTime);
+  var roomsToBook = params.rooms || (params.roomName ? params.roomName.split(', ') : []);
+
+  for (var i = 1; i < data.length; i++) {
+    var existingBuilding = data[i][4];
+    var existingRoomStr = data[i][5];
+    var existingStatus = data[i][25]; // Z: Status
+
+    if (existingStatus === "Cancelled" || existingStatus === "Rejected") continue;
+
+    if (existingBuilding === params.building) {
+      var exEventDate = data[i][3];
+      var exStartTime = data[i][6];
+      var exEndTime = data[i][7];
+
+      if (exEventDate && exStartTime && exEndTime) {
+        var exDates = exEventDate.split(" ถึง ");
+        var exStartDateStr = exDates[0].trim();
+        var exEndDateStr = exDates.length > 1 ? exDates[1].trim() : exDates[0].trim();
+
+        var exStart = new Date(exStartDateStr + "T" + exStartTime);
+        var exEnd = new Date(exEndDateStr + "T" + exEndTime);
+
+        if (isTimeOverlapped(newStart, newEnd, exStart, exEnd)) {
+          for (var r = 0; r < roomsToBook.length; r++) {
+            var targetRoom = roomsToBook[r].trim();
+            if (existingRoomStr.indexOf(targetRoom) !== -1) {
+              return { success: false, message: "ห้อง '" + targetRoom + "' ถูกจองไว้แล้วในช่วงเวลาดังกล่าว" };
+            }
+          }
+        }
+      }
+    }
+  }
+
+  var totalRows = roomSheet.getLastRow();
+  var bookingId = "BR" + String(totalRows).padStart(4, '0');
+  var formattedPhone = cleanPhone(params.phone);
+  if (formattedPhone !== "" && !formattedPhone.startsWith("'")) formattedPhone = "'" + formattedPhone;
+
+  var startDateObj = new Date(params.startDate);
+  var monthSubmitted = startDateObj.toLocaleString('en-US', { month: 'short', year: 'numeric' });
+
+  // แถวข้อมูลเรียง A ถึง Z (รวม 26 ค่า)
+  var rowData = [
+    new Date(),                                                         // A: timestamp
+    bookingId,                                                          // B: BookingID
+    monthSubmitted,                                                     // C: monthSubmitted
+    params.eventDate || (params.startDate + " ถึง " + params.endDate),   // D: eventDate
+    params.building || "",                                              // E: building
+    params.roomName || "",                                              // F: roomName
+    params.startTime || "",                                             // G: startTime
+    params.endTime || "",                                               // H: endTime
+    params.eventTitle || "",                                            // I: eventTitle
+    params.applicantName || "",                                         // J: applicantName
+    params.applicantStatus || "",                                       // K: applicantStatus
+    params.attendeeCount || "",                                         // L: attendeeCount
+    params.pinCode || "",                                               // M: pinCode
+    formattedPhone,                                                     // N: phone
+    params.email || "",                                                 // O: email
+    0,                                                                  // P: originalFee
+    0,                                                                  // Q: taxAmount
+    0,                                                                  // R: waivedAmount
+    "",                                                                 // S: docNumber
+    "",                                                                 // T: docDate
+    "",                                                                 // U: payDate
+    "",                                                                 // V: receiptNo
+    "",                                                                 // W: depositDate
+    "",                                                                 // X: depositReceiptNo
+    "",                                                                 // Y: depositAmount
+    "Pending"                                                           // Z: status
+  ];
+
+  roomSheet.appendRow(rowData);
+  return { success: true, message: "Room reservation submitted successfully!", bookingId: bookingId };
+}
+
+// ดึงข้อมูลการจองทั้งหมดสำหรับ Admin Web App (คอลัมน์ A ถึง Z)
+function handleGetAllAdminBookings(e, ss) {
+  var roomSheet = ss.getSheetByName("Booking Room");
+  if (!roomSheet) return { success: false, message: "Sheet 'Booking Room' not found" };
+
+  var displayData = roomSheet.getDataRange().getDisplayValues();
+  var results = [];
+
+  for (var i = 1; i < displayData.length; i++) {
+    var row = displayData[i];
+    if (!row[1] && !row[0]) continue;
+
+    results.push({
+      id: row[1] || ("BR" + String(i).padStart(4, '0')),
+      rowIndex: i + 1,
+      timestamp: row[0] || "",
+      monthSubmitted: row[2] || "",
+      eventDate: row[3] || "",
+      building: row[4] || "",
+      roomName: row[5] || "",
+      startTime: cleanDateTime(row[6]),
+      endTime: cleanDateTime(row[7]),
+      eventTitle: row[8] || "",
+      applicantName: row[9] || "",
+      applicantStatus: row[10] || "",
+      attendeeCount: row[11] || "",
+      pinCode: row[12] || "",
+      phone: cleanPhone(row[13]),
+      email: row[14] || "",
+      originalFee: row[15] || "",      // P
+      taxAmount: row[16] || "",        // Q
+      waivedAmount: row[17] || "",     // R
+      docNumber: row[18] || "",        // S
+      docDate: row[19] || "",          // T
+      payDate: row[20] || "",          // U
+      receiptNo: row[21] || "",        // V
+      depositDate: row[22] || "",      // W
+      depositReceiptNo: row[23] || "", // X
+      depositAmount: row[24] || "",    // Y
+      status: row[25] || "Pending"     // Z
+    });
+  }
+
+  return { success: true, records: results.reverse() };
+}
+
+// อัปเดตข้อมูลเจ้าหน้าที่สำหรับ Admin Web App
+function handleUpdateAdminBooking(params, ss) {
+  var roomSheet = ss.getSheetByName("Booking Room");
+  if (!roomSheet) return { success: false, message: "Sheet 'Booking Room' not found" };
+
+  var targetId = params.bookingId ? params.bookingId.trim().toUpperCase() : "";
+  var data = roomSheet.getDataRange().getDisplayValues();
+  var rowIndex = -1;
+
+  for (var i = 1; i < data.length; i++) {
+    if (data[i][1] && String(data[i][1]).trim().toUpperCase() === targetId) {
+      rowIndex = i + 1;
+      break;
+    }
+  }
+
+  if (rowIndex === -1) return { success: false, message: "ไม่พบรายการที่ต้องการแก้ไข" };
+
+  // บันทึกลงคอลัมน์ P (16) ถึง Z (26)
+  roomSheet.getRange(rowIndex, 16).setValue(params.originalFee || "");
+  roomSheet.getRange(rowIndex, 17).setValue(params.taxAmount || "");
+  roomSheet.getRange(rowIndex, 18).setValue(params.waivedAmount || "");
+  roomSheet.getRange(rowIndex, 19).setValue(params.docNumber || "");
+  roomSheet.getRange(rowIndex, 20).setValue(params.docDate || "");
+  roomSheet.getRange(rowIndex, 21).setValue(params.payDate || "");
+  roomSheet.getRange(rowIndex, 22).setValue(params.receiptNo || "");
+  roomSheet.getRange(rowIndex, 23).setValue(params.depositDate || "");
+  roomSheet.getRange(rowIndex, 24).setValue(params.depositReceiptNo || "");
+  roomSheet.getRange(rowIndex, 25).setValue(params.depositAmount || "");
+  roomSheet.getRange(rowIndex, 26).setValue(params.status || "Pending");
+
+  return { success: true, message: "อัปเดตข้อมูลเรียบร้อยแล้ว!" };
+}

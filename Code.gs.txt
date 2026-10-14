@@ -1,0 +1,46 @@
+function doGet(e) {
+  var action = e ? e.parameter.action : "";
+  var callback = e ? e.parameter.callback : null;
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+
+  // Admin Routes (ห้องประชุม & พื้นที่ส่วนกลาง)
+  if (action === "getAllAdminBookings") return createResponse(handleGetAllAdminBookings(e, ss), callback);
+  if (action === "getAllAdminRequests") return createResponse(handleGetAllAdminRequests(e, ss), callback);
+
+  // User History Routes
+  if (action === "getRequestById") return createResponse(handleGetRequestById(e, ss), callback);
+  if (action === "getHistory") return createResponse(handleGetRequestsHistory(e, ss), callback);
+  if (action === "getRoomHistory") return createResponse(handleGetRoomHistory(e, ss), callback);
+  if (action === "getBookingById") return createResponse(handleGetBookingById(e, ss), callback);
+  if (action === "checkBookedRooms") return createResponse(handleCheckBookedRooms(e, ss), callback);
+  if (action === "verifyPin") return createResponse(handleVerifyPin(e, ss), callback);
+
+  return createResponse({ success: true, message: "API Active" }, callback);
+}
+
+function doPost(e) {
+  try {
+    var params = {};
+    if (e.postData && e.postData.contents) {
+      params = JSON.parse(e.postData.contents);
+    } else if (e.parameter) {
+      params = e.parameter;
+    }
+
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+
+    // Admin Update Routes
+    if (params.action === "updateAdminBooking") return createResponse(handleUpdateAdminBooking(params, ss));
+    if (params.action === "updateAdminRequest") return createResponse(handleUpdateAdminRequest(params, ss));
+
+    // User Booking Routes
+    if (params.action === "updateRoomBooking") return createResponse(handleUpdateRoomBooking(params, ss));
+    if (params.action === "updateRequest") return createResponse(handleUpdateRequest(params, ss));
+    if (params.action === "bookRoom") return createResponse(handleSaveRoomBooking(params, ss));
+
+    return createResponse(handleSaveRequest(params, ss));
+
+  } catch(error) {
+    return createResponse({ success: false, message: error.toString() });
+  }
+}
