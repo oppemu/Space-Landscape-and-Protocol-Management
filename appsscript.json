@@ -1,4 +1,0 @@
-=ARRAYFORMULA({"** หากพิมพ์ชื่อถูกระบบจะดึงข้อมูลให้"; ""; BYROW(O3:O, LAMBDA(row, IF(row="", "", IFERROR(TEXTJOIN(CHAR(10), TRUE, MAP(SPLIT(row, CHAR(10)), LAMBDA(name, IFERROR(VLOOKUP(TRIM(REGEXREPLACE(name, "^[0-9⭕🔴🟢🛑⛔🌸💮✅\.\s\-\+]+|(นาย|นางสาว|นาง|ม\.ล\.|ว่าที่ร้อยตรี)", "")), 'ชื่อ ทั้งกอง'!$C$2:$L, 10, FALSE), VLOOKUP("นาย"&TRIM(REGEXREPLACE(name, "^[0-9⭕🔴🟢🛑⛔🌸💮\.\s\-\+]+|(นาย|นางสาว|นาง|ม.ล.|ว่าที่ร้อยตรี)", "")), 'ชื่อ ทั้งกอง'!$C$2:$L, 10, FALSE))))), "ไม่พบข้อมูล"))))})
-
-
-=ARRAYFORMULA({"** หากพิมพ์ชื่อถูกระบบจะดึงข้อมูลให้"; ""; BYROW(P3:P, LAMBDA(row, IF(row="", "", IFERROR(TEXTJOIN(CHAR(10), TRUE, MAP(SPLIT(row, CHAR(10)), LAMBDA(name, IFERROR(VLOOKUP(TRIM(REGEXREPLACE(name, "^[0-9⭕🔴🟢🛑⛔🌸💮✅\.\s\-\+]+|(นาย|นางสาว|นาง|ม\.ล\.|ว่าที่ร้อยตรี)", "")), 'ชื่อ ทั้งกอง'!$C$2:$L, 10, FALSE), VLOOKUP("นาย"&TRIM(REGEXREPLACE(name, "^[0-9⭕🔴🟢🛑⛔🌸💮\.\s\-\+]+|(นาย|นางสาว|นาง|ม\.ล\.|ว่าที่ร้อยตรี)", "")), 'ชื่อ ทั้งกอง'!$C$2:$L, 10, FALSE))))), "ไม่พบข้อมูล"))))})
