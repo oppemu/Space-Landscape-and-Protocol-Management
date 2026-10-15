@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ตรวจสอบและดูประวัติการขอใช้บริการ</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+  <style>
+    body { 
+      font-family: 'Sarabun', sans-serif; 
+      background-color: #f0f3f8; 
+      min-height: 100vh; 
+      color: #334155;
+    }
+    .search-card { 
+      background: white; 
+      border-radius: 20px; 
+      padding: 35px 30px; 
+      box-shadow: 0 10px 30px rgba(0, 43, 102, 0.06); 
+      max-width: 850px; 
+      margin: 30px auto 25px auto; 
+      border: 1px solid rgba(226, 232, 240, 0.8);
+    }
+    .logo-img { max-width: 130px; height: auto; }
+    
+    .result-card { 
+      background: white; 
+      border-radius: 16px; 
+      border: 1px solid #e2e8f0; 
+      padding: 24px; 
+      margin-bottom: 20px; 
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+      transition: all 0.2s ease-in-out;
+    }
+    .result-card:hover {
+      box-shadow: 0 8px 20px rgba(0, 43, 102, 0.08);
+      border-color: #cbd5e1;
+    }
+    .id-badge {
+      background-color: #e0e7ff;
+      color: #1e1e50;
+      font-weight: 700;
+      padding: 6px 16px;
+      border-radius: 30px;
+      font-size: 0.95rem;
+      display: inline-block;
+    }
+    .btn-pdf { 
+      background-color: #1e1e50; 
+      color: white; 
+      border-radius: 25px; 
+      padding: 8px 22px; 
+      border: none; 
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: all 0.2s ease;
+    }
+    .btn-pdf:hover { 
+      background-color: #0f172a; 
+      color: #fbbf24;
+      transform: translateY(-1px);
+    }
+    .btn-search {
+      background-color: #1e1e50;
+      color: white;
+      border-radius: 30px;
+      padding: 10px 32px;
+      font-weight: 600;
+      border: none;
+      transition: all 0.2s;
+    }
+    .btn-search:hover {
+      background-color: #0f172a;
+      color: white;
+      box-shadow: 0 4px 12px rgba(30, 30, 80, 0.25);
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: max-content 1fr;
+      column-gap: 12px;
+      row-gap: 10px;
+      align-items: start;
+    }
+    .info-label {
+      color: #64748b;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+    .info-value {
+      color: #1e293b;
+      font-weight: 600;
+      line-height: 1.5;
+    }
+    .pdf-preview-box { background: white; border: 1px solid #ccc; padding: 25px 30px; font-size: 0.85rem; line-height: 1.5; color: #333; }
+  </style>
+</head>
+<body>
+
+<div class="container my-4">
+  <div class="mb-3" style="max-width: 850px; margin: 0 auto;">
+    <a href="./menu-common.html" class="btn btn-outline-secondary btn-sm rounded-pill px-3"><i class="bi bi-arrow-left me-1"></i> ย้อนกลับหน้าเมนูหลัก</a>
+  </div>
+
+  <div class="search-card text-center">
+    <img src="LOGO.png" alt="Logo" class="logo-img mb-3" onerror="this.src='LOGO.jpg'">
+    <h4 class="mb-4 fw-bold" style="color: #002b66;">ตรวจสอบประวัติการขอใช้สถานที่และบริการ</h4>
+    
+    <form id="searchForm" onsubmit="handleSearch(event)">
+      <div class="row g-3 text-start mb-4">
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">ชื่อ - สกุล ผู้ขอใช้สถานที่ <span class="text-danger">*</span></label>
+          <input type="text" id="searchName" class="form-control form-control-lg fs-6" placeholder="เช่น ธิระพงศ์ เหมทานนท์" required>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">อีเมล <span class="text-danger">*</span></label>
+          <input type="email" id="searchEmail" class="form-control form-control-lg fs-6" placeholder="เช่น example@mahidol.ac.th" required>
+        </div>
+      </div>
+      <button type="submit" id="searchBtn" class="btn btn-search shadow-sm"><i class="bi bi-search me-1"></i> ค้นหาประวัติ</button>
+    </form>
+  </div>
+
+  <div id="resultContainer" class="mx-auto" style="max-width: 850px;"></div>
+</div>
+
+<!-- Modal 1: ยืนยัน PIN ก่อนดู PDF -->
+<div class="modal fade" id="pinModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg rounded-4">
+      <div class="modal-header border-0 pb-0">
+        <h5 class="modal-title fw-bold" style="color: #1e1e50;"><i class="bi bi-shield-lock-fill text-warning me-2"></i>ยืนยันรหัสผ่านเพื่อความปลอดภัย</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-center p-4">
+        <p class="text-muted small mb-3">กรุณากรอกรหัสลับ 4 หลักที่ท่านตั้งไว้ขณะยื่นเรื่อง (<span id="modalReqIdText" class="fw-bold text-dark"></span>)</p>
+        <form id="pinAuthForm" onsubmit="verifyPinAndShowPdf(event)">
+          <input type="password" id="inputPinCode" class="form-control text-center fs-3 fw-bold mb-3 mx-auto rounded-3" style="max-width: 200px; letter-spacing: 6px;" maxlength="4" placeholder="••••" required autocomplete="off">
+          <button type="submit" id="checkPinBtn" class="btn btn-search w-100 fw-bold py-2">ยืนยันรหัสผ่านเพื่อเปิด PDF</button>
+        </form>
+        <div id="pinAlert" class="mt-3"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal 2: แสดงตัวอย่าง PDF -->
+<div class="modal fade" id="pdfModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content rounded-4 border-0">
+      <div class="modal-header" style="background-color: #f8fafc;">
+        <h5 class="modal-title fw-bold" style="color: #1e1e50;"><i class="bi bi-file-earmark-pdf-fill me-2 text-danger"></i>ตัวอย่างเอกสารคำขอ</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body bg-light p-4">
+        <div id="pdfContent" class="pdf-preview-box shadow-sm rounded-3"></div>
+      </div>
+      <div class="modal-footer border-0 bg-light pt-0">
+        <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">ปิด</button>
+        <button type="button" id="downloadPdfBtn" class="btn btn-success rounded-pill px-4" onclick="downloadPdf()"><i class="bi bi-download me-1"></i> ดาวน์โหลดเอกสาร PDF</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="config.js"></script>
+<script>
+  let currentRecord = null;
+  let pinModalObj = null;
+  let pdfModalObj = null;
+
+  // ข้อจำกัดระบบไฟฟ้าประจำสถานที่
+  const ELEC_LIMITS = {
+    'ลานมหิดล (มี sprinkler)': '⚡ ข้อจำกัดไฟฟ้า: สามารถเชื่อมต่อไฟฟ้าได้ขนาดไม่เกิน 50 แอมป์ จำนวน 1 ชุด',
+    'ถนนคนเดิน สาย เอ (วิทยาลัยนานาชาติ ถึง คณะวิศวกรรมศาสตร์)': '⚡ ข้อจำกัดไฟฟ้า: สามารถเชื่อมต่อไฟฟ้าได้ขนาดไม่เกิน 50 แอมป์ (มีไฟฟ้าแสงสว่างตามปกติ)',
+    'ถนนคนเดิน สาย บี (คณะวิศวกรรมศาสตร์ ถึง วิทยาลัยวิทย์ฯ การกีฬา)': '⚡ ข้อจำกัดไฟฟ้า: มีไฟฟ้าแสงสว่างตามปกติ (ไม่อนุญาตให้ติดตั้งระบบไฟฟ้าเพิ่ม)',
+    'ถนนคนเดิน สาย ซี (สถาบันพัฒนาสุขภาพอาเซียน ถึง สวนเจ้าฟ้า)': '⚡ ข้อจำกัดไฟฟ้า: มีไฟฟ้าแสงสว่างตามปกติ (ไม่อนุญาตให้ติดตั้งระบบไฟฟ้าเพิ่ม)',
+    'ถนนคนเดิน สาย ดี (วิทยาลัยวิทย์ฯ ถึง หน้าหอพัก 9)': '⚡ ข้อจำกัดไฟฟ้า: มีไฟฟ้าแสงสว่างตามปกติ (ไม่อนุญาตให้ติดตั้งระบบไฟฟ้าเพิ่ม)',
+    'สนามหญ้าด้านหน้าหอสมุดและคลังความรู้': '⚡ ข้อจำกัดไฟฟ้า: สามารถเชื่อมต่อไฟฟ้าได้ขนาดไม่เกิน 70 แอมป์ จำนวน 2 ชุด',
+    'ศาลาแปดเหลี่ยมด้านข้างหอสมุด': '⚡ ข้อจำกัดไฟฟ้า: สามารถเชื่อมต่อไฟฟ้าได้ขนาดไม่เกิน 50 แอมป์ จำนวน 1 ชุด',
+    'แหล่งนันทนาการทางน้ำ (ด้านหลังสนามฟุตบอลใหญ่)': '⚡ ข้อจำกัดไฟฟ้า: มีไฟฟ้าแสงสว่างตามปกติ (ไม่อนุญาตให้ติดตั้งระบบไฟฟ้าเพิ่ม)',
+    'สนามหญ้าบริเวณโดยรอบอาคารอเนกประสงค์': '⚡ ข้อจำกัดไฟฟ้า: สามารถเชื่อมต่อไฟฟ้าได้ตามระบบมาตรฐานอาคาร'
+  };
+
+  document.addEventListener('DOMContentLoaded', function() {
+    pinModalObj = new bootstrap.Modal(document.getElementById('pinModal'));
+    pdfModalObj = new bootstrap.Modal(document.getElementById('pdfModal'));
+  });
+
+  function formatPhoneNumber(phone) {
+    if (!phone) return '-';
+    let clean = String(phone).trim().replace(/\D/g, '');
+    if (clean.length === 9) {
+      clean = '0' + clean;
+    }
+    return clean;
+  }
+
+  window.onHistoryReceived = function(data) {
+    const searchBtn = document.getElementById('searchBtn');
+    const resultContainer = document.getElementById('resultContainer');
+    const name = document.getElementById('searchName').value.trim();
+    const email = document.getElementById('searchEmail').value.trim();
+
+    searchBtn.disabled = false;
+    searchBtn.innerHTML = '<i class="bi bi-search me-1"></i> ค้นหาประวัติ';
+
+    const oldScript = document.getElementById('jsonpScript');
+    if (oldScript) oldScript.remove();
+
+    if (data && data.success && data.records && data.records.length > 0) {
+      renderResults(data.records);
+    } else {
+      resultContainer.innerHTML = `<div class="alert alert-warning text-center my-3 rounded-4 shadow-sm py-3"><i class="bi bi-exclamation-circle me-2"></i>ไม่พบข้อมูลประวัติของ คุณ${name} (${email})</div>`;
+    }
+  };
+
+  function handleSearch(e) {
+    e.preventDefault();
+    const name = document.getElementById('searchName').value.trim();
+    const email = document.getElementById('searchEmail').value.trim();
+    const searchBtn = document.getElementById('searchBtn');
+    const resultContainer = document.getElementById('resultContainer');
+
+    searchBtn.disabled = true;
+    searchBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>กำลังค้นหา...';
+    resultContainer.innerHTML = '<div class="text-center text-muted my-4"><div class="spinner-border text-primary spinner-border-sm me-2"></div>กำลังดึงข้อมูลประวัติ...</div>';
+
+    const oldScript = document.getElementById('jsonpScript');
+    if (oldScript) oldScript.remove();
+
+    const script = document.createElement('script');
+    script.id = 'jsonpScript';
+    script.src = `${CONFIG.WEB_APP_URL}?action=getHistory&name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}&callback=onHistoryReceived`;
+    script.onerror = function() {
+      searchBtn.disabled = false;
+      searchBtn.innerHTML = '<i class="bi bi-search me-1"></i> ค้นหาประวัติ';
+      resultContainer.innerHTML = `<div class="alert alert-danger text-center my-3 rounded-4">เกิดข้อผิดพลาดในการเชื่อมต่อข้อมูล</div>`;
+    };
+    document.body.appendChild(script);
+  }
+
+  function renderResults(records) {
+    const container = document.getElementById('resultContainer');
+    let html = '';
+
+    records.forEach((rec) => {
+      window['rec_' + rec.id] = rec;
+      html += `
+        <div class="result-card">
+          <div class="d-flex justify-content-between align-items-center pb-3 mb-3 border-bottom">
+            <span class="id-badge"><i class="bi bi-file-text me-1"></i> Request ID: ${rec.id}</span>
+            <button class="btn btn-pdf shadow-sm" onclick="promptPinForPdf('${rec.id}')">
+              <i class="bi bi-lock-fill me-1 text-warning"></i> ดูตัวอย่าง PDF
+            </button>
+          </div>
+
+          <div class="info-grid">
+            <span class="info-label"><i class="bi bi-person me-2"></i>ผู้ขอใช้บริการ:</span>
+            <span class="info-value">${rec.title || ''} ${rec.requesterName}</span>
+
+            <span class="info-label"><i class="bi bi-journal-text me-2"></i>เรื่องที่ดำเนินการ:</span>
+            <span class="info-value">${rec.activityName}</span>
+
+            <span class="info-label"><i class="bi bi-geo-alt me-2"></i>สถานที่ขอใช้:</span>
+            <span class="info-value">${rec.location}</span>
+          </div>
+        </div>
+      `;
+    });
+
+    container.innerHTML = html;
+  }
+
+  function promptPinForPdf(reqId) {
+    currentRecord = window['rec_' + reqId];
+    document.getElementById('modalReqIdText').innerText = reqId;
+    document.getElementById('inputPinCode').value = '';
+    document.getElementById('pinAlert').innerHTML = '';
+    pinModalObj.show();
+  }
+
+  window.onVerifyPinForPdfReceived = function(data) {
+    const btn = document.getElementById('checkPinBtn');
+    const alertDiv = document.getElementById('pinAlert');
+
+    btn.disabled = false;
+    btn.innerHTML = 'ยืนยันรหัสผ่านเพื่อเปิด PDF';
+
+    const oldScript = document.getElementById('verifyPinScript');
+    if (oldScript) oldScript.remove();
+
+    if (data && data.success) {
+      pinModalObj.hide();
+      openPdfModal(currentRecord);
+    } else {
+      alertDiv.innerHTML = `<div class="alert alert-danger small py-2 mb-0 rounded-3"><i class="bi bi-exclamation-triangle-fill me-1"></i> รหัสลับ 4 หลักไม่ถูกต้อง</div>`;
+    }
+  };
+
+  function verifyPinAndShowPdf(e) {
+    e.preventDefault();
+    const pin = document.getElementById('inputPinCode').value.trim();
+    const btn = document.getElementById('checkPinBtn');
+    const alertDiv = document.getElementById('pinAlert');
+
+    if (!pin || pin.length !== 4) {
+      alertDiv.innerHTML = `<div class="alert alert-warning small py-2 mb-0 rounded-3">กรุณากรอกรหัสลับเป็นตัวเลข 4 หลัก</div>`;
+      return;
+    }
+
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>กำลังตรวจสอบรหัส...';
+    alertDiv.innerHTML = '';
+
+    const oldScript = document.getElementById('verifyPinScript');
+    if (oldScript) oldScript.remove();
+
+    const script = document.createElement('script');
+    script.id = 'verifyPinScript';
+    script.src = `${CONFIG.WEB_APP_URL}?action=verifyPin&requestId=${encodeURIComponent(currentRecord.id)}&pin=${encodeURIComponent(pin)}&callback=onVerifyPinForPdfReceived`;
+    script.onerror = function() {
+      btn.disabled = false;
+      btn.innerHTML = 'ยืนยันรหัสผ่านเพื่อเปิด PDF';
+      alertDiv.innerHTML = `<div class="alert alert-danger small py-2 mb-0 rounded-3">เกิดข้อผิดพลาดในการเชื่อมต่อระบบ</div>`;
+    };
+    document.body.appendChild(script);
+  }
+
+  function openPdfModal(record) {
+    const modalBody = document.getElementById('pdfContent');
+    const phoneNum = formatPhoneNumber(record.phone || record.Phone);
+
+    // สร้างแสดงสถานที่พร้อมกล่องแจ้งเตือนไฟฟ้า
+    let locationHtml = '-';
+    if (record.location && record.location.trim() !== '') {
+      const locList = record.location.split(', ');
+      
+      locationHtml = `<ul class="mb-0 ps-3 mt-1" style="list-style-type: disc;">` + 
+        locList.map(loc => {
+          const cleanLoc = loc.trim();
+          const warningText = ELEC_LIMITS[cleanLoc];
+          let warnBox = '';
+          
+          if (warningText) {
+            warnBox = `
+              <div class="mt-1 mb-1 px-2 py-1 rounded" style="background-color: #fefce8; border: 1px solid #fef08a; color: #b45309; font-size: 0.75rem; font-weight: 500; line-height: 1.3; display: inline-block;">
+                ${warningText}
+              </div>`;
+          }
+          return `<li class="mb-1" style="font-size: 0.85rem; color: #334155;"><span style="font-weight: 600;">${cleanLoc}</span><br>${warnBox}</li>`;
+        }).join('') + 
+      `</ul>`;
+    }
+
+    modalBody.innerHTML = `
+      <div class="text-center mb-3 pb-2 border-bottom">
+        <h5 class="fw-bold mb-1" style="color: #002b66; font-size: 1.15rem;">กองกายภาพและสิ่งแวดล้อม มหาวิทยาลัยมหิดล</h5>
+        <p class="text-muted mb-0" style="font-size: 0.8rem;">แบบฟอร์มขอใช้สถานที่และบริการ</p>
+      </div>
+
+      <!-- 1. ข้อมูลผู้กรอกแบบฟอร์ม -->
+      <div class="mb-3">
+        <h6 class="fw-bold text-primary border-bottom pb-1 mb-2" style="font-size: 0.95rem;">1. ข้อมูลผู้กรอกแบบฟอร์ม</h6>
+        <div class="ps-2" style="font-size: 0.82rem;">
+          <p class="mb-1"><span class="fw-semibold text-secondary">รหัสคำขอ :</span> <span class="badge bg-secondary" style="font-size: 0.75rem;">${record.id || '-'}</span></p>
+          <p class="mb-1"><span class="fw-semibold text-secondary">วันที่ยื่นเรื่อง :</span> ${record.requestDate || '-'}</p>
+          <p class="mb-1"><span class="fw-semibold text-secondary">ชื่อผู้ขอใช้สถานที่ :</span> ${record.title || ''} ${record.requesterName}</p>
+          <p class="mb-1"><span class="fw-semibold text-secondary">หน่วยงาน :</span> ${record.faculty} ${record.department ? '(' + record.department + ')' : ''}</p>
+          <p class="mb-1"><span class="fw-semibold text-secondary">หมายเลขโทรศัพท์ :</span> ${phoneNum}</p>
+          <p class="mb-1"><span class="fw-semibold text-secondary">E-Mail :</span> ${record.email}</p>
+        </div>
+      </div>
+
+      <!-- 2. รายละเอียดงานและกิจกรรม -->
+      <div class="mb-3">
+        <h6 class="fw-bold text-primary border-bottom pb-1 mb-2" style="font-size: 0.95rem;">2. รายละเอียดงานและกิจกรรม</h6>
+        <div class="ps-2" style="font-size: 0.82rem;">
+          <p class="mb-2"><span class="fw-semibold text-secondary">เรื่องที่ดำเนินการ :</span> ${record.activityName}</p>
+          <div class="mb-2">
+            <span class="fw-semibold text-secondary">สถานที่ขอใช้ :</span>
+            <div class="text-dark fw-normal">${locationHtml}</div>
+          </div>
+          <p class="mb-1"><span class="fw-semibold text-secondary">จำนวนผู้เข้าร่วม :</span> ${record.participantCount} คน</p>
+          <p class="mb-1"><span class="fw-semibold text-secondary">ช่วงวันเวลา :</span> ${record.startDate} (${record.startTime}) ถึง ${record.endDate} (${record.endTime})</p>
+        </div>
+      </div>
+
+      <!-- 3. รายการบริการเพิ่มเติม -->
+      <div class="mb-3">
+        <h6 class="fw-bold text-primary border-bottom pb-1 mb-2" style="font-size: 0.95rem;">3. รายการบริการเพิ่มเติม</h6>
+        <div class="ps-2" style="font-size: 0.82rem;">
+          <p class="mb-1"><span class="fw-semibold text-secondary">วัสดุ/อุปกรณ์ :</span> ${record.equipmentDetails || 'ไม่มี'}</p>
+          <p class="mb-1"><span class="fw-semibold text-secondary">งานสาธารณูปโภค :</span> ${record.utilityDetails || 'ไม่มี'}</p>
+          <p class="mb-1"><span class="fw-semibold text-secondary">งานจราจร/ความปลอดภัย :</span> ${record.securityDetails || 'ไม่มี'}</p>
+          <p class="mb-1"><span class="fw-semibold text-secondary">ยานพาหนะ :</span> ${record.vehicleDetails || 'ไม่มี'}</p>
+          <p class="mb-1"><span class="fw-semibold text-secondary">ต้นไม้ประดับ :</span> ${record.plantDetails || 'ไม่มี'}</p>
+        </div>
+      </div>
+
+      <!-- 4. ผู้รับรอง -->
+      <div class="mt-3 pt-2 border-top" style="font-size: 0.82rem;">
+        <p class="mb-0"><span class="fw-semibold text-secondary">ผู้ให้การรับรอง :</span> ${record.approverName} (${record.approverPosition})</p>
+      </div>
+    `;
+
+    pdfModalObj.show();
+  }
+
+  function downloadPdf() {
+    if (!currentRecord) return;
+
+    const element = document.getElementById('pdfContent');
+    const opt = {
+      margin:       [10, 10, 10, 10],
+      filename:     `คำขอใช้สถานที่_${currentRecord.id || 'เอกสาร'}.pdf`,
+      image:        { type: 'jpeg', quality: 0.98 },
+      html2canvas:  { scale: 2, useCORS: true, scrollX: 0, scrollY: 0 },
+      jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+
+    const btn = document.getElementById('downloadPdfBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>กำลังสร้าง PDF...';
+
+    const originalWidth = element.style.width;
+    element.style.width = '750px';
+
+    html2pdf().set(opt).from(element).save().then(() => {
+      element.style.width = originalWidth;
+      btn.disabled = false;
+      btn.innerHTML = '<i class="bi bi-download me-1"></i> ดาวน์โหลดเอกสาร PDF';
+    }).catch(err => {
+      element.style.width = originalWidth;
+      btn.disabled = false;
+      btn.innerHTML = '<i class="bi bi-download me-1"></i> ดาวน์โหลดเอกสาร PDF';
+    });
+  }
+</script>
+</body>
+</html>
