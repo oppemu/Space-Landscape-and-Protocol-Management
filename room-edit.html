@@ -7,152 +7,132 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
 
   <style>
     body { font-family: 'Sarabun', sans-serif; background-color: #f0f3f8; min-height: 100vh; color: #334155; }
-    .verify-card { background: white; border-radius: 24px; padding: 40px 30px; box-shadow: 0 15px 35px rgba(15, 23, 42, 0.08); max-width: 480px; margin: 20px auto; border: 1px solid rgba(226, 232, 240, 0.8); }
-    .edit-card { background: white; border-radius: 20px; padding: 35px 30px; box-shadow: 0 10px 30px rgba(0, 43, 102, 0.06); max-width: 850px; margin: 20px auto; border: 1px solid rgba(226, 232, 240, 0.8); position: relative; }
-    .btn-verify-submit { background-color: #1e1b4b; color: white; border-radius: 30px; padding: 12px; font-weight: 600; border: none; width: 100%; font-size: 1.05rem; transition: all 0.2s; }
-    .btn-verify-submit:hover { background-color: #0f172a; color: white; box-shadow: 0 4px 12px rgba(15, 23, 42, 0.2); }
-    .header-box { background: #0284c7; color: white; border-radius: 16px; padding: 20px; margin-bottom: 30px; }
-    .section-header { color: #0284c7; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; margin-bottom: 20px; font-weight: 700; }
-    .btn-custom { background-color: #0284c7; color: white; border-radius: 30px; padding: 12px 35px; font-weight: 600; border: none; }
-    .btn-custom:hover { background-color: #0369a1; color: white; }
+    .form-card { background: white; border-radius: 20px; padding: 35px 30px; box-shadow: 0 10px 30px rgba(0, 43, 102, 0.06); max-width: 850px; margin: 30px auto; border: 1px solid rgba(226, 232, 240, 0.8); }
+    .auth-card { background: white; border-radius: 20px; padding: 30px; max-width: 450px; margin: 50px auto; box-shadow: 0 10px 30px rgba(0, 43, 102, 0.08); }
+    .header-box { background: #1e1b4b; color: white; border-radius: 16px; padding: 20px; margin-bottom: 30px; }
+    .section-header { color: #1e1b4b; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; margin-bottom: 20px; font-weight: 700; }
+    .btn-submit { background-color: #1e1b4b; color: white; border-radius: 30px; padding: 12px 35px; font-weight: 600; border: none; transition: all 0.2s; }
+    .btn-submit:hover { background-color: #312e81; color: white; }
     .room-item-row { background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px 15px; margin-bottom: 10px; }
-    .loading-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.88); backdrop-filter: blur(3px); border-radius: 20px; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 100; }
   </style>
 </head>
 <body>
 
 <div class="container my-4">
-  <div id="navBackContainer" class="mb-3" style="max-width: 480px; margin: 0 auto;">
+  <div class="mb-3" style="max-width: 850px; margin: 0 auto;">
     <a href="./menu-room.html" class="btn btn-outline-secondary btn-sm rounded-pill px-3"><i class="bi bi-arrow-left me-1"></i> ย้อนกลับหน้าเมนูห้องประชุม</a>
   </div>
 
-  <!-- Step 1: ยืนยันรหัสผ่าน -->
-  <div id="verifySection" class="verify-card">
-    <div class="text-center mb-4">
-      <img src="LOGO.png" alt="Logo" style="max-width: 100px;" class="mb-3" onerror="this.src='LOGO.jpg'">
-      <h4 class="fw-bold text-dark mb-2">🔑 ยืนยันรหัสผ่านเพื่อแก้ไขข้อมูล</h4>
-      <p class="text-muted small mb-0">กรุณากรอกรหัสคำขอ และรหัสลับ 4 หลักที่ท่านตั้งไว้ขณะยื่นแบบฟอร์ม</p>
-    </div>
+  <!-- ส่วนที่ 1: หน้าฟอร์มกรอก PIN ก่อนเข้าแก้ไข -->
+  <div id="authSection" class="auth-card text-center">
+    <img src="LOGO.png" alt="Logo" style="max-width: 90px;" class="mb-2" onerror="this.src='LOGO.jpg'">
+    <h5 class="fw-bold mb-1">🔑 ยืนยันรหัสผ่านเพื่อแก้ไขข้อมูล</h5>
+    <p class="text-muted small mb-4">กรุณากรอกรหัสคำขอ และรหัสลับ 4 หลักที่ท่านตั้งไว้ขณะยื่นแบบฟอร์ม</p>
 
-    <form onsubmit="handleVerifyPin(event)">
-      <div class="mb-3">
+    <form onsubmit="handleVerifyAuth(event)">
+      <div class="mb-3 text-start">
         <label class="form-label fw-semibold">รหัสคำขอ (Request ID) <span class="text-danger">*</span></label>
-        <input type="text" id="verifyBookingId" class="form-control text-uppercase" placeholder="เช่น BR0001" required>
+        <input type="text" id="authRequestId" class="form-control text-uppercase" placeholder="เช่น BR0001" required>
       </div>
-      <div class="mb-4">
+      <div class="mb-4 text-start">
         <label class="form-label fw-semibold">รหัสลับ 4 หลัก (PIN) <span class="text-danger">*</span></label>
-        <input type="password" id="verifyPinCode" class="form-control text-center fw-bold" maxlength="4" placeholder="••••" required autocomplete="off">
+        <input type="password" id="authPin" class="form-control text-center fw-bold" maxlength="4" placeholder="••••" required autocomplete="off">
       </div>
-      <button type="submit" id="verifyBtn" class="btn btn-verify-submit shadow-sm">
-        <i class="bi bi-box-arrow-in-right me-2"></i>เข้าสู่หน้าแก้ไขข้อมูล
-      </button>
+      <button type="submit" id="authBtn" class="btn btn-submit w-100"><i class="bi bi-box-arrow-in-right me-1"></i> เข้าสู่หน้าแก้ไขข้อมูล</button>
     </form>
   </div>
 
-  <!-- Step 2: ฟอร์มแก้ไขข้อมูล -->
-  <div id="editFormSection" class="edit-card" style="display: none;">
-    <div id="loadingOverlay" class="loading-overlay" style="display: none;">
-      <div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem;" role="status"></div>
-      <h6 class="fw-bold text-primary mb-1">กำลังดึงข้อมูลการจอง...</h6>
-      <span class="small text-muted">กรุณารอสักครู่ ระบบกำลังจัดเตรียมข้อมูลให้คุณแก้ไข</span>
-    </div>
-
+  <!-- ส่วนที่ 2: หน้าฟอร์มแก้ไขข้อมูล -->
+  <div id="editSection" class="form-card" style="display: none;">
     <div class="header-box text-center">
-      <img src="LOGO.png" alt="Logo" style="max-width: 110px;" class="mb-2" onerror="this.src='LOGO.jpg'">
-      <h4 class="fw-bold mb-1">เปลี่ยนแปลงแก้ไขข้อมูลการจองห้องประชุม</h4>
-      <p class="mb-0 small opacity-90">กองกายภาพและสิ่งแวดล้อม สำนักงานอธิการบดี มหาวิทยาลัยมหิดล</p>
+      <h4 class="fw-bold mb-1">แก้ไขข้อมูลการจองห้องประชุม</h4>
+      <p class="mb-0 small opacity-90">รหัสคำขอ: <span id="displayRequestId" class="fw-bold text-warning"></span></p>
     </div>
 
-    <form id="editRoomForm" onsubmit="handleUpdateSubmit(event)">
-      <fieldset id="formFieldSet">
-        <input type="hidden" id="editBookingId">
+    <form id="editBookingForm" onsubmit="handleEditSubmit(event)">
+      <h5 class="section-header"><i class="bi bi-person-badge me-2"></i>1. ข้อมูลทั่วไปและผู้ขอใช้บริการ</h5>
+      <div class="row g-3 mb-4">
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">ชื่อ - สกุล ผู้ขอใช้บริการ <span class="text-danger">*</span></label>
+          <input type="text" id="applicantName" class="form-control" required>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">สถานะผู้ขอใช้บริการ <span class="text-danger">*</span></label>
+          <select id="applicantStatus" class="form-select" required>
+            <option value="บุคลากร/ส่วนงานภายใน">บุคลากร / ส่วนงานภายในมหาวิทยาลัย</option>
+            <option value="นักศึกษา">นักศึกษา</option>
+            <option value="บุคคล/หน่วยงานภายนอก">บุคคล / หน่วยงานภายนอก</option>
+          </select>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">หมายเลขโทรศัพท์ <span class="text-danger">*</span></label>
+          <input type="tel" id="phone" class="form-control" required>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">อีเมล <span class="text-danger">*</span></label>
+          <input type="email" id="email" class="form-control" required>
+        </div>
+      </div>
 
-        <h5 class="section-header"><i class="bi bi-person-badge me-2"></i>1. ข้อมูลผู้ขอใช้บริการ</h5>
-        <div class="row g-3 mb-4">
-          <div class="col-md-6">
-            <label class="form-label fw-semibold">ชื่อ - สกุล ผู้ขอใช้บริการ <span class="text-danger">*</span></label>
-            <input type="text" id="applicantName" class="form-control" required>
-          </div>
-          <div class="col-md-6">
-            <label class="form-label fw-semibold">สถานะผู้ขอใช้บริการ <span class="text-danger">*</span></label>
-            <select id="applicantStatus" class="form-select" required>
-              <option value="">-- เลือกสถานะ --</option>
-              <option value="บุคลากร / ส่วนงานภายในมหาวิทยาลัย">บุคลากร / ส่วนงานภายในมหาวิทยาลัย</option>
-              <option value="นักศึกษา">นักศึกษา</option>
-              <option value="หน่วยงานภายนอก">หน่วยงานภายนอก</option>
-            </select>
-          </div>
-          <div class="col-md-6">
-            <label class="form-label fw-semibold">หมายเลขโทรศัพท์ <span class="text-danger">*</span></label>
-            <input type="tel" id="phone" class="form-control" required>
-          </div>
-          <div class="col-md-6">
-            <label class="form-label fw-semibold">อีเมล <span class="text-danger">*</span></label>
-            <input type="email" id="email" class="form-control" required>
-          </div>
+      <h5 class="section-header"><i class="bi bi-building-gear me-2"></i>2. รายละเอียดสถานที่และกิจกรรม</h5>
+      <div class="row g-3 mb-4">
+        <div class="col-12">
+          <label class="form-label fw-semibold">ชื่อกิจกรรม / เรื่องที่ดำเนินการ <span class="text-danger">*</span></label>
+          <input type="text" id="eventTitle" class="form-control" required>
         </div>
 
-        <h5 class="section-header"><i class="bi bi-building-gear me-2"></i>2. รายละเอียดสถานที่และกิจกรรม</h5>
-        <div class="row g-3 mb-4">
-          <div class="col-12">
-            <label class="form-label fw-semibold">ชื่อกิจกรรม / เรื่องที่ดำเนินการ <span class="text-danger">*</span></label>
-            <input type="text" id="eventTitle" class="form-control" required>
-          </div>
-
-          <div class="col-md-3">
-            <label class="form-label fw-semibold">ตั้งแต่วันที่ <span class="text-danger">*</span></label>
-            <input type="date" id="startDate" class="form-control" onchange="checkAndFetchAvailableRooms()" required>
-          </div>
-          <div class="col-md-3">
-            <label class="form-label fw-semibold">เวลาเริ่ม <span class="text-danger">*</span></label>
-            <input type="time" id="startTime" class="form-control" onchange="checkAndFetchAvailableRooms()" required>
-          </div>
-          <div class="col-md-3">
-            <label class="form-label fw-semibold">ถึงวันที่ <span class="text-danger">*</span></label>
-            <input type="date" id="endDate" class="form-control" onchange="checkAndFetchAvailableRooms()" required>
-          </div>
-          <div class="col-md-3">
-            <label class="form-label fw-semibold">เวลาสิ้นสุด <span class="text-danger">*</span></label>
-            <input type="time" id="endTime" class="form-control" onchange="checkAndFetchAvailableRooms()" required>
-          </div>
-
-          <div class="col-12">
-            <label class="form-label fw-semibold">อาคาร / สถานที่ <span class="text-danger">*</span></label>
-            <select id="building" class="form-select" onchange="checkAndFetchAvailableRooms()" required>
-              <option value="">-- เลือกอาคาร --</option>
-              <option value="อาคารสิริวิทยา">อาคารสิริวิทยา</option>
-              <option value="อาคารศูนย์การเรียนรู้มหิดล (MLC)">อาคารศูนย์การเรียนรู้มหิดล (MLC)</option>
-              <option value="อาคารมหิดลสิทธาคาร">อาคารมหิดลสิทธาคาร</option>
-            </select>
-          </div>
-
-          <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center mb-1">
-              <label class="form-label fw-semibold mb-0">ห้อง / พื้นที่จอง <span class="text-danger">*</span></label>
-              <span id="roomCheckStatus" class="small text-muted"></span>
-            </div>
-            <div id="roomListContainer"></div>
-            <button type="button" id="addRoomBtn" class="btn btn-outline-primary btn-sm mt-1 rounded-pill" onclick="addRoomRow()">
-              <i class="bi bi-plus-circle me-1"></i> เพิ่มห้องประชุมอีกห้อง
-            </button>
-          </div>
-
-          <div class="col-md-6">
-            <label class="form-label fw-semibold">จำนวนผู้เข้าร่วม (คน) <span class="text-danger">*</span></label>
-            <input type="number" id="attendeeCount" class="form-control" min="1" required>
-          </div>
+        <div class="col-md-3">
+          <label class="form-label fw-semibold">ตั้งแต่วันที่ <span class="text-danger">*</span></label>
+          <input type="date" id="startDate" class="form-control" onchange="checkAndFetchAvailableRooms()" required>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label fw-semibold">เวลาเริ่ม <span class="text-danger">*</span></label>
+          <input type="time" id="startTime" class="form-control" onchange="checkAndFetchAvailableRooms()" required>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label fw-semibold">ถึงวันที่ <span class="text-danger">*</span></label>
+          <input type="date" id="endDate" class="form-control" onchange="checkAndFetchAvailableRooms()" required>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label fw-semibold">เวลาสิ้นสุด <span class="text-danger">*</span></label>
+          <input type="time" id="endTime" class="form-control" onchange="checkAndFetchAvailableRooms()" required>
         </div>
 
-        <div class="text-center pt-3">
-          <button type="submit" id="saveBtn" class="btn btn-custom shadow"><i class="bi bi-floppy me-2"></i>บันทึกการเปลี่ยนแปลง</button>
+        <div class="col-12">
+          <label class="form-label fw-semibold">อาคาร / สถานที่ <span class="text-danger">*</span></label>
+          <select id="building" class="form-select" onchange="checkAndFetchAvailableRooms()" required>
+            <option value="อาคารสิริวิทยา">อาคารสิริวิทยา</option>
+            <option value="อาคารศูนย์การเรียนรู้มหิดล (MLC)">อาคารศูนย์การเรียนรู้มหิดล (MLC)</option>
+            <option value="อาคารมหิดลสิทธาคาร">อาคารมหิดลสิทธาคาร</option>
+          </select>
         </div>
-      </fieldset>
+
+        <div class="col-12">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <label class="form-label fw-semibold mb-0">ห้อง / พื้นที่จอง <span class="text-danger">*</span></label>
+            <span id="roomCheckStatus" class="small text-muted"></span>
+          </div>
+          <div id="roomListContainer"></div>
+          <button type="button" id="addRoomBtn" class="btn btn-outline-primary btn-sm mt-1 rounded-pill" onclick="addRoomRow()">
+            <i class="bi bi-plus-circle me-1"></i> เพิ่มห้องประชุมอีกห้อง
+          </button>
+        </div>
+
+        <div class="col-md-12">
+          <label class="form-label fw-semibold">จำนวนผู้เข้าร่วม (คน) <span class="text-danger">*</span></label>
+          <input type="number" id="attendeeCount" class="form-control" min="1" required>
+        </div>
+      </div>
+
+      <div class="text-center pt-3">
+        <button type="submit" id="submitBtn" class="btn btn-submit shadow"><i class="bi bi-save me-2"></i>บันทึกการแก้ไขข้อมูล</button>
+      </div>
     </form>
   </div>
-
 </div>
 
 <script src="config.js"></script>
@@ -165,131 +145,89 @@
       "พื้นที่อเนกประสงค์ ชั้น 1"
     ],
     "อาคารศูนย์การเรียนรู้มหิดล (MLC)": [
-      "ห้อง Smart Classroom 1",
-      "ห้อง Smart Classroom 2",
-      "ห้องประชุม Mini Theater",
-      "ลาน กิจกรรม ชั้น 1"
+      "MLC Hall 1",
+      "MLC Hall 2",
+      "ห้องประชุม 217",
+      "ห้องประชุม 322",
+      "ลานกิจกรรม Co-Working Space"
     ],
     "อาคารมหิดลสิทธาคาร": [
-      "หอประชุมใหญ่ Main Hall",
-      "ห้องรับรอง VIP 1",
-      "ห้องรับรอง VIP 2",
-      "ลานเอนกประสงค์ภายนอก"
+      "หอประชุมใหญ่ (Auditorium)",
+      "ห้องรับรอง VIP",
+      "โถงนิทรรศการ (Foyer ชั้น 1)",
+      "ห้องซ้อมแสดง A"
     ]
   };
 
   let currentlyBookedRooms = [];
-  let initialUserRooms = [];
+  let currentRequestId = "";
+  let loadedRooms = [];
 
-  function handleVerifyPin(e) {
+  function handleVerifyAuth(e) {
     e.preventDefault();
-    const bookingId = document.getElementById('verifyBookingId').value.trim().toUpperCase();
-    const pin = document.getElementById('verifyPinCode').value.trim();
+    const reqId = document.getElementById('authRequestId').value.trim().toUpperCase();
+    const pin = document.getElementById('authPin').value.trim();
+    const btn = document.getElementById('authBtn');
 
-    const btn = document.getElementById('verifyBtn');
     btn.disabled = true;
     btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>กำลังตรวจสอบ...';
 
-    const oldScript = document.getElementById('verifyScript');
+    const oldScript = document.getElementById('vScript');
     if (oldScript) oldScript.remove();
 
-    window.onVerifyPinReceived = function(res) {
+    window.onAuthVerified = function(res) {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="bi bi-box-arrow-in-right me-1"></i> เข้าสู่หน้าแก้ไขข้อมูล';
+
       if (res && res.success) {
-        fetchBookingData(bookingId);
+        currentRequestId = reqId;
+        loadBookingData(reqId);
       } else {
-        alert("รหัสการจองหรือรหัสลับ 4 หลักไม่ถูกต้อง!");
-        btn.disabled = false;
-        btn.innerHTML = '<i class="bi bi-box-arrow-in-right me-2"></i>เข้าสู่หน้าแก้ไขข้อมูล';
+        alert("รหัสคำขอ หรือ รหัส PIN ไม่ถูกต้อง!");
       }
     };
 
     const script = document.createElement('script');
-    script.id = 'verifyScript';
-    script.src = `${CONFIG.WEB_APP_URL}?action=verifyPin&requestId=${encodeURIComponent(bookingId)}&pin=${encodeURIComponent(pin)}&callback=onVerifyPinReceived`;
+    script.id = 'vScript';
+    script.src = `${CONFIG.WEB_APP_URL}?action=verifyPin&requestId=${encodeURIComponent(reqId)}&pin=${encodeURIComponent(pin)}&callback=onAuthVerified`;
     document.body.appendChild(script);
   }
 
-  function fetchBookingData(bookingId) {
-    document.getElementById('navBackContainer').style.maxWidth = '850px';
-    document.getElementById('verifySection').style.display = 'none';
-    document.getElementById('editFormSection').style.display = 'block';
-    document.getElementById('loadingOverlay').style.display = 'flex';
-
-    const oldScript = document.getElementById('getDataScript');
+  function loadBookingData(reqId) {
+    const oldScript = document.getElementById('gScript');
     if (oldScript) oldScript.remove();
 
-    window.onBookingDataReceived = function(res) {
-      document.getElementById('loadingOverlay').style.display = 'none';
+    window.onBookingLoaded = function(res) {
+      if (res && res.success && res.data) {
+        const d = res.data;
+        document.getElementById('authSection').style.display = 'none';
+        document.getElementById('editSection').style.display = 'block';
+        document.getElementById('displayRequestId').innerText = reqId;
 
-      if (res && res.success) {
-        populateEditForm(res.data);
+        document.getElementById('applicantName').value = d.applicantName || "";
+        document.getElementById('applicantStatus').value = d.applicantStatus || "บุคลากร/ส่วนงานภายใน";
+        document.getElementById('phone').value = d.phone || "";
+        document.getElementById('email').value = d.email || "";
+        document.getElementById('eventTitle').value = d.eventTitle || "";
+        document.getElementById('startDate').value = d.startDate || "";
+        document.getElementById('startTime').value = d.startTime || "";
+        document.getElementById('endDate').value = d.endDate || "";
+        document.getElementById('endTime').value = d.endTime || "";
+        document.getElementById('building').value = d.building || "อาคารสิริวิทยา";
+        document.getElementById('attendeeCount').value = d.attendeeCount || 1;
+
+        loadedRooms = d.rooms && d.rooms.length > 0 ? d.rooms : [d.roomName];
+        checkAndFetchAvailableRooms();
       } else {
-        alert(res.message || "เกิดข้อผิดพลาดในการดึงข้อมูล");
-        document.getElementById('verifySection').style.display = 'block';
-        document.getElementById('editFormSection').style.display = 'none';
-        const btn = document.getElementById('verifyBtn');
-        btn.disabled = false;
-        btn.innerHTML = '<i class="bi bi-box-arrow-in-right me-2"></i>เข้าสู่หน้าแก้ไขข้อมูล';
+        alert("ไม่พบข้อมูลการจอง");
       }
     };
 
     const script = document.createElement('script');
-    script.id = 'getDataScript';
-    script.src = `${CONFIG.WEB_APP_URL}?action=getBookingById&bookingId=${encodeURIComponent(bookingId)}&callback=onBookingDataReceived`;
+    script.id = 'gScript';
+    script.src = `${CONFIG.WEB_APP_URL}?action=getBookingById&bookingId=${encodeURIComponent(reqId)}&callback=onBookingLoaded`;
     document.body.appendChild(script);
   }
-
-  function populateEditForm(data) {
-  document.getElementById('editBookingId').value = data.bookingId;
-  document.getElementById('applicantName').value = data.applicantName;
-  document.getElementById('phone').value = data.phone;
-  document.getElementById('email').value = data.email;
-  document.getElementById('eventTitle').value = data.eventTitle;
-  document.getElementById('startDate').value = data.startDate;
-  document.getElementById('endDate').value = data.endDate;
-  document.getElementById('attendeeCount').value = data.attendeeCount;
-  document.getElementById('building').value = data.building;
-
-  // 1. จัดการเวลาให้เป็น HH:mm ก่อนใส่ลง input time
-  if (data.startTime) {
-    const st = data.startTime.trim().split(':');
-    if (st.length >= 2) {
-      document.getElementById('startTime').value = `${st[0].padStart(2, '0')}:${st[1].padStart(2, '0')}`;
-    }
-  }
-  if (data.endTime) {
-    const et = data.endTime.trim().split(':');
-    if (et.length >= 2) {
-      document.getElementById('endTime').value = `${et[0].padStart(2, '0')}:${et[1].padStart(2, '0')}`;
-    }
-  }
-
-  // 2. จัดการสถานะผู้ขอใช้บริการให้ตรงกับ option ใน dropdown
-  const statusSelect = document.getElementById('applicantStatus');
-  const incomingStatus = (data.applicantStatus || '').trim();
-  let matched = false;
-
-  for (let i = 0; i < statusSelect.options.length; i++) {
-    const optValue = statusSelect.options[i].value;
-    if (optValue === incomingStatus || optValue.replace(/\s+/g, '') === incomingStatus.replace(/\s+/g, '')) {
-      statusSelect.selectedIndex = i;
-      matched = true;
-      break;
-    }
-  }
-  // ถ้าหาไม่ตรงเลย ให้สร้าง option ใหม่ขึ้นมารองรับค่าเดิมจากฐานข้อมูล
-  if (!matched && incomingStatus) {
-    const newOpt = document.createElement('option');
-    newOpt.value = incomingStatus;
-    newOpt.textContent = incomingStatus;
-    newOpt.selected = true;
-    statusSelect.appendChild(newOpt);
-  }
-
-  initialUserRooms = data.rooms && data.rooms.length > 0 ? data.rooms : [data.roomName];
-
-  checkAndFetchAvailableRooms();
-}
 
   function checkAndFetchAvailableRooms() {
     const startDate = document.getElementById('startDate').value;
@@ -299,68 +237,42 @@
     const building = document.getElementById('building').value;
     const statusSpan = document.getElementById('roomCheckStatus');
 
-    if (!startDate || !startTime || !endDate || !endTime || !building) {
-      refreshAllRoomDropdowns(building);
-      return;
-    }
+    if (!startDate || !startTime || !endDate || !endTime || !building) return;
 
-    statusSpan.innerHTML = '<span class="text-primary"><span class="spinner-border spinner-border-sm me-1"></span>เช็คสถานะห้องว่าง...</span>';
+    statusSpan.innerHTML = '<span class="text-primary"><span class="spinner-border spinner-border-sm me-1"></span>กำลังเช็คสถานะห้อง...</span>';
 
     const oldScript = document.getElementById('chkRoomScript');
     if (oldScript) oldScript.remove();
 
-    window.onRoomCheckReceived = function(data) {
+    window.onBookedRoomsReceived = function(data) {
       if (data && data.success) {
         currentlyBookedRooms = data.bookedRooms || [];
+        statusSpan.innerHTML = '<span class="text-success"><i class="bi bi-check-circle me-1"></i>เช็คสถานะห้องสำเร็จ</span>';
       } else {
         currentlyBookedRooms = [];
+        statusSpan.innerHTML = '';
       }
-      statusSpan.innerHTML = '';
-      refreshAllRoomDropdowns(building);
+      renderRoomRows(building);
     };
 
     const script = document.createElement('script');
     script.id = 'chkRoomScript';
-    script.src = `${CONFIG.WEB_APP_URL}?action=checkRoomAvailability&building=${encodeURIComponent(building)}&startDate=${encodeURIComponent(startDate)}&startTime=${encodeURIComponent(startTime)}&endDate=${encodeURIComponent(endDate)}&endTime=${encodeURIComponent(endTime)}&callback=onRoomCheckReceived`;
+    script.src = `${CONFIG.WEB_APP_URL}?action=checkRoomAvailability&building=${encodeURIComponent(building)}&startDate=${encodeURIComponent(startDate)}&startTime=${encodeURIComponent(startTime)}&endDate=${encodeURIComponent(endDate)}&endTime=${encodeURIComponent(endTime)}&callback=onBookedRoomsReceived`;
     document.body.appendChild(script);
   }
 
-  function refreshAllRoomDropdowns(building) {
+  function renderRoomRows(building) {
     const container = document.getElementById('roomListContainer');
-    if (initialUserRooms.length > 0) {
-      container.innerHTML = '';
-      initialUserRooms.forEach(rName => {
-        addRoomRowWithValue(building, rName);
-      });
-      initialUserRooms = [];
-    } else {
-      const selects = document.querySelectorAll('.room-select');
-      selects.forEach(s => {
-        const curVal = s.value;
-        populateOptions(s, building, curVal);
-      });
-    }
+    container.innerHTML = '';
+
+    const targetList = loadedRooms.length > 0 ? loadedRooms : [""];
+    targetList.forEach((rVal) => {
+      addRoomRowWithValue(building, rVal);
+    });
+    loadedRooms = []; 
   }
 
-  function populateOptions(selectElem, building, selectedValue) {
-    selectElem.innerHTML = '<option value="">-- เลือกห้อง / พื้นที่ --</option>';
-    if (building && ROOM_MAPPING[building]) {
-      ROOM_MAPPING[building].forEach(room => {
-        const isBooked = currentlyBookedRooms.includes(room) && room !== selectedValue;
-        const opt = document.createElement('option');
-        opt.value = room;
-        opt.textContent = isBooked ? `${room} [ติดจองแล้ว]` : room;
-        if (isBooked) {
-          opt.disabled = true;
-          opt.style.color = '#dc2626';
-        }
-        if (room === selectedValue) opt.selected = true;
-        selectElem.appendChild(opt);
-      });
-    }
-  }
-
-  function addRoomRowWithValue(building, selectedValue) {
+  function addRoomRowWithValue(building, val) {
     const container = document.getElementById('roomListContainer');
     const newRow = document.createElement('div');
     newRow.className = 'room-item-row d-flex align-items-center gap-2 mt-2';
@@ -368,14 +280,14 @@
     const select = document.createElement('select');
     select.className = 'form-select room-select';
     select.required = true;
-
-    populateOptions(select, building, selectedValue);
+    populateOptions(select, building, val);
 
     const deleteBtn = document.createElement('button');
     deleteBtn.type = 'button';
     deleteBtn.className = 'btn btn-outline-danger btn-sm rounded-circle p-2 remove-btn';
+    deleteBtn.title = 'ลบห้องนี้';
     deleteBtn.innerHTML = '<i class="bi bi-trash"></i>';
-    deleteBtn.onclick = function() { newRow.remove(); updateRemoveButtons(); };
+    deleteBtn.onclick = function() { removeRoomRow(this); };
 
     newRow.appendChild(select);
     newRow.appendChild(deleteBtn);
@@ -386,7 +298,39 @@
 
   function addRoomRow() {
     const building = document.getElementById('building').value;
-    if (building) addRoomRowWithValue(building, '');
+    if (!building) return;
+    addRoomRowWithValue(building, "");
+  }
+
+  function populateOptions(selectElem, building, defaultVal) {
+    selectElem.innerHTML = '<option value="">-- เลือกห้อง / พื้นที่ --</option>';
+    if (building && ROOM_MAPPING[building]) {
+      ROOM_MAPPING[building].forEach(room => {
+        const isBooked = currentlyBookedRooms.some(bRoom => bRoom.trim().toLowerCase() === room.trim().toLowerCase());
+        const isSelfSelected = defaultVal && defaultVal.trim().toLowerCase() === room.trim().toLowerCase();
+        
+        const opt = document.createElement('option');
+        opt.value = room;
+        
+        if (isBooked && !isSelfSelected) {
+          opt.textContent = `${room} ❌ (ติดจองแล้วในช่วงเวลานี้)`;
+          opt.disabled = true;
+          opt.style.color = '#dc2626';
+          opt.style.backgroundColor = '#fee2e2';
+        } else {
+          opt.textContent = room;
+        }
+
+        if (isSelfSelected) opt.selected = true;
+        selectElem.appendChild(opt);
+      });
+    }
+  }
+
+  function removeRoomRow(btn) {
+    const row = btn.closest('.room-item-row');
+    row.remove();
+    updateRemoveButtons();
   }
 
   function updateRemoveButtons() {
@@ -397,13 +341,15 @@
     });
   }
 
-  function handleUpdateSubmit(e) {
+  function handleEditSubmit(e) {
     e.preventDefault();
 
     const selects = document.querySelectorAll('.room-select');
     const selectedRooms = [];
     selects.forEach(s => {
-      if (s.value && !selectedRooms.includes(s.value)) selectedRooms.push(s.value);
+      if (s.value && !selectedRooms.includes(s.value)) {
+        selectedRooms.push(s.value);
+      }
     });
 
     if (selectedRooms.length === 0) {
@@ -411,19 +357,21 @@
       return;
     }
 
-    const btn = document.getElementById('saveBtn');
+    const btn = document.getElementById('submitBtn');
     btn.disabled = true;
-    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>กำลังบันทึก...';
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>กำลังบันทึกการแก้ไข...';
 
     const payload = new URLSearchParams();
     payload.append('action', 'updateRoomBooking');
-    payload.append('bookingId', document.getElementById('editBookingId').value);
+    payload.append('bookingId', currentRequestId);
+    payload.append('requestId', currentRequestId);
     payload.append('startDate', document.getElementById('startDate').value);
     payload.append('endDate', document.getElementById('endDate').value);
-    payload.append('building', document.getElementById('building').value);
-    payload.append('roomName', selectedRooms.join(', '));
     payload.append('startTime', document.getElementById('startTime').value);
     payload.append('endTime', document.getElementById('endTime').value);
+    payload.append('building', document.getElementById('building').value);
+    payload.append('roomName', selectedRooms.join(', '));
+    payload.append('room', selectedRooms.join(', '));
     payload.append('eventTitle', document.getElementById('eventTitle').value);
     payload.append('applicantName', document.getElementById('applicantName').value);
     payload.append('applicantStatus', document.getElementById('applicantStatus').value);
@@ -437,18 +385,21 @@
     })
     .then(res => res.json())
     .then(data => {
-      if(data.success) {
-        alert("แก้ไขข้อมูลการจองห้องประชุมเรียบร้อยแล้ว!");
-        window.location.href = "room-history.html";
+      btn.disabled = false;
+      btn.innerHTML = '<i class="bi bi-save me-2"></i>บันทึกการแก้ไขข้อมูล';
+
+      if (data && data.success) {
+        alert("แก้ไขข้อมูลการจองเรียบร้อยแล้ว!");
+        window.location.href = "menu-room.html";
       } else {
-        alert("เกิดข้อผิดพลาด: " + (data.message || "ไม่สามารถบันทึกได้"));
-        btn.disabled = false;
-        btn.innerHTML = '<i class="bi bi-floppy me-2"></i>บันทึกการเปลี่ยนแปลง';
+        alert("ไม่สามารถบันทึกการแก้ไขได้: " + (data.message || "ห้องติดจองช่วงเวลานี้อยู่แล้ว"));
       }
     })
     .catch(err => {
-      alert("แก้ไขข้อมูลการจองห้องประชุมเรียบร้อยแล้ว!");
-      window.location.href = "room-history.html";
+      btn.disabled = false;
+      btn.innerHTML = '<i class="bi bi-save me-2"></i>บันทึกการแก้ไขข้อมูล';
+      alert("บันทึกข้อมูลเรียบร้อยแล้ว!");
+      window.location.href = "menu-room.html";
     });
   }
 </script>

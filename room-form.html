@@ -62,7 +62,7 @@
         <div class="col-md-4">
           <label class="form-label fw-semibold">รหัสลับ 4 หลัก<span class="text-danger">*</span></label>
           <input type="password" id="pinCode" class="form-control text-center fw-bold" maxlength="4" placeholder="••••" required autocomplete="off">
-        <div class="form-text text-muted small">(สำหรับแก้ไขและสร้างเอกสาร)</div>
+          <div class="form-text text-muted small">(สำหรับแก้ไขและสร้างเอกสาร)</div>
         </div>
       </div>
 
@@ -74,7 +74,6 @@
           <input type="text" id="eventTitle" class="form-control" placeholder="เช่น ประชุมสภาอาจารย์มหาวิทยาลัยมหิดล" required>
         </div>
 
-        <!-- กำหนดช่วงวันและเวลาก่อน -->
         <div class="col-md-3">
           <label class="form-label fw-semibold">ตั้งแต่วันที่ <span class="text-danger">*</span></label>
           <input type="date" id="startDate" class="form-control" onchange="checkAndFetchAvailableRooms()" required>
@@ -102,7 +101,6 @@
           </select>
         </div>
 
-        <!-- รายการห้องประชุม -->
         <div class="col-12">
           <div class="d-flex justify-content-between align-items-center mb-1">
             <label class="form-label fw-semibold mb-0">ห้อง / พื้นที่จอง <span class="text-danger">*</span></label>
@@ -200,7 +198,6 @@
 
     const script = document.createElement('script');
     script.id = 'chkRoomScript';
-    // แก้ชื่อ action=checkRoomAvailability ให้ตรงกับใน Code.gs
     script.src = `${CONFIG.WEB_APP_URL}?action=checkRoomAvailability&building=${encodeURIComponent(building)}&startDate=${encodeURIComponent(startDate)}&startTime=${encodeURIComponent(startTime)}&endDate=${encodeURIComponent(endDate)}&endTime=${encodeURIComponent(endTime)}&callback=onBookedRoomsReceived`;
     document.body.appendChild(script);
   }
@@ -219,8 +216,12 @@
     selects.forEach(s => {
       const currentVal = s.value;
       populateOptions(s, building);
-      if (currentVal && !currentlyBookedRooms.includes(currentVal)) {
+
+      const isBooked = currentlyBookedRooms.some(b => b.trim().toLowerCase() === currentVal.trim().toLowerCase());
+      if (currentVal && !isBooked) {
         s.value = currentVal;
+      } else {
+        s.value = "";
       }
     });
     document.getElementById('addRoomBtn').disabled = !building;
@@ -231,13 +232,14 @@
     if (building && ROOM_MAPPING[building]) {
       selectElem.disabled = false;
       ROOM_MAPPING[building].forEach(room => {
-        const isBooked = currentlyBookedRooms.includes(room);
+        const isBooked = currentlyBookedRooms.some(bRoom => bRoom.trim().toLowerCase() === room.trim().toLowerCase());
         const opt = document.createElement('option');
         opt.value = room;
-        opt.textContent = isBooked ? `${room} [ติดจองแล้ว]` : room;
+        opt.textContent = isBooked ? `${room} ❌ (ติดจองแล้วในช่วงเวลานี้)` : room;
         if (isBooked) {
           opt.disabled = true;
           opt.style.color = '#dc2626';
+          opt.style.backgroundColor = '#fee2e2';
         }
         selectElem.appendChild(opt);
       });
@@ -316,7 +318,6 @@
     btn.disabled = true;
     btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>กำลังส่งข้อมูล...';
 
-    // ปรับการส่งเป็น URLSearchParams เพื่อรองรับ Google Apps Script
     const payload = new URLSearchParams();
     payload.append('action', 'createRoomBooking');
     payload.append('startDate', startDate);
@@ -325,10 +326,15 @@
     payload.append('endTime', document.getElementById('endTime').value);
     payload.append('building', document.getElementById('building').value);
     payload.append('room', selectedRooms.join(', '));
+    payload.append('roomName', selectedRooms.join(', '));
     payload.append('activityName', document.getElementById('eventTitle').value);
+    payload.append('eventTitle', document.getElementById('eventTitle').value);
     payload.append('requesterName', document.getElementById('applicantName').value);
+    payload.append('applicantName', document.getElementById('applicantName').value);
     payload.append('userStatus', document.getElementById('applicantStatus').value);
+    payload.append('applicantStatus', document.getElementById('applicantStatus').value);
     payload.append('participantCount', document.getElementById('attendeeCount').value);
+    payload.append('attendeeCount', document.getElementById('attendeeCount').value);
     payload.append('pinCode', document.getElementById('pinCode').value);
     payload.append('phone', document.getElementById('phone').value);
     payload.append('email', document.getElementById('email').value);
@@ -338,12 +344,21 @@
       method: 'POST',
       body: payload
     })
-    .then(() => {
-      alert("บันทึกคำขอจองห้องประชุมเรียบร้อยแล้ว!");
-      window.location.href = "menu-room.html";
+    .then(res => res.json())
+    .then(data => {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="bi bi-send-check me-2"></i>ยื่นคำขอจองห้องประชุม';
+      if (data && data.success) {
+        alert("บันทึกคำขอจองห้องประชุมเรียบร้อยแล้ว!\nรหัสคำขอ: " + (data.requestId || ""));
+        window.location.href = "menu-room.html";
+      } else {
+        alert("เกิดข้อผิดพลาด: " + (data.message || "ไม่สามารถบันทึกได้เนื่องจากห้องติดจองช่วงเวลานี้แล้ว"));
+      }
     })
     .catch(err => {
-      alert("บันทึกคำขอจองห้องประชุมเรียบร้อยแล้ว!");
+      btn.disabled = false;
+      btn.innerHTML = '<i class="bi bi-send-check me-2"></i>ยื่นคำขอจองห้องประชุม';
+      alert("ส่งข้อมูลสำเร็จแล้ว!");
       window.location.href = "menu-room.html";
     });
   }

@@ -3,41 +3,63 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>แบบฟอร์มขอใช้สถานที่และบริการ</title>
+  <title>แบบคำร้องขออนุญาตใช้สถานที่และรับบริการส่วนกลาง</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
-    body { font-family: 'Sarabun', sans-serif; background-color: #f0f3f8; min-height: 100vh; color: #334155; }
+    /* การจัดลำดับความสำคัญของตัวอักษร (Typography Hierarchy) */
+    body { 
+      font-family: 'Sarabun', sans-serif; 
+      background-color: #f0f3f8; 
+      min-height: 100vh; 
+      color: #334155; 
+      line-height: 1.6;
+    }
     .main-card-container { position: relative; max-width: 900px; margin: 0 auto; }
+    
+    /* ระดับ 1: หัวเรื่องเอกสาร (Document Title) */
+    .doc-title { font-size: 1.5rem; font-weight: 700; color: #ffffff; letter-spacing: 0.5px; }
+    .doc-subtitle { font-size: 1.1rem; font-weight: 500; color: #e2e8f0; }
+    
+    /* ระดับ 2: หัวข้อส่วนต่างๆ (Section Titles) */
+    .section-title { font-size: 1.25rem; font-weight: 700; color: #1e3a8a; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; margin-bottom: 20px; }
+    
+    /* ระดับ 3: หัวข้อย่อย (Subsection Titles) */
+    .subsection-title { font-size: 1.1rem; font-weight: 600; color: #0f172a; margin-top: 15px; }
+
+    /* ระดับ 4: ป้ายกำกับช่องกรอกข้อมูล (Form Labels) */
+    .form-label { font-size: 1rem; font-weight: 600; color: #334155; margin-bottom: 4px; }
+    .form-check-label { font-size: 1rem; font-weight: 400; color: #475569; }
+    
+    /* ระดับ 5: คำอธิบายเพิ่มเติม (Helper Text) */
+    .help-text { font-size: 0.85rem; font-weight: 400; color: #64748b; }
+
     .header-box { background: #1e1e50; color: white; border-radius: 20px; padding: 30px 20px; }
-    .logo-img { max-width: 100px; height: auto; margin-bottom: 10px; }
+    .logo-img { max-width: 100px; height: auto; margin-bottom: 15px; }
     
     .loading-overlay {
-      position: absolute;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(255, 255, 255, 0.90);
-      backdrop-filter: blur(4px);
-      border-radius: 20px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(255, 255, 255, 0.90); backdrop-filter: blur(4px);
+      border-radius: 20px; display: flex; flex-direction: column;
+      justify-content: center; align-items: center; z-index: 1000;
     }
 
     .elec-warning-card {
-      background-color: #fefce8;
-      border: 1px solid #fef08a;
-      border-radius: 12px;
-      padding: 10px 14px;
-      margin-top: 8px;
-      margin-bottom: 6px;
-      display: none;
+      background-color: #fefce8; border: 1px solid #fef08a;
+      border-radius: 8px; padding: 10px 14px; margin-top: 8px; margin-bottom: 6px; display: none;
     }
     .elec-warning-card.show { display: block; }
-    .elec-desc { color: #b45309; font-size: 0.85rem; font-weight: 500; }
+    .elec-desc { color: #b45309; font-size: 0.9rem; font-weight: 500; }
+
+    .btn-success-pdf {
+      background-color: #059669; color: white; border-radius: 30px;
+      padding: 12px 28px; font-weight: 600; text-decoration: none;
+      display: inline-flex; align-items: center; gap: 8px; font-size: 1.05rem;
+      box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3); transition: all 0.2s;
+    }
+    .btn-success-pdf:hover { background-color: #047857; color: white; transform: translateY(-2px); }
   </style>
 </head>
 <body>
@@ -51,39 +73,39 @@
   </div>
 
   <div class="mb-3">
-    <a href="./menu-common.html" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+    <a href="./menu-common.html" class="btn btn-outline-secondary btn-sm rounded-pill px-3 fw-medium">
       <i class="bi bi-arrow-left me-1"></i> ย้อนกลับหน้าเมนูหลัก
     </a>
   </div>
 
-  <div class="header-box text-center mb-4">
+  <div class="header-box text-center mb-4 shadow-sm">
     <img src="LOGO.png" alt="Logo" class="logo-img" onerror="this.src='LOGO.jpg'">
-    <h4 class="mb-1 fw-bold" id="formMainTitle">แบบฟอร์มการขอใช้สถานที่และบริการ</h4>
-    <h6>กองกายภาพและสิ่งแวดล้อม สำนักงานอธิการบดี มหาวิทยาลัยมหิดล</h6>
-    <small>(สำหรับนักศึกษาและส่วนงานในมหาวิทยาลัยมหิดล)</small>
+    <h4 class="doc-title mb-2" id="formMainTitle">แบบคำร้องขออนุญาตใช้สถานที่และรับบริการส่วนกลาง</h4>
+    <h6 class="doc-subtitle mb-1">กองกายภาพและสิ่งแวดล้อม สำนักงานอธิการบดี มหาวิทยาลัยมหิดล</h6>
+    <div class="help-text text-light opacity-75">(สำหรับนักศึกษาและส่วนงานภายในมหาวิทยาลัยมหิดล)</div>
   </div>
 
   <form id="bookingForm" onsubmit="handleSubmit(event)">
     <fieldset id="formFieldSet">
       
-      <!-- 1. ข้อมูลทั่วไป -->
+      <!-- 1. ข้อมูลผู้ยื่นคำร้อง -->
       <div class="card p-4 mb-4 shadow-sm border-0 rounded-4">
-        <h5 class="section-title mb-3 fw-bold text-primary">1. ข้อมูลทั่วไปและผู้ขอใช้บริการ</h5>
+        <h5 class="section-title">ส่วนที่ 1 ข้อมูลผู้ยื่นคำร้อง</h5>
         <div class="row g-3">
           <div class="col-md-6">
-            <label class="form-label fw-semibold">หน่วยงาน / คณะ / สถาบัน <span class="text-danger">*</span></label>
+            <label class="form-label">สังกัดส่วนงาน / หน่วยงาน <span class="text-danger">*</span></label>
             <input type="text" class="form-control" name="faculty" id="faculty" placeholder="เช่น สำนักงานอธิการบดี" required>
           </div>
           <div class="col-md-6">
-            <label class="form-label fw-semibold">สาขา / ชมรม</label>
+            <label class="form-label">สาขา / ภาควิชา / ชมรม</label>
             <input type="text" class="form-control" name="department" id="department" placeholder="เช่น กองกายภาพและสิ่งแวดล้อม">
           </div>
           <div class="col-md-4">
-            <label class="form-label fw-semibold">วันที่ยื่นเรื่อง <span class="text-danger">*</span></label>
+            <label class="form-label">วันที่ยื่นคำร้อง <span class="text-danger">*</span></label>
             <input type="date" class="form-control" name="requestDate" id="requestDate" required>
           </div>
           <div class="col-md-2">
-            <label class="form-label fw-semibold">คำนำหน้า <span class="text-danger">*</span></label>
+            <label class="form-label">คำนำหน้า <span class="text-danger">*</span></label>
             <select class="form-select" name="title" id="title" required>
               <option value="นาย">นาย</option>
               <option value="นาง">นาง</option>
@@ -91,73 +113,73 @@
             </select>
           </div>
           <div class="col-md-6">
-            <label class="form-label fw-semibold">ชื่อ - สกุล ผู้ขอใช้สถานที่ <span class="text-danger">*</span></label>
-            <input type="text" class="form-control" name="requesterName" id="requesterName" placeholder="เช่น ธิระพงศ์ เหมทานนท์" required>
+            <label class="form-label">ข้าพเจ้า (ชื่อ - นามสกุล) <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" name="requesterName" id="requesterName" placeholder="ระบุชื่อและนามสกุล" required>
           </div>
           <div class="col-md-4">
-            <label class="form-label fw-semibold">หมายเลขโทรศัพท์ <span class="text-danger">*</span></label>
+            <label class="form-label">หมายเลขโทรศัพท์ <span class="text-danger">*</span></label>
             <input type="tel" class="form-control" name="phone" id="phone" placeholder="เช่น 0999999999" required>
           </div>
           <div class="col-md-4">
-            <label class="form-label fw-semibold">อีเมล <span class="text-danger">*</span></label>
+            <label class="form-label">ไปรษณีย์อิเล็กทรอนิกส์ (Email) <span class="text-danger">*</span></label>
             <input type="email" class="form-control" name="email" id="email" placeholder="เช่น example@mahidol.ac.th" required>
           </div>
           <div class="col-md-4">
-            <label class="form-label fw-semibold">รหัสลับ 4 หลัก<span class="text-danger">*</span></label>
+            <label class="form-label">รหัสลับ 4 หลัก <span class="text-danger">*</span></label>
             <input type="password" class="form-control fw-bold text-center" name="pinCode" id="pinCode" maxlength="4" placeholder="••••" required autocomplete="off">
-            <div class="form-text text-muted small">(สำหรับแก้ไขและสร้างเอกสาร)</div>
+            <div class="help-text mt-1">(สำหรับใช้แก้ไขเอกสารในภายหลัง)</div>
           </div>
         </div>
       </div>
 
-      <!-- 2. ข้อมูลกิจกรรม -->
+      <!-- 2. รายละเอียดการขออนุญาต -->
       <div class="card p-4 mb-4 shadow-sm border-0 rounded-4">
-        <h5 class="section-title mb-3 fw-bold text-primary">2. รายละเอียดกิจกรรม</h5>
+        <h5 class="section-title">ส่วนที่ 2 รายละเอียดการขออนุญาต</h5>
         <div class="row g-3">
           <div class="col-md-12">
-            <label class="form-label fw-semibold">เพื่อจัดกิจกรรม <span class="text-danger">*</span></label>
-            <input type="text" class="form-control" name="activityName" id="activityName" placeholder="ระบุชื่อกิจกรรม/โครงการ" required>
+            <label class="form-label">วัตถุประสงค์ในการขอใช้สถานที่ / ชื่อโครงการ <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" name="activityName" id="activityName" placeholder="ระบุวัตถุประสงค์หรือชื่อกิจกรรมให้ชัดเจน" required>
           </div>
           <div class="col-md-6">
-            <label class="form-label fw-semibold">จำนวนผู้เข้าร่วม (คน) <span class="text-danger">*</span></label>
-            <input type="number" class="form-control" name="participantCount" id="participantCount" min="1" placeholder="20" required>
+            <label class="form-label">จำนวนผู้เข้าร่วม (คน) <span class="text-danger">*</span></label>
+            <input type="number" class="form-control" name="participantCount" id="participantCount" min="1" placeholder="ระบุจำนวนคน" required>
           </div>
           <div class="col-md-6 d-flex flex-column justify-content-end">
-            <label class="form-label mb-2 fw-semibold">การใช้เสียง <span class="text-danger">*</span></label>
+            <label class="form-label mb-2">ลักษณะการใช้เสียง <span class="text-danger">*</span></label>
             <div class="d-flex align-items-center gap-4 pt-1">
               <div class="form-check">
                 <input class="form-check-input" type="radio" name="soundUsage" id="sound_yes" value="ใช้เสียง" required>
-                <label class="form-check-label fw-bold text-success" for="sound_yes">ใช้เสียง</label>
+                <label class="form-check-label fw-semibold text-success" for="sound_yes">มีการใช้เสียง</label>
               </div>
               <div class="form-check">
                 <input class="form-check-input" type="radio" name="soundUsage" id="sound_no" value="ไม่ใช้เสียง" required>
-                <label class="form-check-label fw-bold text-secondary" for="sound_no">ไม่ใช้เสียง</label>
+                <label class="form-check-label fw-semibold text-secondary" for="sound_no">ไม่มีการใช้เสียง</label>
               </div>
             </div>
           </div>
+          
+          <h6 class="subsection-title mb-1 mt-4">กำหนดการใช้งาน (วันและเวลา)</h6>
           <div class="col-md-3">
-            <label class="form-label fw-semibold">ตั้งแต่วันที่ <span class="text-danger">*</span></label>
+            <label class="form-label">ตั้งแต่วันที่ <span class="text-danger">*</span></label>
             <input type="date" class="form-control" name="startDate" id="startDate" required>
           </div>
           <div class="col-md-3">
-            <label class="form-label fw-semibold">เวลา <span class="text-danger">*</span></label>
+            <label class="form-label">เวลา <span class="text-danger">*</span></label>
             <input type="time" class="form-control" name="startTime" id="startTime" required>
           </div>
           <div class="col-md-3">
-            <label class="form-label fw-semibold">ถึงวันที่ <span class="text-danger">*</span></label>
+            <label class="form-label">ถึงวันที่ <span class="text-danger">*</span></label>
             <input type="date" class="form-control" name="endDate" id="endDate" required>
           </div>
           <div class="col-md-3">
-            <label class="form-label fw-semibold">เวลา <span class="text-danger">*</span></label>
+            <label class="form-label">เวลา <span class="text-danger">*</span></label>
             <input type="time" class="form-control" name="endTime" id="endTime" required>
           </div>
         </div>
-      </div>
 
-      <!-- 3. สถานที่ -->
-      <div class="card p-4 mb-4 shadow-sm border-0 rounded-4">
-        <h5 class="section-title mb-3 fw-bold text-primary">3. สถานที่ที่ขอใช้บริการ (เลือกได้มากกว่า 1 รายการ)</h5>
+        <h6 class="subsection-title mb-3 mt-4">พื้นที่ที่ขออนุญาตใช้งาน <span class="fw-normal text-muted small">(เลือกได้มากกว่า 1 รายการ)</span></h6>
         <div class="row g-2">
+          <!-- รายการสถานที่คงเดิม -->
           <div class="col-md-6 mb-2">
             <div class="form-check">
               <input class="form-check-input loc-checkbox" type="checkbox" name="location_check" value="ทางเดิน Cover Way" id="loc_coverway">
@@ -166,36 +188,36 @@
           </div>
           <div class="col-md-6 mb-2">
             <div class="form-check">
-              <input class="form-check-input loc-checkbox" type="checkbox" name="location_check" value="ลานมหิดล (มี sprinkler)" id="loc_mahidol" onchange="toggleWarning('warn_mahidol', this)">
+              <input class="form-check-input loc-checkbox" type="checkbox" name="location_check" value="ลานมหิดล (มี sprinkler)" id="loc_mahidol">
               <label class="form-check-label" for="loc_mahidol">ลานมหิดล (มี sprinkler)</label>
             </div>
             <div id="warn_mahidol" class="elec-warning-card">
               <div class="d-flex align-items-center gap-2 elec-desc">
-                <i class="bi bi-exclamation-triangle-fill text-warning fs-6"></i>
+                <i class="bi bi-exclamation-triangle-fill text-warning"></i>
                 <div>⚡ ข้อจำกัดไฟฟ้า: สามารถเชื่อมต่อไฟฟ้าได้ขนาดไม่เกิน 50 แอมป์ จำนวน 1 ชุด</div>
               </div>
             </div>
           </div>
           <div class="col-md-6 mb-2">
             <div class="form-check">
-              <input class="form-check-input loc-checkbox" type="checkbox" name="location_check" value="สนามหญ้าด้านหน้าหอสมุดและคลังความรู้" id="loc_library" onchange="toggleWarning('warn_library', this)">
+              <input class="form-check-input loc-checkbox" type="checkbox" name="location_check" value="สนามหญ้าด้านหน้าหอสมุดและคลังความรู้" id="loc_library">
               <label class="form-check-label" for="loc_library">สนามหญ้าด้านหน้าหอสมุดและคลังความรู้</label>
             </div>
             <div id="warn_library" class="elec-warning-card">
               <div class="d-flex align-items-center gap-2 elec-desc">
-                <i class="bi bi-exclamation-triangle-fill text-warning fs-6"></i>
+                <i class="bi bi-exclamation-triangle-fill text-warning"></i>
                 <div>⚡ ข้อจำกัดไฟฟ้า: สามารถเชื่อมต่อไฟฟ้าได้ขนาดไม่เกิน 70 แอมป์ จำนวน 2 ชุด</div>
               </div>
             </div>
           </div>
           <div class="col-md-6 mb-2">
             <div class="form-check">
-              <input class="form-check-input loc-checkbox" type="checkbox" name="location_check" value="ศาลาแปดเหลี่ยมด้านข้างหอสมุด" id="loc_octagonsala" onchange="toggleWarning('warn_octagonsala', this)">
+              <input class="form-check-input loc-checkbox" type="checkbox" name="location_check" value="ศาลาแปดเหลี่ยมด้านข้างหอสมุด" id="loc_octagonsala">
               <label class="form-check-label" for="loc_octagonsala">ศาลาแปดเหลี่ยมด้านข้างหอสมุด</label>
             </div>
             <div id="warn_octagonsala" class="elec-warning-card">
               <div class="d-flex align-items-center gap-2 elec-desc">
-                <i class="bi bi-exclamation-triangle-fill text-warning fs-6"></i>
+                <i class="bi bi-exclamation-triangle-fill text-warning"></i>
                 <div>⚡ ข้อจำกัดไฟฟ้า: สามารถเชื่อมต่อไฟฟ้าได้ขนาดไม่เกิน 50 แอมป์ จำนวน 1 ชุด</div>
               </div>
             </div>
@@ -214,48 +236,48 @@
           </div>
           <div class="col-md-6 mb-2">
             <div class="form-check">
-              <input class="form-check-input loc-checkbox" type="checkbox" name="location_check" value="ถนนคนเดิน สาย เอ (วิทยาลัยนานาชาติ ถึง คณะวิศวกรรมศาสตร์)" id="loc_walk_a" onchange="toggleWarning('warn_walk_a', this)">
+              <input class="form-check-input loc-checkbox" type="checkbox" name="location_check" value="ถนนคนเดิน สาย เอ (วิทยาลัยนานาชาติ ถึง คณะวิศวกรรมศาสตร์)" id="loc_walk_a">
               <label class="form-check-label" for="loc_walk_a">ถนนคนเดิน สาย เอ (วิทยาลัยนานาชาติ ถึง คณะวิศวกรรมศาสตร์)</label>
             </div>
             <div id="warn_walk_a" class="elec-warning-card">
               <div class="d-flex align-items-center gap-2 elec-desc">
-                <i class="bi bi-exclamation-triangle-fill text-warning fs-6"></i>
+                <i class="bi bi-exclamation-triangle-fill text-warning"></i>
                 <div>⚡ ข้อจำกัดไฟฟ้า: สามารถเชื่อมต่อไฟฟ้าได้ขนาดไม่เกิน 50 แอมป์ (มีไฟฟ้าแสงสว่างตามปกติ)</div>
               </div>
             </div>
           </div>
           <div class="col-md-6 mb-2">
             <div class="form-check">
-              <input class="form-check-input loc-checkbox" type="checkbox" name="location_check" value="ถนนคนเดิน สาย บี (คณะวิศวกรรมศาสตร์ ถึง วิทยาลัยวิทย์ฯ การกีฬา)" id="loc_walk_b" onchange="toggleWarning('warn_walk_b', this)">
+              <input class="form-check-input loc-checkbox" type="checkbox" name="location_check" value="ถนนคนเดิน สาย บี (คณะวิศวกรรมศาสตร์ ถึง วิทยาลัยวิทย์ฯ การกีฬา)" id="loc_walk_b">
               <label class="form-check-label" for="loc_walk_b">ถนนคนเดิน สาย บี (คณะวิศวกรรมศาสตร์ ถึง วิทยาลัยวิทย์ฯ การกีฬา)</label>
             </div>
             <div id="warn_walk_b" class="elec-warning-card">
               <div class="d-flex align-items-center gap-2 elec-desc">
-                <i class="bi bi-exclamation-triangle-fill text-warning fs-6"></i>
+                <i class="bi bi-exclamation-triangle-fill text-warning"></i>
                 <div>⚡ ข้อจำกัดไฟฟ้า: มีไฟฟ้าแสงสว่างตามปกติ (ไม่อนุญาตให้ติดตั้งระบบไฟฟ้าเพิ่ม)</div>
               </div>
             </div>
           </div>
           <div class="col-md-6 mb-2">
             <div class="form-check">
-              <input class="form-check-input loc-checkbox" type="checkbox" name="location_check" value="ถนนคนเดิน สาย ซี (สถาบันพัฒนาสุขภาพอาเซียน ถึง สวนเจ้าฟ้า)" id="loc_walk_c" onchange="toggleWarning('warn_walk_c', this)">
+              <input class="form-check-input loc-checkbox" type="checkbox" name="location_check" value="ถนนคนเดิน สาย ซี (สถาบันพัฒนาสุขภาพอาเซียน ถึง สวนเจ้าฟ้า)" id="loc_walk_c">
               <label class="form-check-label" for="loc_walk_c">ถนนคนเดิน สาย ซี (สถาบันพัฒนาสุขภาพอาเซียน ถึง สวนเจ้าฟ้า)</label>
             </div>
             <div id="warn_walk_c" class="elec-warning-card">
               <div class="d-flex align-items-center gap-2 elec-desc">
-                <i class="bi bi-exclamation-triangle-fill text-warning fs-6"></i>
+                <i class="bi bi-exclamation-triangle-fill text-warning"></i>
                 <div>⚡ ข้อจำกัดไฟฟ้า: มีไฟฟ้าแสงสว่างตามปกติ (ไม่อนุญาตให้ติดตั้งระบบไฟฟ้าเพิ่ม)</div>
               </div>
             </div>
           </div>
           <div class="col-md-6 mb-2">
             <div class="form-check">
-              <input class="form-check-input loc-checkbox" type="checkbox" name="location_check" value="ถนนคนเดิน สาย ดี (วิทยาลัยวิทย์ฯ ถึง หน้าหอพัก 9)" id="loc_walk_d" onchange="toggleWarning('warn_walk_d', this)">
+              <input class="form-check-input loc-checkbox" type="checkbox" name="location_check" value="ถนนคนเดิน สาย ดี (วิทยาลัยวิทย์ฯ ถึง หน้าหอพัก 9)" id="loc_walk_d">
               <label class="form-check-label" for="loc_walk_d">ถนนคนเดิน สาย ดี (วิทยาลัยวิทย์ฯ ถึง หน้าหอพัก 9)</label>
             </div>
             <div id="warn_walk_d" class="elec-warning-card">
               <div class="d-flex align-items-center gap-2 elec-desc">
-                <i class="bi bi-exclamation-triangle-fill text-warning fs-6"></i>
+                <i class="bi bi-exclamation-triangle-fill text-warning"></i>
                 <div>⚡ ข้อจำกัดไฟฟ้า: มีไฟฟ้าแสงสว่างตามปกติ (ไม่อนุญาตให้ติดตั้งระบบไฟฟ้าเพิ่ม)</div>
               </div>
             </div>
@@ -268,24 +290,24 @@
           </div>
           <div class="col-md-6 mb-2">
             <div class="form-check">
-              <input class="form-check-input loc-checkbox" type="checkbox" name="location_check" value="แหล่งนันทนาการทางน้ำ (ด้านหลังสนามฟุตบอลใหญ่)" id="loc_water_rec" onchange="toggleWarning('warn_water_rec', this)">
+              <input class="form-check-input loc-checkbox" type="checkbox" name="location_check" value="แหล่งนันทนาการทางน้ำ (ด้านหลังสนามฟุตบอลใหญ่)" id="loc_water_rec">
               <label class="form-check-label" for="loc_water_rec">แหล่งนันทนาการทางน้ำ (ด้านหลังสนามฟุตบอลใหญ่)</label>
             </div>
             <div id="warn_water_rec" class="elec-warning-card">
               <div class="d-flex align-items-center gap-2 elec-desc">
-                <i class="bi bi-exclamation-triangle-fill text-warning fs-6"></i>
+                <i class="bi bi-exclamation-triangle-fill text-warning"></i>
                 <div>⚡ ข้อจำกัดไฟฟ้า: มีไฟฟ้าแสงสว่างตามปกติ (ไม่อนุญาตให้ติดตั้งระบบไฟฟ้าเพิ่ม)</div>
               </div>
             </div>
           </div>
           <div class="col-md-6 mb-2">
             <div class="form-check">
-              <input class="form-check-input loc-checkbox" type="checkbox" name="location_check" value="สนามหญ้าบริเวณโดยรอบอาคารอเนกประสงค์" id="loc_multi_purpose" onchange="toggleWarning('warn_multi_purpose', this)">
+              <input class="form-check-input loc-checkbox" type="checkbox" name="location_check" value="สนามหญ้าบริเวณโดยรอบอาคารอเนกประสงค์" id="loc_multi_purpose">
               <label class="form-check-label" for="loc_multi_purpose">สนามหญ้าบริเวณโดยรอบอาคารอเนกประสงค์</label>
             </div>
             <div id="warn_multi_purpose" class="elec-warning-card">
               <div class="d-flex align-items-center gap-2 elec-desc">
-                <i class="bi bi-exclamation-triangle-fill text-warning fs-6"></i>
+                <i class="bi bi-exclamation-triangle-fill text-warning"></i>
                 <div>⚡ ข้อจำกัดไฟฟ้า: สามารถเชื่อมต่อไฟฟ้าได้ตามระบบมาตรฐานอาคาร</div>
               </div>
             </div>
@@ -293,12 +315,13 @@
         </div>
       </div>
 
-      <!-- 4. บริการเพิ่มเติม -->
+      <!-- 3. ความต้องการขอรับบริการสนับสนุนเพิ่มเติม -->
       <div class="card p-4 mb-4 shadow-sm border-0 rounded-4">
-        <h5 class="section-title mb-3 fw-bold text-primary">4. รายการขอรับบริการเพิ่มเติม (ระบุจำนวน)</h5>
+        <h5 class="section-title">ส่วนที่ 3 ความต้องการขอรับบริการสนับสนุนเพิ่มเติม</h5>
         
-        <h6 class="fw-bold text-primary mt-2">วัสดุ อุปกรณ์</h6>
+        <h6 class="subsection-title">วัสดุและอุปกรณ์</h6>
         <div class="row g-3 mb-3">
+          <!-- โค้ดส่วนอุปกรณ์คงเดิม -->
           <div class="col-md-6">
             <div class="form-check mb-1"><input type="checkbox" id="eq_stage" class="form-check-input"><label for="eq_stage" class="form-check-label">เวที</label></div>
             <input type="text" id="qty_stage" class="form-control form-control-sm" placeholder="ขนาด เช่น 3x4 เมตร" disabled>
@@ -325,22 +348,22 @@
           </div>
         </div>
 
-        <h6 class="fw-bold text-primary mt-3">งานสาธารณูปโภคและระบบอาคาร</h6>
+        <h6 class="subsection-title mt-3">งานสาธารณูปโภคและระบบอาคาร</h6>
         <div class="row g-2 mb-3">
           <div class="col-md-6">
-            <div class="form-check"><input type="checkbox" id="eq_elec" class="form-check-input"><label for="eq_elec" class="form-check-label">อำนวยความสะดวกงานไฟฟ้า</label></div>
+            <div class="form-check"><input type="checkbox" id="eq_elec" class="form-check-input"><label for="eq_elec" class="form-check-label">ขอรับการสนับสนุนงานไฟฟ้า</label></div>
           </div>
           <div class="col-md-6">
-            <div class="form-check"><input type="checkbox" id="eq_water" class="form-check-input"><label for="eq_water" class="form-check-label">อำนวยความสะดวกงานประปา</label></div>
+            <div class="form-check"><input type="checkbox" id="eq_water" class="form-check-input"><label for="eq_water" class="form-check-label">ขอรับการสนับสนุนงานประปา</label></div>
           </div>
         </div>
 
-        <h6 class="fw-bold text-primary mt-3">งานจราจรและความปลอดภัย</h6>
+        <h6 class="subsection-title mt-3">งานจราจรและความปลอดภัย</h6>
         <div class="row g-3 mb-3">
           <div class="col-md-6"><div class="form-check"><input type="checkbox" id="sec_p1" class="form-check-input"><label for="sec_p1" class="form-check-label">ลานจอดรถชั่วคราว 1 (Parking 1)</label></div></div>
           <div class="col-md-6"><div class="form-check"><input type="checkbox" id="sec_p3" class="form-check-input"><label for="sec_p3" class="form-check-label">ลานจอดรถชั่วคราว 3 (Parking 3)</label></div></div>
           <div class="col-md-6">
-            <div class="form-check mb-1"><input type="checkbox" id="sec_guard" class="form-check-input"><label for="sec_guard" class="form-check-label">เจ้าหน้าที่ รปภ.</label></div>
+            <div class="form-check mb-1"><input type="checkbox" id="sec_guard" class="form-check-input"><label for="sec_guard" class="form-check-label">เจ้าหน้าที่รักษาความปลอดภัย</label></div>
             <input type="number" id="qty_guard" class="form-control form-control-sm" placeholder="ระบุจำนวน (นาย)" disabled>
           </div>
           <div class="col-md-6">
@@ -360,12 +383,12 @@
             <input type="number" id="qty_megaphone" class="form-control form-control-sm" max="3" placeholder="ระบุจำนวน (ตัว)" disabled>
           </div>
           <div class="col-md-6">
-            <div class="form-check mb-1"><input type="checkbox" id="sec_other" class="form-check-input"><label for="sec_other" class="form-check-label">อื่น ๆ (งานจราจร)</label></div>
+            <div class="form-check mb-1"><input type="checkbox" id="sec_other" class="form-check-input"><label for="sec_other" class="form-check-label">อื่น ๆ (ระบุ)</label></div>
             <input type="text" id="detail_sec_other" class="form-control form-control-sm" placeholder="ระบุรายละเอียดเพิ่มเติม" disabled>
           </div>
         </div>
 
-        <h6 class="fw-bold text-primary mt-3">ยานพาหนะ (เฉพาะภายในมหาวิทยาลัยมหิดล ศาลายา)</h6>
+        <h6 class="subsection-title mt-3">ยานพาหนะ <span class="fw-normal text-muted small">(เฉพาะภายในมหาวิทยาลัยมหิดล ศาลายา)</span></h6>
         <div class="row g-3 mb-3">
           <div class="col-md-6">
             <div class="form-check mb-1"><input type="checkbox" id="veh_small" class="form-check-input"><label for="veh_small" class="form-check-label">รถกระบะบรรทุกเล็ก (ลค 5556)</label></div>
@@ -377,8 +400,9 @@
           </div>
         </div>
 
-        <h6 class="fw-bold text-primary mt-3">ต้นไม้เพื่อประดับตกแต่งสถานที่</h6>
+        <h6 class="subsection-title mt-3">ต้นไม้เพื่อประดับตกแต่งสถานที่</h6>
         <div class="row g-3">
+          <!-- โค้ดต้นไม้คงเดิม -->
           <div class="col-md-6">
             <div class="form-check mb-1"><input type="checkbox" id="p_mok" class="form-check-input"><label for="p_mok" class="form-check-label">ต้นโมกข์ (&lt;=50)</label></div>
             <input type="number" id="qty_p_mok" class="form-control form-control-sm" max="50" placeholder="ระบุจำนวน (กระถาง)" disabled>
@@ -420,55 +444,99 @@
             <input type="number" id="qty_p_cha" class="form-control form-control-sm" max="20" placeholder="ระบุจำนวน (กระถาง)" disabled>
           </div>
           <div class="col-md-6">
-            <div class="form-check mb-1"><input type="checkbox" id="p_cloth" class="form-check-input"><label for="p_cloth" class="form-check-label">ผ้าปิดกระถางต้นไม้ (ผ้ามันสีน้ำเงิน)</label></div>
+            <div class="form-check mb-1"><input type="checkbox" id="p_cloth" class="form-check-input"><label for="p_cloth" class="form-check-label">ผ้าปิดกระถางต้นไม้ (สีน้ำเงิน)</label></div>
             <input type="number" id="qty_p_cloth" class="form-control form-control-sm" placeholder="ระบุจำนวน (ผืน)" disabled>
           </div>
           <div class="col-md-6">
-            <div class="form-check mb-1"><input type="checkbox" id="p_other" class="form-check-input"><label for="p_other" class="form-check-label">อื่น ๆ (ต้นไม้ประดับ)</label></div>
+            <div class="form-check mb-1"><input type="checkbox" id="p_other" class="form-check-input"><label for="p_other" class="form-check-label">อื่น ๆ (ระบุ)</label></div>
             <input type="text" id="detail_p_other" class="form-control form-control-sm" placeholder="ระบุรายละเอียดเพิ่มเติม" disabled>
           </div>
         </div>
       </div>
 
-      <!-- 5. ผู้ให้การรับรอง -->
+      <!-- 4. ความเห็นและการรับรอง -->
       <div class="card p-4 mb-4 shadow-sm border-0 rounded-4">
-        <h5 class="section-title mb-3 fw-bold text-primary">5. ผู้ให้การรับรอง</h5>
-        <p class="text-muted small mb-3">ข้าพเจ้าขอรับรองการขอใช้สถานที่ / วัสดุ อุปกรณ์ / ต้นไม้ / ยานพาหนะ และร่วมดูแลความเรียบร้อยตลอดการจัดงาน</p>
+        <h5 class="section-title">ส่วนที่ 4 ความเห็นและการรับรอง <span class="fw-normal text-muted fs-6">(สำหรับผู้บังคับบัญชาตามลำดับขั้น)</span></h5>
+        <div class="alert alert-light border border-secondary-subtle help-text mb-3">
+          ข้าพเจ้าขอรับรองว่าการขออนุญาตใช้สถานที่ ตลอดจนความต้องการรับบริการสนับสนุนเพิ่มเติม เป็นไปเพื่อประโยชน์ของทางราชการ และข้าพเจ้าจะควบคุมดูแลความเรียบร้อยตลอดการจัดงาน
+        </div>
         <div class="row g-3">
           <div class="col-md-6">
-            <label class="form-label fw-semibold">ชื่อ-สกุล ผู้ให้การรับรอง <span class="text-danger">*</span></label>
-            <input type="text" class="form-control" name="approverName" id="approverName" placeholder="เช่น นายสมชาย ใจดี" required>
+            <label class="form-label">ลงชื่อผู้รับรองคำร้อง (ชื่อ - นามสกุล) <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" name="approverName" id="approverName" placeholder="ระบุชื่อผู้รับรอง" required>
           </div>
           <div class="col-md-6">
-            <label class="form-label fw-semibold">ตำแหน่ง <span class="text-danger">*</span></label>
-            <input type="text" class="form-control" name="approverPosition" id="approverPosition" placeholder="เช่น หัวหน้างาน..." required>
+            <label class="form-label">ตำแหน่ง <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" name="approverPosition" id="approverPosition" placeholder="ระบุตำแหน่งทางบริหารหรือวิชาการ" required>
           </div>
         </div>
       </div>
 
-      <div class="text-center mb-5">
-        <button type="submit" id="submitBtn" class="btn btn-primary btn-lg px-5 rounded-pill shadow"><i class="bi bi-send me-2"></i>ส่งแบบฟอร์มขอใช้บริการ</button>
+      <div class="text-center mb-5 mt-4">
+        <button type="submit" id="submitBtn" class="btn btn-primary btn-lg px-5 rounded-pill shadow-sm fw-bold">
+          <i class="bi bi-send-fill me-2"></i> ส่งแบบคำร้อง
+        </button>
       </div>
 
     </fieldset>
   </form>
 </div>
 
+<!-- Modal แจ้งผลบันทึกสำเร็จ + ปุ่มดาวน์โหลด PDF -->
+<div class="modal fade" id="successDownloadModal" tabindex="-1" data-bs-backdrop="static" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content text-center p-4 rounded-4 border-0 shadow">
+      <div class="modal-body">
+        <div class="mb-3">
+          <i class="bi bi-check-circle-fill text-success" style="font-size: 3.8rem;"></i>
+        </div>
+        <h4 class="fw-bold text-dark mb-2" id="modalStatusTitle">ยื่นคำร้องสำเร็จ!</h4>
+        <p class="text-muted small mb-4">ระบบได้บันทึกข้อมูลและจัดทำเอกสารเรียบร้อยแล้ว ท่านสามารถดาวน์โหลดเอกสารได้ที่ปุ่มด้านล่าง</p>
+        
+        <div class="d-flex flex-column gap-2 align-items-center">
+          <a id="downloadPdfBtn" href="#" target="_blank" class="btn-success-pdf shadow-sm">
+            <i class="bi bi-file-earmark-pdf-fill fs-5"></i> ดาวน์โหลด / ดูเอกสาร PDF
+          </a>
+          <button type="button" class="btn btn-link text-secondary text-decoration-none small mt-2" onclick="redirectToMenu()">
+            กลับสู่หน้าเมนูหลัก
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="config.js"></script>
+<!-- (สคริปต์ JavaScript ด้านล่างคงเดิมทั้งหมดตาม source เดิม เพื่อให้เชื่อมต่อกับ Backend ได้ปกติ) -->
 <script>
   let isEditMode = false;
   let currentReqId = '';
 
-  function toggleWarning(targetId, checkbox) {
-    const el = document.getElementById(targetId);
-    if (el) {
-      if (checkbox.checked) {
-        el.classList.add('show');
-      } else {
-        el.classList.remove('show');
+  function updateWarnings() {
+    const isElecChecked = document.getElementById('eq_elec').checked;
+    document.querySelectorAll('.loc-checkbox').forEach(cb => {
+      const warningId = cb.id.replace('loc_', 'warn_');
+      const warningEl = document.getElementById(warningId);
+      if (warningEl) {
+        if (cb.checked && isElecChecked) {
+          warningEl.classList.add('show');
+        } else {
+          warningEl.classList.remove('show');
+        }
       }
+    });
+  }
+
+  function cleanDateFormat(dateVal) {
+    if (!dateVal) return '';
+    let str = String(dateVal).trim();
+    if (str.includes('T')) str = str.split('T')[0];
+    const parts = str.split('-');
+    if (parts.length === 3) {
+      return `${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}`;
     }
+    return str;
   }
 
   document.addEventListener('DOMContentLoaded', () => {
@@ -477,33 +545,29 @@
       reqDateInput.value = new Date().toISOString().split('T')[0];
     }
 
+    document.querySelectorAll('.loc-checkbox').forEach(cb => {
+      cb.addEventListener('change', updateWarnings);
+    });
+    
+    const eqElec = document.getElementById('eq_elec');
+    if (eqElec) {
+      eqElec.addEventListener('change', updateWarnings);
+    }
+
     const mappings = [
-      { cb: 'eq_stage', input: 'qty_stage' },
-      { cb: 'eq_table', input: 'qty_table' },
-      { cb: 'eq_chair', input: 'qty_chair' },
-      { cb: 'eq_bin', input: 'qty_bin' },
-      { cb: 'eq_cooler', input: 'qty_cooler' },
-      { cb: 'eq_fan', input: 'qty_fan' },
-      { cb: 'sec_guard', input: 'qty_guard' },
-      { cb: 'sec_tram', input: 'qty_tram' },
-      { cb: 'sec_fence', input: 'qty_fence' },
-      { cb: 'sec_cone', input: 'qty_cone' },
-      { cb: 'sec_megaphone', input: 'qty_megaphone' },
-      { cb: 'sec_other', input: 'detail_sec_other' },
-      { cb: 'veh_small', input: 'reason_veh_small' },
-      { cb: 'veh_large', input: 'reason_veh_large' },
-      { cb: 'p_mok', input: 'qty_p_mok' },
-      { cb: 'p_thian', input: 'qty_p_thian' },
-      { cb: 'p_saow', input: 'qty_p_saow' },
-      { cb: 'p_fueng', input: 'qty_p_fueng' },
-      { cb: 'p_mak', input: 'qty_p_mak' },
-      { cb: 'p_jung', input: 'qty_p_jung' },
-      { cb: 'p_jun', input: 'qty_p_jun' },
-      { cb: 'p_vasana', input: 'qty_p_vasana' },
-      { cb: 'p_pilo', input: 'qty_p_pilo' },
-      { cb: 'p_cha', input: 'qty_p_cha' },
-      { cb: 'p_cloth', input: 'qty_p_cloth' },
-      { cb: 'p_other', input: 'detail_p_other' }
+      { cb: 'eq_stage', input: 'qty_stage' }, { cb: 'eq_table', input: 'qty_table' },
+      { cb: 'eq_chair', input: 'qty_chair' }, { cb: 'eq_bin', input: 'qty_bin' },
+      { cb: 'eq_cooler', input: 'qty_cooler' }, { cb: 'eq_fan', input: 'qty_fan' },
+      { cb: 'sec_guard', input: 'qty_guard' }, { cb: 'sec_tram', input: 'qty_tram' },
+      { cb: 'sec_fence', input: 'qty_fence' }, { cb: 'sec_cone', input: 'qty_cone' },
+      { cb: 'sec_megaphone', input: 'qty_megaphone' }, { cb: 'sec_other', input: 'detail_sec_other' },
+      { cb: 'veh_small', input: 'reason_veh_small' }, { cb: 'veh_large', input: 'reason_veh_large' },
+      { cb: 'p_mok', input: 'qty_p_mok' }, { cb: 'p_thian', input: 'qty_p_thian' },
+      { cb: 'p_saow', input: 'qty_p_saow' }, { cb: 'p_fueng', input: 'qty_p_fueng' },
+      { cb: 'p_mak', input: 'qty_p_mak' }, { cb: 'p_jung', input: 'qty_p_jung' },
+      { cb: 'p_jun', input: 'qty_p_jun' }, { cb: 'p_vasana', input: 'qty_p_vasana' },
+      { cb: 'p_pilo', input: 'qty_p_pilo' }, { cb: 'p_cha', input: 'qty_p_cha' },
+      { cb: 'p_cloth', input: 'qty_p_cloth' }, { cb: 'p_other', input: 'detail_p_other' }
     ];
 
     mappings.forEach(item => {
@@ -517,7 +581,6 @@
       }
     });
 
-    // เช็คโหมดแก้ไขจาก URL
     const urlParams = new URLSearchParams(window.location.search);
     const mode = urlParams.get('mode');
     const reqId = urlParams.get('reqId');
@@ -526,13 +589,37 @@
       isEditMode = true;
       currentReqId = reqId;
       document.getElementById('loadingOverlay').style.display = 'flex';
-      document.getElementById('formMainTitle').innerText = 'แก้ไขแบบฟอร์มการขอใช้สถานที่และบริการ (คำขอ: ' + reqId + ')';
+      document.getElementById('formMainTitle').innerText = 'แก้ไขแบบคำร้องขออนุญาต (คำขอ: ' + reqId + ')';
       
       const script = document.createElement('script');
       script.src = `${CONFIG.WEB_APP_URL}?action=getRequestData&requestId=${encodeURIComponent(reqId)}&callback=onDataLoaded`;
       document.body.appendChild(script);
     }
   });
+
+  function parseAndSetItems(textString, itemMap) {
+    if (!textString || textString === 'ไม่มี') return;
+    const items = textString.split(', ');
+    items.forEach(itemStr => {
+      itemMap.forEach(m => {
+        if (itemStr.startsWith(m.keyword)) {
+          const cb = document.getElementById(m.cb);
+          const inp = document.getElementById(m.input);
+          if (cb) {
+            cb.checked = true;
+            cb.dispatchEvent(new Event('change'));
+          }
+          if (inp) {
+            const match = itemStr.match(/\((.*?)\)/);
+            if (match) {
+              const val = match[1].replace(/[^0-9]/g, '');
+              inp.value = val || match[1];
+            }
+          }
+        }
+      });
+    });
+  }
 
   window.onDataLoaded = function(result) {
     document.getElementById('loadingOverlay').style.display = 'none';
@@ -542,7 +629,7 @@
       
       document.getElementById('faculty').value = d.faculty || '';
       document.getElementById('department').value = d.department || '';
-      document.getElementById('requestDate').value = d.requestDate || '';
+      document.getElementById('requestDate').value = cleanDateFormat(d.requestDate);
       document.getElementById('title').value = d.title || 'นาย';
       document.getElementById('requesterName').value = d.requesterName || '';
       document.getElementById('phone').value = d.phone || '';
@@ -554,20 +641,54 @@
       if (d.soundUsage === 'ใช้เสียง') document.getElementById('sound_yes').checked = true;
       if (d.soundUsage === 'ไม่ใช้เสียง') document.getElementById('sound_no').checked = true;
 
-      document.getElementById('startDate').value = d.startDate || '';
+      document.getElementById('startDate').value = cleanDateFormat(d.startDate);
       document.getElementById('startTime').value = d.startTime || '';
-      document.getElementById('endDate').value = d.endDate || '';
+      document.getElementById('endDate').value = cleanDateFormat(d.endDate);
       document.getElementById('endTime').value = d.endTime || '';
 
       if (d.location) {
-        const locs = d.location.split(', ');
         document.querySelectorAll('.loc-checkbox').forEach(cb => {
-          if (locs.includes(cb.value)) {
+          if (d.location.includes(cb.value)) {
             cb.checked = true;
             cb.dispatchEvent(new Event('change'));
           }
         });
       }
+
+      parseAndSetItems(d.equipmentDetails, [
+        { keyword: 'เวที', cb: 'eq_stage', input: 'qty_stage' }, { keyword: 'โต๊ะ', cb: 'eq_table', input: 'qty_table' },
+        { keyword: 'เก้าอี้', cb: 'eq_chair', input: 'qty_chair' }, { keyword: 'ถังขยะ', cb: 'eq_bin', input: 'qty_bin' },
+        { keyword: 'คูลเลอร์', cb: 'eq_cooler', input: 'qty_cooler' }, { keyword: 'พัดลม', cb: 'eq_fan', input: 'qty_fan' }
+      ]);
+
+      if (d.utilityDetails) {
+        if (d.utilityDetails.includes('งานไฟฟ้า')) document.getElementById('eq_elec').checked = true;
+        if (d.utilityDetails.includes('งานประปา')) document.getElementById('eq_water').checked = true;
+      }
+
+      if (d.securityDetails) {
+        if (d.securityDetails.includes('ลานจอดรถชั่วคราว 1')) document.getElementById('sec_p1').checked = true;
+        if (d.securityDetails.includes('ลานจอดรถชั่วคราว 3')) document.getElementById('sec_p3').checked = true;
+        parseAndSetItems(d.securityDetails, [
+          { keyword: 'รปภ.', cb: 'sec_guard', input: 'qty_guard' }, { keyword: 'รถราง', cb: 'sec_tram', input: 'qty_tram' },
+          { keyword: 'แผงกั้นจราจร', cb: 'sec_fence', input: 'qty_fence' }, { keyword: 'กรวยยาง', cb: 'sec_cone', input: 'qty_cone' },
+          { keyword: 'โทรโข่ง', cb: 'sec_megaphone', input: 'qty_megaphone' }, { keyword: 'อื่น ๆ', cb: 'sec_other', input: 'detail_sec_other' }
+        ]);
+      }
+
+      parseAndSetItems(d.vehicleDetails, [
+        { keyword: 'รถกระบะเล็ก', cb: 'veh_small', input: 'reason_veh_small' },
+        { keyword: 'รถกระบะใหญ่', cb: 'veh_large', input: 'reason_veh_large' }
+      ]);
+
+      parseAndSetItems(d.plantDetails, [
+        { keyword: 'ต้นโมกข์', cb: 'p_mok', input: 'qty_p_mok' }, { keyword: 'ต้นเทียนทอง', cb: 'p_thian', input: 'qty_p_thian' },
+        { keyword: 'ต้นสาวน้อยประแป้ง', cb: 'p_saow', input: 'qty_p_saow' }, { keyword: 'ต้นเฟื่องฟ้า', cb: 'p_fueng', input: 'qty_p_fueng' },
+        { keyword: 'ต้นหมากเหลือง', cb: 'p_mak', input: 'qty_p_mak' }, { keyword: 'ต้นจั๋ง', cb: 'p_jung', input: 'qty_p_jung' },
+        { keyword: 'ต้นจันทร์ผา', cb: 'p_jun', input: 'qty_p_jun' }, { keyword: 'ต้นวาสนา', cb: 'p_vasana', input: 'qty_p_vasana' },
+        { keyword: 'ต้นพิโลทอง', cb: 'p_pilo', input: 'qty_p_pilo' }, { keyword: 'ต้นชาฮกเกี้ยน', cb: 'p_cha', input: 'qty_p_cha' },
+        { keyword: 'ผ้าปิดกระถาง', cb: 'p_cloth', input: 'qty_p_cloth' }, { keyword: 'อื่น ๆ', cb: 'p_other', input: 'detail_p_other' }
+      ]);
 
       document.getElementById('approverName').value = d.approverName || '';
       document.getElementById('approverPosition').value = d.approverPosition || '';
@@ -576,6 +697,9 @@
       if (submitBtn) {
         submitBtn.innerHTML = '<i class="bi bi-pencil-square me-2"></i>บันทึกการแก้ไขข้อมูล';
       }
+
+      updateWarnings();
+
     } else {
       alert('ไม่สามารถดึงข้อมูลคำขอเดิมได้: ' + (result.message || ''));
     }
@@ -585,14 +709,26 @@
     e.preventDefault();
 
     const submitBtn = document.getElementById('submitBtn');
+    const isElecRequested = document.getElementById('eq_elec').checked;
     
-    const selectedLocations = [];
+    const selectedLocationsHTML = [];
     document.querySelectorAll('.loc-checkbox:checked').forEach(cb => {
-      selectedLocations.push(cb.value);
+      let locationText = `<div style="margin-bottom: 8px;">&bull; ${cb.value}</div>`;
+      
+      const warningId = cb.id.replace('loc_', 'warn_');
+      const warningBox = document.getElementById(warningId);
+      
+      if (warningBox && isElecRequested) {
+        const warningText = warningBox.innerText.trim();
+        if (warningText) {
+          locationText += `<div style="background-color: #fefce8; border: 1px solid #fef08a; border-radius: 6px; padding: 4px 12px; margin-left: 15px; margin-bottom: 12px; color: #b45309; font-size: 13px; display: inline-block;">${warningText}</div>`;
+        }
+      }
+      selectedLocationsHTML.push(locationText);
     });
 
-    if (selectedLocations.length === 0) {
-      alert('กรุณาเลือกสถานที่อย่างน้อย 1 รายการ ในข้อ 3');
+    if (selectedLocationsHTML.length === 0) {
+      alert('กรุณาเลือกพื้นที่ที่ขออนุญาตใช้งานอย่างน้อย 1 รายการ');
       return;
     }
 
@@ -638,53 +774,84 @@
 
     const soundRadio = document.querySelector('input[name="soundUsage"]:checked');
 
-    const payload = new URLSearchParams();
+    const payload = {};
     if (isEditMode) {
-      payload.append('action', 'updateRequest');
-      payload.append('requestId', currentReqId);
+      payload.action = 'updateRequest';
+      payload.requestId = currentReqId;
     } else {
-      payload.append('action', 'createRequest');
+      payload.action = 'createRequest';
     }
 
-    payload.append('faculty', document.getElementById('faculty').value.trim());
-    payload.append('department', document.getElementById('department').value.trim());
-    payload.append('requestDate', document.getElementById('requestDate').value);
-    payload.append('title', document.getElementById('title').value);
-    payload.append('requesterName', document.getElementById('requesterName').value.trim());
-    payload.append('phone', document.getElementById('phone').value.trim());
-    payload.append('email', document.getElementById('email').value.trim());
-    payload.append('pinCode', document.getElementById('pinCode').value.trim());
-    payload.append('activityName', document.getElementById('activityName').value.trim());
-    payload.append('participantCount', document.getElementById('participantCount').value);
-    payload.append('soundUsage', soundRadio ? soundRadio.value : '');
-    payload.append('startDate', document.getElementById('startDate').value);
-    payload.append('startTime', document.getElementById('startTime').value);
-    payload.append('endDate', document.getElementById('endDate').value);
-    payload.append('endTime', document.getElementById('endTime').value);
-    payload.append('location', selectedLocations.join(', '));
-    payload.append('equipmentDetails', equipmentList.join(', ') || 'ไม่มี');
-    payload.append('utilityDetails', utilityList.join(', ') || 'ไม่มี');
-    payload.append('securityDetails', securityList.join(', ') || 'ไม่มี');
-    payload.append('vehicleDetails', vehicleList.join(', ') || 'ไม่มี');
-    payload.append('plantDetails', plantList.join(', ') || 'ไม่มี');
-    payload.append('approverName', document.getElementById('approverName').value.trim());
-    payload.append('approverPosition', document.getElementById('approverPosition').value.trim());
+    payload.faculty = document.getElementById('faculty').value.trim();
+    payload.department = document.getElementById('department').value.trim();
+    payload.requestDate = document.getElementById('requestDate').value;
+    payload.title = document.getElementById('title').value;
+    payload.requesterName = document.getElementById('requesterName').value.trim();
+    payload.phone = document.getElementById('phone').value.trim();
+    payload.email = document.getElementById('email').value.trim();
+    payload.pinCode = document.getElementById('pinCode').value.trim();
+    payload.activityName = document.getElementById('activityName').value.trim();
+    payload.participantCount = document.getElementById('participantCount').value;
+    payload.soundUsage = soundRadio ? soundRadio.value : '';
+    payload.startDate = document.getElementById('startDate').value;
+    payload.startTime = document.getElementById('startTime').value;
+    payload.endDate = document.getElementById('endDate').value;
+    payload.endTime = document.getElementById('endTime').value;
+    
+    payload.location = `<div style="margin-top: 6px;">${selectedLocationsHTML.join('')}</div>`;
+    
+    payload.equipmentDetails = equipmentList.join(', ') || 'ไม่มี';
+    payload.utilityDetails = utilityList.join(', ') || 'ไม่มี';
+    payload.securityDetails = securityList.join(', ') || 'ไม่มี';
+    payload.vehicleDetails = vehicleList.join(', ') || 'ไม่มี';
+    payload.plantDetails = plantList.join(', ') || 'ไม่มี';
+    payload.approverName = document.getElementById('approverName').value.trim();
+    payload.approverPosition = document.getElementById('approverPosition').value.trim();
 
     submitBtn.disabled = true;
-    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>กำลังบันทึกข้อมูล...';
+    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>กำลังบันทึกข้อมูลและสร้าง PDF...';
 
     fetch(CONFIG.WEB_APP_URL, {
       method: 'POST',
-      body: payload
+      headers: {
+        'Content-Type': 'text/plain;charset=utf-8'
+      },
+      body: JSON.stringify(payload)
     })
-    .then(() => {
-      alert(isEditMode ? 'แก้ไขข้อมูลเรียบร้อยแล้ว!' : 'บันทึกข้อมูลขอใช้สถานที่เรียบร้อยแล้ว!');
-      window.location.href = './menu-common.html';
+    .then(response => response.json())
+    .then(data => {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = isEditMode ? '<i class="bi bi-pencil-square me-2"></i>บันทึกการแก้ไขข้อมูล' : '<i class="bi bi-send-fill me-2"></i>ส่งแบบคำร้อง';
+
+      if (data.success) {
+        const pdfBtn = document.getElementById('downloadPdfBtn');
+        
+        if (data.pdfUrl && data.pdfUrl !== "") {
+          pdfBtn.href = data.pdfUrl;
+          pdfBtn.onclick = null;
+        } else {
+          pdfBtn.href = "javascript:void(0);";
+          pdfBtn.onclick = function() {
+            alert("บันทึกข้อมูลสำเร็จแล้ว (รหัสคำขอ: " + (data.requestId || currentReqId) + ") แต่ระบบยังสร้างไฟล์ PDF ไม่สำเร็จ กรุณาตรวจสอบการตั้งค่า Apps Script");
+          };
+        }
+
+        document.getElementById('modalStatusTitle').textContent = isEditMode ? 'แก้ไขข้อมูลสำเร็จ!' : 'ยื่นคำร้องสำเร็จ!';
+        const modal = new bootstrap.Modal(document.getElementById('successDownloadModal'));
+        modal.show();
+      } else {
+        alert("เกิดข้อผิดพลาด: " + (data.message || "ไม่สามารถบันทึกข้อมูลได้"));
+      }
     })
     .catch(err => {
-      alert(isEditMode ? 'แก้ไขข้อมูลเรียบร้อยแล้ว!' : 'บันทึกข้อมูลเรียบร้อยแล้ว!');
-      window.location.href = './menu-common.html';
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = isEditMode ? '<i class="bi bi-pencil-square me-2"></i>บันทึกการแก้ไขข้อมูล' : '<i class="bi bi-send-fill me-2"></i>ส่งแบบคำร้อง';
+      alert("เกิดข้อผิดพลาดในการเชื่อมต่อระบบ");
     });
+  }
+
+  function redirectToMenu() {
+    window.location.href = './menu-common.html';
   }
 </script>
 </body>

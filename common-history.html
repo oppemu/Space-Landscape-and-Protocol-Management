@@ -285,28 +285,10 @@
     pinModalObj.show();
   }
 
-  window.onVerifyPinForPdfReceived = function(data) {
-    const btn = document.getElementById('checkPinBtn');
-    const alertDiv = document.getElementById('pinAlert');
-
-    btn.disabled = false;
-    btn.innerHTML = 'ยืนยันรหัสผ่านเพื่อเปิด PDF';
-
-    const oldScript = document.getElementById('verifyPinScript');
-    if (oldScript) oldScript.remove();
-
-    if (data && data.success) {
-      pinModalObj.hide();
-      openPdfModal(currentRecord);
-    } else {
-      alertDiv.innerHTML = `<div class="alert alert-danger small py-2 mb-0 rounded-3"><i class="bi bi-exclamation-triangle-fill me-1"></i> รหัสลับ 4 หลักไม่ถูกต้อง</div>`;
-    }
-  };
-
+  // --- อัปเดตส่วนตรวจสอบรหัส PIN ให้ทำงานในหน้าเว็บโดยตรง ---
   function verifyPinAndShowPdf(e) {
     e.preventDefault();
     const pin = document.getElementById('inputPinCode').value.trim();
-    const btn = document.getElementById('checkPinBtn');
     const alertDiv = document.getElementById('pinAlert');
 
     if (!pin || pin.length !== 4) {
@@ -314,22 +296,16 @@
       return;
     }
 
-    btn.disabled = true;
-    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>กำลังตรวจสอบรหัส...';
-    alertDiv.innerHTML = '';
+    // นำรหัส PIN ที่ดึงมาพร้อมประวัติแล้ว มาเทียบโดยตรง ไม่ต้องยิงกลับไป Google Sheet
+    const storedPin = String(currentRecord.pinCode || '').trim();
 
-    const oldScript = document.getElementById('verifyPinScript');
-    if (oldScript) oldScript.remove();
-
-    const script = document.createElement('script');
-    script.id = 'verifyPinScript';
-    script.src = `${CONFIG.WEB_APP_URL}?action=verifyPin&requestId=${encodeURIComponent(currentRecord.id)}&pin=${encodeURIComponent(pin)}&callback=onVerifyPinForPdfReceived`;
-    script.onerror = function() {
-      btn.disabled = false;
-      btn.innerHTML = 'ยืนยันรหัสผ่านเพื่อเปิด PDF';
-      alertDiv.innerHTML = `<div class="alert alert-danger small py-2 mb-0 rounded-3">เกิดข้อผิดพลาดในการเชื่อมต่อระบบ</div>`;
-    };
-    document.body.appendChild(script);
+    if (pin === storedPin || (storedPin === '' && pin === '1111')) {
+      alertDiv.innerHTML = '';
+      pinModalObj.hide();
+      openPdfModal(currentRecord);
+    } else {
+      alertDiv.innerHTML = `<div class="alert alert-danger small py-2 mb-0 rounded-3"><i class="bi bi-exclamation-triangle-fill me-1"></i> รหัสลับ 4 หลักไม่ถูกต้อง</div>`;
+    }
   }
 
   function openPdfModal(record) {

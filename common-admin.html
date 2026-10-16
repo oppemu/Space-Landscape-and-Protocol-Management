@@ -420,11 +420,10 @@
       loadAdminData();
     })
     .catch(err => {
-      alert("บันทึกข้อมูลเรียบร้อยแล้ว!");
+      // แก้ไขจากข้อความ Success เป็นแจ้งเตือน Error
+      alert("เกิดข้อผิดพลาดในการบันทึกข้อมูล กรุณาลองใหม่อีกครั้ง!"); 
       btn.disabled = false;
       btn.innerHTML = '<i class="bi bi-floppy me-1"></i> บันทึกข้อมูล';
-      updateModalObj.hide();
-      loadAdminData();
     });
   }
 

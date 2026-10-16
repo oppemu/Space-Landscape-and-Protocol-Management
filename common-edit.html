@@ -68,6 +68,7 @@
   window.onVerifyPinReceived = function(data) {
     const btn = document.getElementById('submitBtn');
     const alertDiv = document.getElementById('statusAlert');
+    const inputReqId = document.getElementById('reqId').value.trim().toUpperCase();
     
     btn.disabled = false;
     btn.innerHTML = '<i class="bi bi-box-arrow-in-right me-2"></i>เข้าสู่หน้าแก้ไขข้อมูล';
@@ -77,9 +78,10 @@
 
     if (data && data.success) {
       alertDiv.innerHTML = `<div class="alert alert-success text-center small rounded-3"><i class="bi bi-check-circle-fill me-1"></i> ยืนยันรหัสผ่านถูกต้อง! กำลังนำไปยังหน้าแก้ไข...</div>`;
+      
+      const redirectReqId = data.requestId || inputReqId;
       setTimeout(() => {
-        // ส่งทั้ง mode=edit และ reqId ไปยัง common-form.html
-        window.location.href = `./common-form.html?mode=edit&reqId=${encodeURIComponent(data.requestId)}`;
+        window.location.href = './common-form.html?mode=edit&reqId=' + encodeURIComponent(redirectReqId);
       }, 1000);
     } else {
       alertDiv.innerHTML = `<div class="alert alert-danger text-center small rounded-3"><i class="bi bi-exclamation-triangle-fill me-1"></i> ${data.message || 'รหัสคำขอหรือรหัสลับ 4 หลักไม่ถูกต้อง'}</div>`;
@@ -88,7 +90,7 @@
 
   function handleVerifyPin(e) {
     e.preventDefault();
-    const reqId = document.getElementById('reqId').value.trim();
+    const reqId = document.getElementById('reqId').value.trim().toUpperCase();
     const pin = document.getElementById('pinCode').value.trim();
     const btn = document.getElementById('submitBtn');
     const alertDiv = document.getElementById('statusAlert');
@@ -100,13 +102,21 @@
     const oldScript = document.getElementById('jsonpScript');
     if (oldScript) oldScript.remove();
 
+    if (typeof CONFIG === 'undefined' || !CONFIG.WEB_APP_URL) {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="bi bi-box-arrow-in-right me-2"></i>เข้าสู่หน้าแก้ไขข้อมูล';
+      alertDiv.innerHTML = `<div class="alert alert-danger text-center small rounded-3">ไม่พบการตั้งค่า CONFIG.WEB_APP_URL กรุณาตรวจสอบไฟล์ config.js</div>`;
+      return;
+    }
+
     const script = document.createElement('script');
     script.id = 'jsonpScript';
-    script.src = `${CONFIG.WEB_APP_URL}?action=verifyPin&requestId=${encodeURIComponent(reqId)}&pin=${encodeURIComponent(pin)}&callback=onVerifyPinReceived`;
+    script.src = CONFIG.WEB_APP_URL + '?action=verifyPin&requestId=' + encodeURIComponent(reqId) + '&pin=' + encodeURIComponent(pin) + '&callback=onVerifyPinReceived';
+    
     script.onerror = function() {
       btn.disabled = false;
       btn.innerHTML = '<i class="bi bi-box-arrow-in-right me-2"></i>เข้าสู่หน้าแก้ไขข้อมูล';
-      alertDiv.innerHTML = `<div class="alert alert-danger text-center small rounded-3">เกิดข้อผิดพลาดในการเชื่อมต่อระบบ</div>`;
+      alertDiv.innerHTML = `<div class="alert alert-danger text-center small rounded-3">เกิดข้อผิดพลาดในการเชื่อมต่อระบบ กรุณาตรวจสอบการตั้งค่าใน config.js และสิทธิ์การปรับใช้ Apps Script</div>`;
     };
     document.body.appendChild(script);
   }
